@@ -108,12 +108,16 @@ export default function ReturnsCalculatorPage() {
             </div>
             {selectedIPO && (
               <div className="flex items-center gap-2 mt-3">
-                <Badge variant="outline" className="text-xs">
-                  {selectedIPO.ipoType.toUpperCase()}
-                </Badge>
-                <Badge variant="secondary" className="text-xs">
-                  {selectedIPO.status}
-                </Badge>
+                {selectedIPO.ipoType && (
+                  <Badge variant="outline" className="text-xs">
+                    {selectedIPO.ipoType.toUpperCase()}
+                  </Badge>
+                )}
+                {selectedIPO.status && (
+                  <Badge variant="secondary" className="text-xs">
+                    {selectedIPO.status}
+                  </Badge>
+                )}
                 <span className="text-xs text-muted-foreground">
                   Price: ₹{selectedIPO.issuePrice} • Lot: {selectedIPO.lotSize}
                 </span>

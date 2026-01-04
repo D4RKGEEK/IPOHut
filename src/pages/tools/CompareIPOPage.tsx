@@ -130,12 +130,16 @@ export default function CompareIPOPage() {
                   {item.selected && (
                     <div className="space-y-2 pt-2 border-t">
                       <div className="flex items-center gap-2">
-                        <Badge variant="outline" className="text-[10px]">
-                          {item.selected.ipoType.toUpperCase()}
-                        </Badge>
-                        <Badge variant="secondary" className="text-[10px]">
-                          {item.selected.status}
-                        </Badge>
+                        {item.selected.ipoType && (
+                          <Badge variant="outline" className="text-[10px]">
+                            {item.selected.ipoType.toUpperCase()}
+                          </Badge>
+                        )}
+                        {item.selected.status && (
+                          <Badge variant="secondary" className="text-[10px]">
+                            {item.selected.status}
+                          </Badge>
+                        )}
                       </div>
                       <div className="grid grid-cols-2 gap-2 text-xs">
                         <div>
@@ -307,9 +311,11 @@ export default function CompareIPOPage() {
                   <div className="w-28 shrink-0 p-3 text-muted-foreground">Type</div>
                   {validIpos.map((item) => (
                     <div key={item.id} className="w-36 shrink-0 p-3 text-center">
-                      <Badge variant="outline" className="text-[10px]">
-                        {item.selected?.ipoType.toUpperCase() || "—"}
-                      </Badge>
+                      {item.selected?.ipoType ? (
+                        <Badge variant="outline" className="text-[10px]">
+                          {item.selected.ipoType.toUpperCase()}
+                        </Badge>
+                      ) : "—"}
                     </div>
                   ))}
                 </div>
@@ -319,9 +325,11 @@ export default function CompareIPOPage() {
                   <div className="w-28 shrink-0 p-3 text-muted-foreground">Status</div>
                   {validIpos.map((item) => (
                     <div key={item.id} className="w-36 shrink-0 p-3 text-center">
-                      <Badge variant="secondary" className="text-[10px]">
-                        {item.selected?.status || "—"}
-                      </Badge>
+                      {item.selected?.status ? (
+                        <Badge variant="secondary" className="text-[10px]">
+                          {item.selected.status}
+                        </Badge>
+                      ) : "—"}
                     </div>
                   ))}
                 </div>

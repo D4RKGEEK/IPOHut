@@ -17,6 +17,7 @@ interface IPOCardProps {
   closeDate?: string;
   listingDate?: string;
   className?: string;
+  style?: React.CSSProperties;
 }
 
 export function IPOCard({
@@ -31,13 +32,14 @@ export function IPOCard({
   closeDate,
   listingDate,
   className,
+  style,
 }: IPOCardProps) {
   const daysUntilClose = getDaysUntil(closeDate);
   const isPositiveGMP = gmp !== undefined && gmp >= 0;
 
   return (
     <Link to={`/ipo/${slug}`}>
-      <Card className={cn("card-hover border", className)}>
+      <Card className={cn("card-hover border", className)} style={style}>
         <CardContent className="p-4">
           <div className="flex items-start justify-between gap-2 mb-3">
             <h3 className="font-semibold text-foreground line-clamp-2 text-sm">{name}</h3>

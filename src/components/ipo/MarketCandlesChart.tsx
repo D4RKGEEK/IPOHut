@@ -1,45 +1,68 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { LineChart, Line, XAxis, YAxis, Tooltip, ResponsiveContainer, ReferenceLine } from "recharts";
-import { IPOMarketData, IPOMarketCandle } from "@/types/ipo";
+import { IPOMarketData } from "@/types/ipo";
 import { TrendingUp, TrendingDown } from "lucide-react";
 
 interface MarketCandlesChartProps {
-  marketData: IPOMarketData | Record<string, { open: number; high: number; low: number; close: number; volume: number }>;
+  marketData: IPOMarketData | Record<string, any>;
   issuePrice?: number;
 }
 
+interface CandleData {
+  time: string;
+  open: number;
+  high: number;
+  low: number;
+  close: number;
+  volume: number;
+}
+
 export function MarketCandlesChart({ marketData, issuePrice }: MarketCandlesChartProps) {
-  // Parse market data - can be candles array or object with time keys
-  let chartData: { time: string; close: number; volume: number }[] = [];
+  // Parse market data - can be in different formats
+  let chartData: { time: string; close: number; open: number; high: number; low: number }[] = [];
   let latestPrice = 0;
   let openPrice = 0;
 
-  if ('candles' in marketData && Array.isArray(marketData.candles)) {
-    // New format with candles array
-    chartData = marketData.candles.map((candle: IPOMarketCandle) => ({
-      time: candle.time,
-      close: candle.close,
-      volume: candle.volume,
-    }));
-    if (marketData.summary) {
-      latestPrice = marketData.summary.close;
-      openPrice = marketData.summary.open;
+  // Check if marketData has a date key with candles inside (e.g., "2025-12-31": { candles: [...] })
+  const dateKeys = Object.keys(marketData).filter(key => /^\d{4}-\d{2}-\d{2}$/.test(key));
+  
+  if (dateKeys.length > 0) {
+    // Get the first date key that has candles
+    const dateKey = dateKeys[0];
+    const dateData = marketData[dateKey];
+    
+    if (dateData?.candles && Array.isArray(dateData.candles)) {
+      // Sort candles by time (oldest first)
+      const sortedCandles = [...dateData.candles].sort((a: CandleData, b: CandleData) => 
+        new Date(a.time).getTime() - new Date(b.time).getTime()
+      );
+      
+      chartData = sortedCandles.map((candle: CandleData) => ({
+        time: new Date(candle.time).toLocaleDateString('en-IN', { day: 'numeric', month: 'short' }),
+        close: candle.close,
+        open: candle.open,
+        high: candle.high,
+        low: candle.low,
+      }));
+      
+      if (sortedCandles.length > 0) {
+        openPrice = sortedCandles[0].open;
+        latestPrice = sortedCandles[sortedCandles.length - 1].close;
+      }
     }
-  } else if (typeof marketData === 'object') {
-    // Old format with time as keys
-    const entries = Object.entries(marketData)
-      .filter(([key]) => key.includes(':')) // Filter only time entries
-      .sort(([a], [b]) => a.localeCompare(b));
-    
-    chartData = entries.map(([time, data]) => ({
-      time: time.split(' ')[1] || time, // Extract time part
-      close: data.close,
-      volume: data.volume,
+  } else if ('candles' in marketData && Array.isArray((marketData as IPOMarketData).candles)) {
+    // Direct candles array format
+    const candles = (marketData as IPOMarketData).candles;
+    chartData = candles.map((candle) => ({
+      time: new Date(candle.time).toLocaleDateString('en-IN', { day: 'numeric', month: 'short' }),
+      close: candle.close,
+      open: candle.open,
+      high: candle.high,
+      low: candle.low,
     }));
-    
-    if (entries.length > 0) {
-      openPrice = entries[0][1].open;
-      latestPrice = entries[entries.length - 1][1].close;
+    if ((marketData as IPOMarketData).summary) {
+      latestPrice = (marketData as IPOMarketData).summary.close;
+      openPrice = (marketData as IPOMarketData).summary.open;
     }
   }
 
@@ -51,18 +74,18 @@ export function MarketCandlesChart({ marketData, issuePrice }: MarketCandlesChar
   const priceChangePercent = openPrice > 0 ? ((priceChange / openPrice) * 100) : 0;
   const isPositive = priceChange >= 0;
 
-  const minPrice = Math.min(...chartData.map(d => d.close)) * 0.995;
-  const maxPrice = Math.max(...chartData.map(d => d.close)) * 1.005;
+  const minPrice = Math.min(...chartData.map(d => d.close)) * 0.99;
+  const maxPrice = Math.max(...chartData.map(d => d.close)) * 1.01;
 
   return (
     <Card className="border">
       <CardHeader className="pb-2 px-3 sm:px-6">
-        <div className="flex items-center justify-between">
-          <CardTitle className="text-sm sm:text-base">Today's Price Movement</CardTitle>
+        <div className="flex items-center justify-between flex-wrap gap-2">
+          <CardTitle className="text-sm sm:text-base">Price History (Since Listing)</CardTitle>
           <div className={`flex items-center gap-1 text-xs sm:text-sm font-medium ${isPositive ? 'text-success' : 'text-destructive'}`}>
             {isPositive ? <TrendingUp className="h-3.5 w-3.5" /> : <TrendingDown className="h-3.5 w-3.5" />}
             <span className="font-tabular">
-              {isPositive ? '+' : ''}{priceChange.toFixed(2)} ({isPositive ? '+' : ''}{priceChangePercent.toFixed(2)}%)
+              ₹{latestPrice.toFixed(2)} ({isPositive ? '+' : ''}{priceChangePercent.toFixed(1)}%)
             </span>
           </div>
         </div>
@@ -122,21 +145,21 @@ export function MarketCandlesChart({ marketData, issuePrice }: MarketCandlesChar
         </div>
 
         {/* Price Summary */}
-        <div className="grid grid-cols-4 gap-2 mt-3 pt-3 border-t border-border">
+        <div className="grid grid-cols-4 gap-1 sm:gap-2 mt-3 pt-3 border-t border-border">
           <div className="text-center">
-            <div className="text-[10px] sm:text-xs text-muted-foreground">Open</div>
-            <div className="text-xs sm:text-sm font-tabular font-medium">₹{openPrice.toFixed(2)}</div>
+            <div className="text-[10px] sm:text-xs text-muted-foreground">Issue</div>
+            <div className="text-xs sm:text-sm font-tabular font-medium">₹{issuePrice?.toFixed(0) || '—'}</div>
           </div>
           <div className="text-center">
             <div className="text-[10px] sm:text-xs text-muted-foreground">High</div>
             <div className="text-xs sm:text-sm font-tabular font-medium text-success">
-              ₹{Math.max(...chartData.map(d => d.close)).toFixed(2)}
+              ₹{Math.max(...chartData.map(d => d.high)).toFixed(2)}
             </div>
           </div>
           <div className="text-center">
             <div className="text-[10px] sm:text-xs text-muted-foreground">Low</div>
             <div className="text-xs sm:text-sm font-tabular font-medium text-destructive">
-              ₹{Math.min(...chartData.map(d => d.close)).toFixed(2)}
+              ₹{Math.min(...chartData.map(d => d.low)).toFixed(2)}
             </div>
           </div>
           <div className="text-center">

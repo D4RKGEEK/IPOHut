@@ -12,3 +12,4 @@ export { AboutCompany } from "./AboutCompany";
 export { PDFDownloadButton } from "./PDFDownloadButton";
 export { MarketCandlesChart } from "./MarketCandlesChart";
 export { IPOFAQSection } from "./IPOFAQSection";
+export { WidgetRenderer, WidgetList } from "./WidgetRenderer";

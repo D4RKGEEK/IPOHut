@@ -1,35 +1,20 @@
-import { useParams } from "react-router-dom";
+import { useParams, Link } from "react-router-dom";
 import { Helmet } from "react-helmet-async";
 import { MainLayout } from "@/components/layout";
 import { useAdmin } from "@/contexts/AdminContext";
 import { useIPODetail } from "@/hooks/useIPO";
 import { applyTemplate } from "@/types/admin";
-import { StatusBadge, TypeBadge, IPOTimeline, GMPCalculator, BrokerSentiment, ShareButtons, BreadcrumbNav } from "@/components/shared";
+import { StatusBadge, TypeBadge, IPOTimeline, ShareButtons, BreadcrumbNav } from "@/components/shared";
 import { parseIPODate } from "@/lib/api";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { ExternalLink, Phone, Mail, Globe, FileCheck } from "lucide-react";
-import { Link } from "react-router-dom";
+import { FileCheck } from "lucide-react";
 import { analytics, useScrollTracking, useTimeOnPage } from "@/hooks/useAnalytics";
-import {
-  IPOVitalStats,
-  IPOGMPWidget,
-  LotSizeTable,
-  ReservationTable,
-  PromoterHolding,
-  ObjectivesList,
-  LeadManagersList,
-  KeyMetrics,
-  SubscriptionTable,
-  CompanyFinancials,
-  AboutCompany,
-  PDFDownloadButton,
-  MarketCandlesChart,
-  IPOFAQSection,
-} from "@/components/ipo";
+import { PDFDownloadButton, WidgetRenderer } from "@/components/ipo";
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
+import { useMemo } from "react";
 
 export default function IPODetailPage() {
   const { slug } = useParams<{ slug: string }>();
@@ -41,10 +26,16 @@ export default function IPODetailPage() {
   useTimeOnPage(`ipo-detail-${slug}`);
 
   const pageSettings = settings.pages.ipoDetail;
+  const detailConfig = settings.site.ipoDetailConfig;
 
   const handleTabChange = (tabName: string) => {
     analytics.ipoTabChange(slug || "", tabName);
   };
+
+  // Get enabled tabs
+  const enabledTabs = useMemo(() => {
+    return detailConfig.tabs.filter(tab => tab.enabled);
+  }, [detailConfig.tabs]);
 
   if (isLoading) {
     return (
@@ -148,6 +139,30 @@ export default function IPODetailPage() {
     status: step.status as "completed" | "current" | "upcoming",
   }));
 
+  // Widget data object
+  const widgetData = {
+    basicInfo,
+    timeline,
+    gmpData,
+    financials,
+    subscription,
+    recommendations,
+    registrar,
+    peMetrics,
+    promoterHolding,
+    objectives,
+    lotSizeTable,
+    reservationTable,
+    aboutCompany,
+    leadManagers,
+    marketData,
+    timelineSteps,
+    issuePrice,
+    lotSize,
+    status,
+    slug: slug || "",
+  };
+
   // JSON-LD structured data
   const structuredData = {
     "@context": "https://schema.org",
@@ -197,6 +212,11 @@ export default function IPODetailPage() {
     ],
   };
 
+  // Sort above fold widgets
+  const sortedAboveFoldWidgets = [...detailConfig.aboveFoldWidgets]
+    .filter(w => w.enabled)
+    .sort((a, b) => a.order - b.order);
+
   return (
     <>
       <Helmet>
@@ -217,341 +237,96 @@ export default function IPODetailPage() {
           
           {/* Header */}
           <header className="flex flex-col sm:flex-row sm:items-start gap-3 sm:gap-4">
-            {ipo.logo_about?.logo && (
+            {detailConfig.showLogo && ipo.logo_about?.logo && (
               <img 
                 src={ipo.logo_about.logo} 
                 alt={basicInfo["IPO Name"]} 
                 className="h-10 w-10 sm:h-16 sm:w-16 rounded-md border object-contain bg-white p-1 shrink-0"
+                loading="lazy"
               />
             )}
             <div className="flex-1 min-w-0">
               <div className="flex flex-wrap items-center gap-1.5 sm:gap-2 mb-1 sm:mb-2">
                 <h1 className="text-lg sm:text-2xl md:text-3xl font-bold">{basicInfo["IPO Name"]}</h1>
-                <TypeBadge type={ipo.ipo_type} />
-                <StatusBadge status={status} />
+                {detailConfig.showBadges && (
+                  <>
+                    <TypeBadge type={ipo.ipo_type} />
+                    <StatusBadge status={status} />
+                  </>
+                )}
               </div>
               <p className="text-muted-foreground text-xs sm:text-sm">
                 {basicInfo["Listing At"]} • {basicInfo["Issue Type"] || "Book Built"}
               </p>
             </div>
             <div className="flex items-center gap-2 shrink-0 flex-wrap sm:flex-nowrap">
-              <Link to={`/ipo/${slug}/allotment`}>
-                <Button variant="default" size="sm" className="gap-1.5">
-                  <FileCheck className="h-4 w-4" />
-                  <span className="hidden sm:inline">Check Allotment</span>
-                  <span className="sm:hidden">Allotment</span>
-                </Button>
-              </Link>
-              <ShareButtons 
-                title={basicInfo["IPO Name"]} 
-                description={`${basicInfo["IPO Name"]} - Issue Price: ${basicInfo["Issue Price"]}, Listing: ${timeline["Tentative Listing Date"]}`}
-              />
-              <PDFDownloadButton ipo={ipo} status={status} />
+              {detailConfig.showAllotmentButton && (
+                <Link to={`/ipo/${slug}/allotment`}>
+                  <Button variant="default" size="sm" className="gap-1.5">
+                    <FileCheck className="h-4 w-4" />
+                    <span className="hidden sm:inline">Check Allotment</span>
+                    <span className="sm:hidden">Allotment</span>
+                  </Button>
+                </Link>
+              )}
+              {detailConfig.showShareButton && (
+                <ShareButtons 
+                  title={basicInfo["IPO Name"]} 
+                  description={`${basicInfo["IPO Name"]} - Issue Price: ${basicInfo["Issue Price"]}, Listing: ${timeline["Tentative Listing Date"]}`}
+                />
+              )}
+              {detailConfig.showPDFDownload && (
+                <PDFDownloadButton ipo={ipo} status={status} />
+              )}
             </div>
           </header>
 
-          {/* Vital Stats */}
-          <IPOVitalStats basicInfo={basicInfo} timeline={timeline} />
+          {/* Above Fold Widgets */}
+          {sortedAboveFoldWidgets.map(widget => (
+            <WidgetRenderer key={widget.id} widgetId={widget.id} data={widgetData} />
+          ))}
 
-          {/* GMP Widget */}
-          {gmpData?.current_gmp !== undefined && issuePrice > 0 && (
-            <IPOGMPWidget gmpData={gmpData} issuePrice={issuePrice} lotSize={lotSize} />
+          {/* Tabs */}
+          {enabledTabs.length > 0 && (
+            <Tabs defaultValue={enabledTabs[0]?.id} className="w-full" onValueChange={handleTabChange}>
+              <ScrollArea className="w-full whitespace-nowrap">
+                <TabsList className="inline-flex h-10 items-center gap-1 bg-muted/50 p-1 rounded-lg w-max min-w-full sm:w-auto">
+                  {enabledTabs.map(tab => (
+                    <TabsTrigger 
+                      key={tab.id}
+                      value={tab.id} 
+                      className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground rounded-md px-3 py-1.5 text-xs sm:text-sm whitespace-nowrap"
+                    >
+                      {tab.label}
+                    </TabsTrigger>
+                  ))}
+                </TabsList>
+                <ScrollBar orientation="horizontal" className="invisible" />
+              </ScrollArea>
+
+              {enabledTabs.map(tab => {
+                const sortedWidgets = [...tab.widgets]
+                  .filter(w => w.enabled)
+                  .sort((a, b) => a.order - b.order);
+
+                return (
+                  <TabsContent key={tab.id} value={tab.id} className="mt-3 sm:mt-4 space-y-3 sm:space-y-4">
+                    {sortedWidgets.length > 0 ? (
+                      sortedWidgets.map(widget => (
+                        <WidgetRenderer key={widget.id} widgetId={widget.id} data={widgetData} />
+                      ))
+                    ) : (
+                      <Card className="border">
+                        <CardContent className="py-12 text-center text-muted-foreground">
+                          No content available for this tab
+                        </CardContent>
+                      </Card>
+                    )}
+                  </TabsContent>
+                );
+              })}
+            </Tabs>
           )}
-
-          {/* Market Data Chart for listed IPOs */}
-          {marketData && status === "listed" && (
-            <MarketCandlesChart marketData={marketData} issuePrice={issuePrice} ipoSlug={slug} />
-          )}
-
-          {/* Tabs - Horizontal scrollable on mobile */}
-          <Tabs defaultValue="overview" className="w-full" onValueChange={handleTabChange}>
-            <ScrollArea className="w-full whitespace-nowrap">
-              <TabsList className="inline-flex h-10 items-center gap-1 bg-muted/50 p-1 rounded-lg w-max min-w-full sm:w-auto">
-                <TabsTrigger value="overview" className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground rounded-md px-3 py-1.5 text-xs sm:text-sm whitespace-nowrap">
-                  Overview
-                </TabsTrigger>
-                <TabsTrigger value="subscription" className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground rounded-md px-3 py-1.5 text-xs sm:text-sm whitespace-nowrap">
-                  Subscription
-                </TabsTrigger>
-                <TabsTrigger value="details" className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground rounded-md px-3 py-1.5 text-xs sm:text-sm whitespace-nowrap">
-                  Details
-                </TabsTrigger>
-                <TabsTrigger value="financials" className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground rounded-md px-3 py-1.5 text-xs sm:text-sm whitespace-nowrap">
-                  Financials
-                </TabsTrigger>
-                <TabsTrigger value="about" className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground rounded-md px-3 py-1.5 text-xs sm:text-sm whitespace-nowrap">
-                  About
-                </TabsTrigger>
-                <TabsTrigger value="contacts" className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground rounded-md px-3 py-1.5 text-xs sm:text-sm whitespace-nowrap">
-                  Contacts
-                </TabsTrigger>
-                <TabsTrigger value="tools" className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground rounded-md px-3 py-1.5 text-xs sm:text-sm whitespace-nowrap">
-                  Tools
-                </TabsTrigger>
-              </TabsList>
-              <ScrollBar orientation="horizontal" className="invisible" />
-            </ScrollArea>
-
-            {/* Overview Tab */}
-            <TabsContent value="overview" className="mt-3 sm:mt-4 space-y-3 sm:space-y-4">
-              <div className="grid grid-cols-1 lg:grid-cols-3 gap-3 sm:gap-4">
-                <div className="lg:col-span-2 space-y-3 sm:space-y-4">
-                  {/* Timeline */}
-                  <Card className="border">
-                    <CardHeader className="pb-3">
-                      <CardTitle className="text-sm sm:text-base">IPO Timeline</CardTitle>
-                    </CardHeader>
-                    <CardContent>
-                      <IPOTimeline steps={timelineSteps} />
-                    </CardContent>
-                  </Card>
-
-                  {/* Subscription Status */}
-                  {subscription && <SubscriptionTable subscription={subscription} />}
-                </div>
-
-                <div className="space-y-3 sm:space-y-4">
-                  {/* Key Metrics */}
-                  {peMetrics && <KeyMetrics peMetrics={peMetrics} />}
-
-                  {/* Broker Sentiment */}
-                  {recommendations?.brokers && (
-                    <BrokerSentiment
-                      subscribe={recommendations.brokers.subscribe || 0}
-                      mayApply={recommendations.brokers.may_apply || 0}
-                      neutral={recommendations.brokers.neutral || 0}
-                      avoid={recommendations.brokers.avoid || 0}
-                    />
-                  )}
-                </div>
-              </div>
-            </TabsContent>
-
-            {/* Subscription Tab */}
-            <TabsContent value="subscription" className="mt-3 sm:mt-4 space-y-3 sm:space-y-4">
-              {subscription && <SubscriptionTable subscription={subscription} />}
-              
-              {!subscription && (
-                <Card className="border">
-                  <CardContent className="py-12 text-center text-muted-foreground">
-                    Subscription data not available yet
-                  </CardContent>
-                </Card>
-              )}
-            </TabsContent>
-
-            {/* Details Tab */}
-            <TabsContent value="details" className="mt-3 sm:mt-4 space-y-3 sm:space-y-4">
-              <div className="grid grid-cols-1 lg:grid-cols-2 gap-3 sm:gap-4">
-                {/* Basic Info Card */}
-                <Card className="border">
-                  <CardHeader className="pb-3">
-                    <CardTitle className="text-sm sm:text-base">Basic Information</CardTitle>
-                  </CardHeader>
-                  <CardContent>
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                      {[
-                        ["IPO Date", basicInfo["IPO Date"]],
-                        ["Face Value", basicInfo["Face Value"]],
-                        ["Price Band", basicInfo["Price Band"]],
-                        ["Issue Price", basicInfo["Issue Price"]],
-                        ["Lot Size", basicInfo["Lot Size"]],
-                        ["Total Issue Size", basicInfo["Total Issue Size"]],
-                        ["Fresh Issue", basicInfo["Fresh Issue"]],
-                        ["OFS", basicInfo["Offer for Sale"]],
-                        ["Sale Type", basicInfo["Sale Type"]],
-                        ["Issue Type", basicInfo["Issue Type"]],
-                        ["ISIN", basicInfo["ISIN"]],
-                        ["BSE/NSE Symbol", basicInfo["BSE Script Code / NSE Symbol"]],
-                      ].filter(([, value]) => value).map(([label, value]) => (
-                        <div key={label} className="flex justify-between gap-2 py-2 border-b border-border/50 last:border-0">
-                          <span className="text-xs sm:text-sm text-muted-foreground">{label}</span>
-                          <span className="text-xs sm:text-sm font-medium text-right font-tabular">{value}</span>
-                        </div>
-                      ))}
-                    </div>
-                  </CardContent>
-                </Card>
-
-                {/* Lot Size Table */}
-                {lotSizeTable && <LotSizeTable lotSizeTable={lotSizeTable} />}
-              </div>
-
-              {/* Reservation Table */}
-              {reservationTable && <ReservationTable reservationTable={reservationTable} />}
-
-              {/* Objectives */}
-              {objectives && objectives.length > 0 && <ObjectivesList objectives={objectives} />}
-            </TabsContent>
-
-            {/* Financials Tab */}
-            <TabsContent value="financials" className="mt-3 sm:mt-4 space-y-3 sm:space-y-4">
-              <div className="grid grid-cols-1 lg:grid-cols-2 gap-3 sm:gap-4">
-                {financials && <CompanyFinancials financials={financials} />}
-                {peMetrics && <KeyMetrics peMetrics={peMetrics} />}
-              </div>
-              
-              {promoterHolding && <PromoterHolding promoterHolding={promoterHolding} />}
-
-              {!financials && !peMetrics && !promoterHolding && (
-                <Card className="border">
-                  <CardContent className="py-12 text-center text-muted-foreground">
-                    Financial data not available
-                  </CardContent>
-                </Card>
-              )}
-            </TabsContent>
-
-            {/* About Tab */}
-            <TabsContent value="about" className="mt-3 sm:mt-4 space-y-3 sm:space-y-4">
-              {aboutCompany && <AboutCompany about={aboutCompany} />}
-              
-              {!aboutCompany && (
-                <Card className="border">
-                  <CardContent className="py-12 text-center text-muted-foreground">
-                    Company information not available
-                  </CardContent>
-                </Card>
-              )}
-            </TabsContent>
-
-            {/* Contacts Tab */}
-            <TabsContent value="contacts" className="mt-3 sm:mt-4 space-y-3 sm:space-y-4">
-              <div className="grid grid-cols-1 lg:grid-cols-2 gap-3 sm:gap-4">
-                {/* Registrar Info */}
-                {registrar?.registrar && (
-                  <Card className="border">
-                    <CardHeader className="pb-3">
-                      <CardTitle className="text-sm sm:text-base">Registrar</CardTitle>
-                    </CardHeader>
-                    <CardContent className="space-y-4">
-                      <div className="font-medium text-sm sm:text-base">{registrar.registrar.name}</div>
-                      
-                      {registrar.registrar.phone && (
-                        <div className="flex items-center gap-2 text-xs sm:text-sm text-muted-foreground">
-                          <Phone className="h-4 w-4" />
-                          {registrar.registrar.phone}
-                        </div>
-                      )}
-                      
-                      {registrar.registrar.email && (
-                        <div className="flex items-center gap-2 text-xs sm:text-sm text-muted-foreground">
-                          <Mail className="h-4 w-4" />
-                          {registrar.registrar.email}
-                        </div>
-                      )}
-                      
-                      {registrar.registrar.website && (
-                        <div className="flex items-center gap-2 text-xs sm:text-sm text-muted-foreground">
-                          <Globe className="h-4 w-4" />
-                          <a 
-                            href={registrar.registrar.website} 
-                            target="_blank" 
-                            rel="noopener noreferrer"
-                            className="text-primary hover:underline"
-                          >
-                            {registrar.registrar.website}
-                          </a>
-                        </div>
-                      )}
-
-                      {registrar.registrar.website && (
-                        <a 
-                          href={registrar.registrar.website} 
-                          target="_blank" 
-                          rel="noopener noreferrer"
-                        >
-                          <Button variant="outline" size="sm" className="w-full mt-2">
-                            Check Allotment Status
-                            <ExternalLink className="ml-2 h-3.5 w-3.5" />
-                          </Button>
-                        </a>
-                      )}
-                    </CardContent>
-                  </Card>
-                )}
-
-                {/* Lead Managers */}
-                {leadManagers && leadManagers.length > 0 && (
-                  <LeadManagersList leadManagers={leadManagers} />
-                )}
-              </div>
-
-              {!registrar?.registrar && (!leadManagers || leadManagers.length === 0) && (
-                <Card className="border">
-                  <CardContent className="py-12 text-center text-muted-foreground">
-                    Contact information not available
-                  </CardContent>
-                </Card>
-              )}
-            </TabsContent>
-
-            {/* Tools Tab */}
-            <TabsContent value="tools" className="mt-3 sm:mt-4 space-y-3 sm:space-y-4">
-              <div className="grid grid-cols-1 lg:grid-cols-2 gap-3 sm:gap-4">
-                {/* GMP Calculator */}
-                {gmpData?.current_gmp !== undefined && issuePrice > 0 && lotSize > 0 && (
-                  <GMPCalculator
-                    issuePrice={issuePrice}
-                    gmp={gmpData.current_gmp}
-                    lotSize={lotSize}
-                  />
-                )}
-
-                {/* Broker Sentiment */}
-                {recommendations?.brokers && (
-                  <BrokerSentiment
-                    subscribe={recommendations.brokers.subscribe || 0}
-                    mayApply={recommendations.brokers.may_apply || 0}
-                    neutral={recommendations.brokers.neutral || 0}
-                    avoid={recommendations.brokers.avoid || 0}
-                  />
-                )}
-              </div>
-
-              {!gmpData?.current_gmp && !recommendations?.brokers && (
-                <Card className="border">
-                  <CardContent className="py-12 text-center text-muted-foreground">
-                    Tools not available for this IPO
-                  </CardContent>
-                </Card>
-              )}
-
-              {/* Allotment Checker Link */}
-              <Card className="border border-primary/20 bg-primary/5">
-                <CardContent className="p-4 sm:p-6">
-                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-                    <div className="flex items-start gap-3">
-                      <FileCheck className="h-8 w-8 text-primary shrink-0" />
-                      <div>
-                        <h3 className="font-semibold text-sm sm:text-base mb-1">Check Allotment Status</h3>
-                        <p className="text-xs sm:text-sm text-muted-foreground">
-                          Step-by-step guide to check your {basicInfo["IPO Name"]} allotment
-                        </p>
-                      </div>
-                    </div>
-                    <Link to={`/ipo/${slug}/allotment`}>
-                      <Button className="w-full sm:w-auto gap-2">
-                        Check Now
-                        <ExternalLink className="h-4 w-4" />
-                      </Button>
-                    </Link>
-                  </div>
-                </CardContent>
-              </Card>
-            </TabsContent>
-          </Tabs>
-
-          {/* FAQ Section */}
-          <IPOFAQSection
-            ipoName={basicInfo["IPO Name"]}
-            basicInfo={basicInfo}
-            timeline={timeline}
-            gmpValue={gmpData?.current_gmp}
-            issuePrice={issuePrice}
-            registrarName={registrar?.registrar?.name}
-            slug={slug || ""}
-          />
         </div>
       </MainLayout>
     </>

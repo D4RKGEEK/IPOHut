@@ -2,7 +2,7 @@ import { Link } from "react-router-dom";
 import { Card, CardContent } from "@/components/ui/card";
 import { StatusBadge, TypeBadge } from "./StatusBadge";
 import { formatCurrency, formatPercent, formatSubscription, getDaysUntil } from "@/lib/api";
-import { TrendingUp, TrendingDown, Clock } from "lucide-react";
+import { TrendingUp, TrendingDown, Clock, FileCheck } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 interface IPOCardProps {
@@ -36,12 +36,13 @@ export function IPOCard({
 }: IPOCardProps) {
   const daysUntilClose = getDaysUntil(closeDate);
   const isPositiveGMP = gmp !== undefined && gmp >= 0;
+  const showAllotmentLink = ["closed", "recently_listed", "listed"].includes(status.toLowerCase());
 
   return (
-    <Link to={`/ipo/${slug}`} className="group block">
-      <Card className={cn("card-hover h-full", className)} style={style}>
-        <CardContent className="p-3 md:p-4">
-          {/* Header */}
+    <Card className={cn("card-hover h-full", className)} style={style}>
+      <CardContent className="p-3 md:p-4">
+        {/* Header */}
+        <Link to={`/ipo/${slug}`} className="group block">
           <div className="flex items-start justify-between gap-2 mb-3">
             <div className="min-w-0 flex-1">
               <h3 className="text-sm font-medium text-foreground line-clamp-1 group-hover:text-primary transition-colors">
@@ -58,9 +59,11 @@ export function IPOCard({
             </div>
             <StatusBadge status={status} />
           </div>
+        </Link>
 
-          {/* GMP Display */}
-          {gmp !== undefined && (
+        {/* GMP Display */}
+        {gmp !== undefined && (
+          <Link to={`/ipo/${slug}`}>
             <div className={cn(
               "flex items-center justify-between p-2 rounded-md mb-2",
               isPositiveGMP ? "bg-success/5" : "bg-destructive/5"
@@ -90,41 +93,52 @@ export function IPOCard({
                 )}
               </div>
             </div>
-          )}
+          </Link>
+        )}
 
-          {/* Subscription */}
-          {subscriptionTimes !== undefined && subscriptionTimes > 0 && (
-            <div className="flex items-center justify-between text-xs mb-2">
-              <span className="text-muted-foreground">Subscription</span>
-              <span className="font-tabular text-foreground">
-                {formatSubscription(subscriptionTimes)}
-              </span>
-            </div>
-          )}
+        {/* Subscription */}
+        {subscriptionTimes !== undefined && subscriptionTimes > 0 && (
+          <div className="flex items-center justify-between text-xs mb-2">
+            <span className="text-muted-foreground">Subscription</span>
+            <span className="font-tabular text-foreground">
+              {formatSubscription(subscriptionTimes)}
+            </span>
+          </div>
+        )}
 
-          {/* Countdown for open IPOs */}
-          {status.toLowerCase() === "open" && daysUntilClose !== null && daysUntilClose >= 0 && (
-            <div className={cn(
-              "flex items-center justify-center gap-1.5 py-1.5 rounded-md text-xs",
-              daysUntilClose === 0 
-                ? "bg-warning/10 text-warning" 
-                : "bg-muted text-muted-foreground"
-            )}>
-              <Clock className="h-3 w-3" />
-              <span>
-                {daysUntilClose === 0 ? "Closes today" : `${daysUntilClose}d left`}
-              </span>
-            </div>
-          )}
+        {/* Countdown for open IPOs */}
+        {status.toLowerCase() === "open" && daysUntilClose !== null && daysUntilClose >= 0 && (
+          <div className={cn(
+            "flex items-center justify-center gap-1.5 py-1.5 rounded-md text-xs",
+            daysUntilClose === 0 
+              ? "bg-warning/10 text-warning" 
+              : "bg-muted text-muted-foreground"
+          )}>
+            <Clock className="h-3 w-3" />
+            <span>
+              {daysUntilClose === 0 ? "Closes today" : `${daysUntilClose}d left`}
+            </span>
+          </div>
+        )}
 
-          {/* Listing date for upcoming */}
-          {status.toLowerCase() === "upcoming" && listingDate && (
-            <div className="text-xs text-muted-foreground">
-              Opens: <span className="text-foreground">{listingDate}</span>
-            </div>
-          )}
-        </CardContent>
-      </Card>
-    </Link>
+        {/* Listing date for upcoming */}
+        {status.toLowerCase() === "upcoming" && listingDate && (
+          <div className="text-xs text-muted-foreground">
+            Opens: <span className="text-foreground">{listingDate}</span>
+          </div>
+        )}
+
+        {/* Allotment Checker Link for closed/listed IPOs */}
+        {showAllotmentLink && (
+          <Link 
+            to={`/ipo/${slug}/allotment`}
+            className="flex items-center justify-center gap-1.5 py-1.5 mt-2 rounded-md text-xs bg-primary/10 text-primary hover:bg-primary/20 transition-colors"
+          >
+            <FileCheck className="h-3 w-3" />
+            <span>Check Allotment</span>
+          </Link>
+        )}
+      </CardContent>
+    </Card>
   );
 }

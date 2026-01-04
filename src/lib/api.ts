@@ -38,6 +38,7 @@ export async function fetchGains(params?: {
 // Status API
 export async function fetchStatus(params: {
   status: "open" | "closed" | "recently_listed" | "upcoming" | "listed";
+  ipo_type?: "mainboard" | "sme";
   sort_by?: string;
   order?: "asc" | "desc";
   limit?: number;

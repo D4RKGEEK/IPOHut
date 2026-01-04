@@ -15,6 +15,7 @@ import GMPTrackerPage from "./pages/GMPTrackerPage";
 import AllotmentStatusPage from "./pages/AllotmentStatusPage";
 import IPOCalendarPage from "./pages/IPOCalendarPage";
 import PerformanceTrackerPage from "./pages/PerformanceTrackerPage";
+import ToolsPage from "./pages/ToolsPage";
 import AdminLoginPage from "./pages/admin/AdminLoginPage";
 import AdminDashboardPage from "./pages/admin/AdminDashboardPage";
 import NotFound from "./pages/NotFound";
@@ -39,6 +40,7 @@ const App = () => (
                 <Route path="/ipo-allotment-status" element={<AllotmentStatusPage />} />
                 <Route path="/ipo-calendar" element={<IPOCalendarPage />} />
                 <Route path="/ipo-listing-performance" element={<PerformanceTrackerPage />} />
+                <Route path="/tools" element={<ToolsPage />} />
                 <Route path="/admin/login" element={<AdminLoginPage />} />
                 <Route path="/admin" element={<AdminDashboardPage />} />
                 <Route path="*" element={<NotFound />} />

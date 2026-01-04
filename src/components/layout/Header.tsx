@@ -1,6 +1,6 @@
 import { Link } from "react-router-dom";
 import { useAdmin } from "@/contexts/AdminContext";
-import { Menu, X, TrendingUp, Calendar, BarChart3, CheckCircle } from "lucide-react";
+import { Menu, X, TrendingUp, Calendar, BarChart3, CheckCircle, Calculator } from "lucide-react";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
@@ -13,6 +13,7 @@ const navItems = [
   { href: "/ipo-allotment-status", label: "Allotment", icon: CheckCircle },
   { href: "/ipo-calendar", label: "Calendar", icon: Calendar },
   { href: "/ipo-listing-performance", label: "Performance", icon: BarChart3 },
+  { href: "/tools", label: "Tools", icon: Calculator },
 ];
 
 export function Header() {

@@ -1,5 +1,66 @@
 // Admin Panel Types
 
+export interface SocialLinks {
+  twitter: string;
+  facebook: string;
+  linkedin: string;
+  youtube: string;
+  telegram: string;
+}
+
+export interface ContactInfo {
+  email: string;
+  phone: string;
+  address: string;
+}
+
+export interface FooterLink {
+  id: string;
+  label: string;
+  url: string;
+}
+
+export interface FooterSettings {
+  copyrightText: string;
+  disclaimer: string;
+  customLinks: FooterLink[];
+}
+
+export interface HomePageConfig {
+  showNewsTicker: boolean;
+  showOpenIPOs: boolean;
+  showUpcomingIPOs: boolean;
+  showRecentlyListed: boolean;
+  showGainersLosers: boolean;
+  announcementBanner: string;
+  announcementEnabled: boolean;
+}
+
+export interface AnalyticsSettings {
+  googleAnalyticsId: string;
+  googleSearchConsoleId: string;
+  facebookPixelId: string;
+}
+
+export interface ThemeSettings {
+  primaryColor: string;
+  enableDarkMode: boolean;
+  defaultTheme: 'light' | 'dark' | 'system';
+}
+
+export interface ContentLabels {
+  checkAllotmentButton: string;
+  viewDetailsButton: string;
+  noDataMessage: string;
+  loadingMessage: string;
+  subscribeButton: string;
+}
+
+export interface ApiConfig {
+  baseUrl: string;
+  cacheMinutes: number;
+}
+
 export interface SiteSettings {
   branding: {
     siteName: string;
@@ -17,6 +78,14 @@ export interface SiteSettings {
     ogImage: string;
     twitterHandle: string;
   };
+  socialLinks: SocialLinks;
+  contact: ContactInfo;
+  footer: FooterSettings;
+  analytics: AnalyticsSettings;
+  theme: ThemeSettings;
+  labels: ContentLabels;
+  apiConfig: ApiConfig;
+  homePageConfig: HomePageConfig;
 }
 
 export interface PageSeoSettings {
@@ -64,6 +133,53 @@ export const defaultAdminSettings: AdminSettings = {
       defaultDescription: "Track live IPO GMP, subscription status, allotment dates, and listing performance. Your complete guide to Indian IPO market.",
       ogImage: "",
       twitterHandle: "",
+    },
+    socialLinks: {
+      twitter: "",
+      facebook: "",
+      linkedin: "",
+      youtube: "",
+      telegram: "",
+    },
+    contact: {
+      email: "",
+      phone: "",
+      address: "",
+    },
+    footer: {
+      copyrightText: "© {year} {siteName}. All rights reserved.",
+      disclaimer: "The information provided is for educational purposes only. Please consult with a SEBI registered investment advisor before making any investment decisions.",
+      customLinks: [],
+    },
+    analytics: {
+      googleAnalyticsId: "",
+      googleSearchConsoleId: "",
+      facebookPixelId: "",
+    },
+    theme: {
+      primaryColor: "hsl(142 76% 36%)",
+      enableDarkMode: true,
+      defaultTheme: 'system',
+    },
+    labels: {
+      checkAllotmentButton: "Check Allotment",
+      viewDetailsButton: "View Details",
+      noDataMessage: "No data available",
+      loadingMessage: "Loading...",
+      subscribeButton: "Apply Now",
+    },
+    apiConfig: {
+      baseUrl: "https://beta.ipowatch.in/api",
+      cacheMinutes: 5,
+    },
+    homePageConfig: {
+      showNewsTicker: true,
+      showOpenIPOs: true,
+      showUpcomingIPOs: true,
+      showRecentlyListed: true,
+      showGainersLosers: true,
+      announcementBanner: "",
+      announcementEnabled: false,
     },
   },
   pages: {

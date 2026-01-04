@@ -102,13 +102,18 @@ export interface IPOFinancials {
   "NET Worth"?: Record<string, string | number>;
 }
 
+export interface IPOSubscriptionRow {
+  category: string;
+  subscription_times?: number;
+  "Subscription (times)"?: string;
+  shares_offered?: number | string;
+  shares_bid?: number | string;
+  "Shares Offered"?: number | string;
+  "Shares Bid For"?: number | string;
+}
+
 export interface IPOSubscriptionStatus {
-  SubscriptionTable: Array<{
-    category: string;
-    subscription_times: number;
-    shares_offered: number;
-    shares_bid: number;
-  }>;
+  SubscriptionTable: IPOSubscriptionRow[];
   TotalApplications?: number;
 }
 
@@ -120,13 +125,65 @@ export interface IPOListingInfo {
   ListingGainPercent?: number;
 }
 
+export interface IPOGMPRating {
+  score: number;
+  display: string;
+}
+
 export interface IPOGMPData {
   current_gmp?: number;
   estimated_listing?: number;
+  rating?: IPOGMPRating;
+  trend?: "up" | "down" | "stable";
+  gmp_range?: {
+    low: number;
+    high: number;
+  };
+  profit_per_lot?: number;
+  profit_per_share?: number;
+  last_updated?: string;
   history?: Array<{
     date: string;
     gmp: number;
   }>;
+}
+
+export interface IPOLotSizeRow {
+  application: string;
+  lots: string;
+  shares: string;
+  amount: string;
+}
+
+export interface IPOReservationRow {
+  category: string;
+  shares_offered: string;
+  percentage?: string;
+  max_allottees?: string;
+}
+
+export interface IPOPromoterHolding {
+  table?: Record<string, string | number>;
+  promoters?: string[];
+}
+
+export interface IPOPEMetrics {
+  KPI?: {
+    RoNW?: string;
+    "Price to Book Value"?: string;
+    ROE?: string;
+  };
+}
+
+export interface IPOObjective {
+  serial_no: string;
+  objective: string;
+  expected_amount?: string;
+}
+
+export interface IPOLeadManager {
+  name: string;
+  profile_url?: string;
 }
 
 export interface IPORecommendation {
@@ -146,9 +203,40 @@ export interface IPORegistrar {
     email?: string;
     website?: string;
   };
-  lead_managers?: Array<{
-    name: string;
-  }>;
+  lead_managers?: IPOLeadManager[];
+}
+
+export interface IPOMarketCandle {
+  time: string;
+  open: number;
+  high: number;
+  low: number;
+  close: number;
+  volume: number;
+}
+
+export interface IPOMarketDataSummary {
+  open: number;
+  high: number;
+  low: number;
+  close: number;
+  prev_close: number;
+  total_volume: number;
+  updated_at: string;
+}
+
+export interface IPOMarketData {
+  date: string;
+  exchange: string;
+  isin: string;
+  candles: IPOMarketCandle[];
+  summary: IPOMarketDataSummary;
+}
+
+export interface IPOAnchorInvestor {
+  name?: string;
+  bid_amount?: string;
+  shares_allocated?: string;
 }
 
 export interface IPODetail {
@@ -156,31 +244,19 @@ export interface IPODetail {
     logo?: string;
     about?: string;
   };
-  objectives?: Array<{
-    serial_no: string;
-    objective: string;
-    expected_amount: string;
-  }>;
+  objectives?: IPOObjective[];
   basic_info: IPOBasicInfo;
   ipo_timeline: IPOTimeline;
   lot_size_table?: Array<Array<string | number>>;
   reservation_table?: Array<Array<string | number>>;
-  promoter_holding?: {
-    table?: Record<string, string | number>;
-    promoters?: string[];
-  };
-  anchor_investors?: Record<string, string | number>;
+  promoter_holding?: IPOPromoterHolding;
+  anchor_investors?: Record<string, string | number> | IPOAnchorInvestor[];
   about_company?: {
     about_company?: string;
     lists?: string[];
   };
   financials?: IPOFinancials;
-  pe_metrics?: {
-    KPI?: {
-      RoNW?: string;
-      "Price to Book Value"?: string;
-    };
-  };
+  pe_metrics?: IPOPEMetrics;
   subscription_status?: IPOSubscriptionStatus;
   listing_info?: IPOListingInfo;
   contact_and_registrar?: {
@@ -194,7 +270,7 @@ export interface IPODetail {
     low: number;
     close: number;
     volume: number;
-  }>;
+  }> | IPOMarketData;
   slug: string;
   ipo_type: "mainboard" | "sme";
 }

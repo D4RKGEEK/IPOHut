@@ -5,14 +5,27 @@ import { useAdmin } from "@/contexts/AdminContext";
 import { useIPODetail } from "@/hooks/useIPO";
 import { applyTemplate } from "@/types/admin";
 import { StatusBadge, TypeBadge, IPOTimeline, GMPCalculator, BrokerSentiment } from "@/components/shared";
-import { formatCurrency, formatPercent, formatSubscription, parseIPODate } from "@/lib/api";
+import { parseIPODate } from "@/lib/api";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
-import { ExternalLink, TrendingUp, TrendingDown, Building2, Users, BarChart3 } from "lucide-react";
-import { cn } from "@/lib/utils";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { ExternalLink, Phone, Mail, Globe } from "lucide-react";
 import { Link } from "react-router-dom";
+import {
+  IPOVitalStats,
+  IPOGMPWidget,
+  LotSizeTable,
+  ReservationTable,
+  PromoterHolding,
+  ObjectivesList,
+  LeadManagersList,
+  KeyMetrics,
+  SubscriptionTable,
+  CompanyFinancials,
+  AboutCompany,
+  PDFDownloadButton,
+} from "@/components/ipo";
 
 export default function IPODetailPage() {
   const { slug } = useParams<{ slug: string }>();
@@ -24,13 +37,14 @@ export default function IPODetailPage() {
   if (isLoading) {
     return (
       <MainLayout>
-        <div className="container py-8 space-y-6">
-          <Skeleton className="h-10 w-1/2" />
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-            {[...Array(4)].map((_, i) => (
-              <Skeleton key={i} className="h-24" />
+        <div className="container py-6 md:py-8 space-y-4">
+          <Skeleton className="h-10 w-2/3" />
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+            {[...Array(8)].map((_, i) => (
+              <Skeleton key={i} className="h-20" />
             ))}
           </div>
+          <Skeleton className="h-10 w-full" />
           <Skeleton className="h-64" />
         </div>
       </MainLayout>
@@ -59,6 +73,13 @@ export default function IPODetailPage() {
   const subscription = ipo.subscription_status;
   const recommendations = ipo.ipo_recommendation_summary;
   const registrar = ipo.contact_and_registrar?.ipo_registrar_lead_managers;
+  const peMetrics = ipo.pe_metrics;
+  const promoterHolding = ipo.promoter_holding;
+  const objectives = ipo.objectives;
+  const lotSizeTable = ipo.lot_size_table;
+  const reservationTable = ipo.reservation_table;
+  const aboutCompany = ipo.about_company;
+  const leadManagers = registrar?.lead_managers;
 
   // Parse issue price from string
   const issuePrice = parseFloat(basicInfo["Issue Price"]?.replace(/[^\d.]/g, "") || "0");
@@ -163,262 +184,289 @@ export default function IPODetailPage() {
       </Helmet>
 
       <MainLayout>
-        <div className="container py-6 md:py-8 space-y-6">
+        <div className="container py-4 sm:py-6 md:py-8 space-y-4 sm:space-y-6">
           {/* Header */}
-          <header className="flex flex-col md:flex-row md:items-start gap-4">
+          <header className="flex flex-col sm:flex-row sm:items-start gap-3 sm:gap-4">
             {ipo.logo_about?.logo && (
               <img 
                 src={ipo.logo_about.logo} 
                 alt={basicInfo["IPO Name"]} 
-                className="h-16 w-16 rounded-md border object-contain bg-white p-1"
+                className="h-12 w-12 sm:h-16 sm:w-16 rounded-md border object-contain bg-white p-1 shrink-0"
               />
             )}
-            <div className="flex-1">
-              <div className="flex flex-wrap items-center gap-2 mb-2">
-                <h1 className="text-2xl md:text-3xl font-bold">{basicInfo["IPO Name"]}</h1>
+            <div className="flex-1 min-w-0">
+              <div className="flex flex-wrap items-center gap-2 mb-1 sm:mb-2">
+                <h1 className="text-xl sm:text-2xl md:text-3xl font-bold truncate">{basicInfo["IPO Name"]}</h1>
                 <TypeBadge type={ipo.ipo_type} />
                 <StatusBadge status={status} />
               </div>
-              <p className="text-muted-foreground text-sm">
-                Listed on {basicInfo["Listing At"]} • {basicInfo["Issue Type"]}
+              <p className="text-muted-foreground text-xs sm:text-sm">
+                {basicInfo["Listing At"]} • {basicInfo["Issue Type"] || "Book Built"}
               </p>
             </div>
+            <PDFDownloadButton ipo={ipo} status={status} />
           </header>
 
           {/* Vital Stats */}
-          <section className="grid grid-cols-2 md:grid-cols-4 gap-3">
-            <Card className="border">
-              <CardContent className="p-4">
-                <div className="text-xs text-muted-foreground mb-1">Issue Price</div>
-                <div className="text-lg font-semibold font-tabular">{basicInfo["Issue Price"] || "—"}</div>
-              </CardContent>
-            </Card>
-            <Card className="border">
-              <CardContent className="p-4">
-                <div className="text-xs text-muted-foreground mb-1">Lot Size</div>
-                <div className="text-lg font-semibold font-tabular">{basicInfo["Lot Size"] || "—"}</div>
-              </CardContent>
-            </Card>
-            <Card className="border">
-              <CardContent className="p-4">
-                <div className="text-xs text-muted-foreground mb-1">Issue Size</div>
-                <div className="text-lg font-semibold font-tabular">{basicInfo["Total Issue Size"] || "—"}</div>
-              </CardContent>
-            </Card>
-            <Card className="border">
-              <CardContent className="p-4">
-                <div className="text-xs text-muted-foreground mb-1">Listing Date</div>
-                <div className="text-lg font-semibold">{timeline["Tentative Listing Date"] || "TBA"}</div>
-              </CardContent>
-            </Card>
-          </section>
+          <IPOVitalStats basicInfo={basicInfo} timeline={timeline} />
 
           {/* GMP Widget */}
-          {gmpData?.current_gmp !== undefined && (
-            <Card className={cn(
-              "border-2",
-              gmpData.current_gmp >= 0 ? "border-success/30 bg-success/5" : "border-destructive/30 bg-destructive/5"
-            )}>
-              <CardContent className="p-6 text-center">
-                <div className="text-sm text-muted-foreground mb-2">Current Grey Market Premium</div>
-                <div className="flex items-center justify-center gap-3">
-                  {gmpData.current_gmp >= 0 ? (
-                    <TrendingUp className="h-8 w-8 text-success" />
-                  ) : (
-                    <TrendingDown className="h-8 w-8 text-destructive" />
-                  )}
-                  <span className={cn(
-                    "text-4xl font-bold font-tabular",
-                    gmpData.current_gmp >= 0 ? "text-success" : "text-destructive"
-                  )}>
-                    {formatCurrency(gmpData.current_gmp)}
-                  </span>
-                  {issuePrice > 0 && (
-                    <span className={cn(
-                      "text-xl font-tabular",
-                      gmpData.current_gmp >= 0 ? "text-success" : "text-destructive"
-                    )}>
-                      ({formatPercent((gmpData.current_gmp / issuePrice) * 100)})
-                    </span>
-                  )}
-                </div>
-                {gmpData.estimated_listing && (
-                  <div className="mt-3 text-sm text-muted-foreground">
-                    Estimated Listing Price: <span className="font-semibold text-foreground">{formatCurrency(gmpData.estimated_listing)}</span>
-                  </div>
-                )}
-              </CardContent>
-            </Card>
+          {gmpData?.current_gmp !== undefined && issuePrice > 0 && (
+            <IPOGMPWidget gmpData={gmpData} issuePrice={issuePrice} lotSize={lotSize} />
           )}
 
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-            {/* Main Content */}
-            <div className="lg:col-span-2 space-y-6">
-              {/* Timeline */}
-              <Card className="border">
-                <CardHeader>
-                  <CardTitle className="text-base">IPO Timeline</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <IPOTimeline steps={timelineSteps} />
-                </CardContent>
-              </Card>
+          {/* Tabs */}
+          <Tabs defaultValue="overview" className="w-full">
+            <TabsList className="w-full h-auto flex-wrap justify-start gap-1 bg-transparent p-0 mb-4">
+              <TabsTrigger value="overview" className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground rounded-full px-4 py-2 text-xs sm:text-sm">
+                Overview
+              </TabsTrigger>
+              <TabsTrigger value="subscription" className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground rounded-full px-4 py-2 text-xs sm:text-sm">
+                Subscription
+              </TabsTrigger>
+              <TabsTrigger value="details" className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground rounded-full px-4 py-2 text-xs sm:text-sm">
+                Details
+              </TabsTrigger>
+              <TabsTrigger value="financials" className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground rounded-full px-4 py-2 text-xs sm:text-sm">
+                Financials
+              </TabsTrigger>
+              <TabsTrigger value="about" className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground rounded-full px-4 py-2 text-xs sm:text-sm">
+                About
+              </TabsTrigger>
+              <TabsTrigger value="contacts" className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground rounded-full px-4 py-2 text-xs sm:text-sm">
+                Contacts
+              </TabsTrigger>
+              <TabsTrigger value="tools" className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground rounded-full px-4 py-2 text-xs sm:text-sm">
+                Tools
+              </TabsTrigger>
+            </TabsList>
 
-              {/* Subscription Status */}
-              {subscription?.SubscriptionTable && subscription.SubscriptionTable.length > 0 && (
+            {/* Overview Tab */}
+            <TabsContent value="overview" className="space-y-4 sm:space-y-6">
+              <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-6">
+                <div className="lg:col-span-2 space-y-4 sm:space-y-6">
+                  {/* Timeline */}
+                  <Card className="border">
+                    <CardHeader className="pb-3">
+                      <CardTitle className="text-sm sm:text-base">IPO Timeline</CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                      <IPOTimeline steps={timelineSteps} />
+                    </CardContent>
+                  </Card>
+
+                  {/* Subscription Status */}
+                  {subscription && <SubscriptionTable subscription={subscription} />}
+                </div>
+
+                <div className="space-y-4 sm:space-y-6">
+                  {/* Key Metrics */}
+                  {peMetrics && <KeyMetrics peMetrics={peMetrics} />}
+
+                  {/* Broker Sentiment */}
+                  {recommendations?.brokers && (
+                    <BrokerSentiment
+                      subscribe={recommendations.brokers.subscribe || 0}
+                      mayApply={recommendations.brokers.may_apply || 0}
+                      neutral={recommendations.brokers.neutral || 0}
+                      avoid={recommendations.brokers.avoid || 0}
+                    />
+                  )}
+                </div>
+              </div>
+            </TabsContent>
+
+            {/* Subscription Tab */}
+            <TabsContent value="subscription" className="space-y-4 sm:space-y-6">
+              {subscription && <SubscriptionTable subscription={subscription} />}
+              
+              {!subscription && (
                 <Card className="border">
-                  <CardHeader>
-                    <CardTitle className="flex items-center gap-2 text-base">
-                      <Users className="h-4 w-4" />
-                      Live Subscription Status
-                    </CardTitle>
+                  <CardContent className="py-12 text-center text-muted-foreground">
+                    Subscription data not available yet
+                  </CardContent>
+                </Card>
+              )}
+            </TabsContent>
+
+            {/* Details Tab */}
+            <TabsContent value="details" className="space-y-4 sm:space-y-6">
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6">
+                {/* Basic Info Card */}
+                <Card className="border">
+                  <CardHeader className="pb-3">
+                    <CardTitle className="text-sm sm:text-base">Basic Information</CardTitle>
                   </CardHeader>
                   <CardContent>
-                    <Table>
-                      <TableHeader>
-                        <TableRow>
-                          <TableHead>Category</TableHead>
-                          <TableHead className="text-right">Subscription</TableHead>
-                          <TableHead className="text-right hidden md:table-cell">Shares Offered</TableHead>
-                          <TableHead className="text-right hidden md:table-cell">Shares Bid</TableHead>
-                        </TableRow>
-                      </TableHeader>
-                      <TableBody>
-                        {subscription.SubscriptionTable.map((row, index) => (
-                          <TableRow key={index}>
-                            <TableCell className="font-medium">{row.category}</TableCell>
-                            <TableCell className="text-right font-tabular font-semibold text-primary">
-                              {formatSubscription(row.subscription_times)}
-                            </TableCell>
-                            <TableCell className="text-right font-tabular hidden md:table-cell">
-                              {row.shares_offered?.toLocaleString()}
-                            </TableCell>
-                            <TableCell className="text-right font-tabular hidden md:table-cell">
-                              {row.shares_bid?.toLocaleString()}
-                            </TableCell>
-                          </TableRow>
-                        ))}
-                      </TableBody>
-                    </Table>
-                    {subscription.TotalApplications && (
-                      <div className="mt-4 text-sm text-muted-foreground text-center">
-                        Total Applications: <span className="font-semibold text-foreground font-tabular">{subscription.TotalApplications.toLocaleString()}</span>
-                      </div>
-                    )}
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                      {[
+                        ["IPO Date", basicInfo["IPO Date"]],
+                        ["Face Value", basicInfo["Face Value"]],
+                        ["Price Band", basicInfo["Price Band"]],
+                        ["Issue Price", basicInfo["Issue Price"]],
+                        ["Lot Size", basicInfo["Lot Size"]],
+                        ["Total Issue Size", basicInfo["Total Issue Size"]],
+                        ["Fresh Issue", basicInfo["Fresh Issue"]],
+                        ["OFS", basicInfo["Offer for Sale"]],
+                        ["Sale Type", basicInfo["Sale Type"]],
+                        ["Issue Type", basicInfo["Issue Type"]],
+                        ["ISIN", basicInfo["ISIN"]],
+                        ["BSE/NSE Symbol", basicInfo["BSE Script Code / NSE Symbol"]],
+                      ].filter(([, value]) => value).map(([label, value]) => (
+                        <div key={label} className="flex justify-between gap-2 py-2 border-b border-border/50 last:border-0">
+                          <span className="text-xs sm:text-sm text-muted-foreground">{label}</span>
+                          <span className="text-xs sm:text-sm font-medium text-right font-tabular">{value}</span>
+                        </div>
+                      ))}
+                    </div>
                   </CardContent>
                 </Card>
-              )}
 
-              {/* Financials */}
-              {financials && Object.keys(financials).length > 0 && (
+                {/* Lot Size Table */}
+                {lotSizeTable && <LotSizeTable lotSizeTable={lotSizeTable} />}
+              </div>
+
+              {/* Reservation Table */}
+              {reservationTable && <ReservationTable reservationTable={reservationTable} />}
+
+              {/* Objectives */}
+              {objectives && objectives.length > 0 && <ObjectivesList objectives={objectives} />}
+            </TabsContent>
+
+            {/* Financials Tab */}
+            <TabsContent value="financials" className="space-y-4 sm:space-y-6">
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6">
+                {financials && <CompanyFinancials financials={financials} />}
+                {peMetrics && <KeyMetrics peMetrics={peMetrics} />}
+              </div>
+              
+              {promoterHolding && <PromoterHolding promoterHolding={promoterHolding} />}
+
+              {!financials && !peMetrics && !promoterHolding && (
                 <Card className="border">
-                  <CardHeader>
-                    <CardTitle className="flex items-center gap-2 text-base">
-                      <BarChart3 className="h-4 w-4" />
-                      Company Financials
-                    </CardTitle>
-                  </CardHeader>
-                  <CardContent className="overflow-x-auto">
-                    <Table>
-                      <TableHeader>
-                        <TableRow>
-                          <TableHead>Metric</TableHead>
-                          {Object.keys(financials.Assets || financials["Total Income"] || {}).map(year => (
-                            <TableHead key={year} className="text-right">{year}</TableHead>
-                          ))}
-                        </TableRow>
-                      </TableHeader>
-                      <TableBody>
-                        {Object.entries(financials).map(([metric, values]) => (
-                          <TableRow key={metric}>
-                            <TableCell className="font-medium">{metric}</TableCell>
-                            {Object.values(values as Record<string, string | number>).map((value, idx) => (
-                              <TableCell key={idx} className="text-right font-tabular">
-                                {typeof value === "number" ? value.toLocaleString() : value}
-                              </TableCell>
-                            ))}
-                          </TableRow>
-                        ))}
-                      </TableBody>
-                    </Table>
+                  <CardContent className="py-12 text-center text-muted-foreground">
+                    Financial data not available
                   </CardContent>
                 </Card>
               )}
+            </TabsContent>
 
-              {/* About Company */}
-              {ipo.about_company?.about_company && (
+            {/* About Tab */}
+            <TabsContent value="about" className="space-y-4 sm:space-y-6">
+              {aboutCompany && <AboutCompany about={aboutCompany} />}
+              
+              {!aboutCompany && (
                 <Card className="border">
-                  <CardHeader>
-                    <CardTitle className="flex items-center gap-2 text-base">
-                      <Building2 className="h-4 w-4" />
-                      About the Company
-                    </CardTitle>
-                  </CardHeader>
-                  <CardContent>
-                    <p className="text-sm text-muted-foreground leading-relaxed">
-                      {ipo.about_company.about_company}
-                    </p>
-                    {ipo.about_company.lists && ipo.about_company.lists.length > 0 && (
-                      <ul className="mt-4 space-y-2">
-                        {ipo.about_company.lists.map((item, idx) => (
-                          <li key={idx} className="text-sm text-muted-foreground flex gap-2">
-                            <span className="text-primary">•</span>
-                            {item}
-                          </li>
-                        ))}
-                      </ul>
-                    )}
+                  <CardContent className="py-12 text-center text-muted-foreground">
+                    Company information not available
                   </CardContent>
                 </Card>
               )}
-            </div>
+            </TabsContent>
 
-            {/* Sidebar */}
-            <div className="space-y-6">
-              {/* GMP Calculator */}
-              {gmpData?.current_gmp !== undefined && issuePrice > 0 && lotSize > 0 && (
-                <GMPCalculator
-                  issuePrice={issuePrice}
-                  gmp={gmpData.current_gmp}
-                  lotSize={lotSize}
-                />
-              )}
+            {/* Contacts Tab */}
+            <TabsContent value="contacts" className="space-y-4 sm:space-y-6">
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6">
+                {/* Registrar Info */}
+                {registrar?.registrar && (
+                  <Card className="border">
+                    <CardHeader className="pb-3">
+                      <CardTitle className="text-sm sm:text-base">Registrar</CardTitle>
+                    </CardHeader>
+                    <CardContent className="space-y-4">
+                      <div className="font-medium text-sm sm:text-base">{registrar.registrar.name}</div>
+                      
+                      {registrar.registrar.phone && (
+                        <div className="flex items-center gap-2 text-xs sm:text-sm text-muted-foreground">
+                          <Phone className="h-4 w-4" />
+                          {registrar.registrar.phone}
+                        </div>
+                      )}
+                      
+                      {registrar.registrar.email && (
+                        <div className="flex items-center gap-2 text-xs sm:text-sm text-muted-foreground">
+                          <Mail className="h-4 w-4" />
+                          {registrar.registrar.email}
+                        </div>
+                      )}
+                      
+                      {registrar.registrar.website && (
+                        <div className="flex items-center gap-2 text-xs sm:text-sm text-muted-foreground">
+                          <Globe className="h-4 w-4" />
+                          <a 
+                            href={registrar.registrar.website} 
+                            target="_blank" 
+                            rel="noopener noreferrer"
+                            className="text-primary hover:underline"
+                          >
+                            {registrar.registrar.website}
+                          </a>
+                        </div>
+                      )}
 
-              {/* Broker Sentiment */}
-              {recommendations?.brokers && (
-                <BrokerSentiment
-                  subscribe={recommendations.brokers.subscribe || 0}
-                  mayApply={recommendations.brokers.may_apply || 0}
-                  neutral={recommendations.brokers.neutral || 0}
-                  avoid={recommendations.brokers.avoid || 0}
-                />
-              )}
+                      {registrar.registrar.website && (
+                        <a 
+                          href={registrar.registrar.website} 
+                          target="_blank" 
+                          rel="noopener noreferrer"
+                        >
+                          <Button variant="outline" size="sm" className="w-full mt-2">
+                            Check Allotment Status
+                            <ExternalLink className="ml-2 h-3.5 w-3.5" />
+                          </Button>
+                        </a>
+                      )}
+                    </CardContent>
+                  </Card>
+                )}
 
-              {/* Registrar Info */}
-              {registrar?.registrar && (
+                {/* Lead Managers */}
+                {leadManagers && leadManagers.length > 0 && (
+                  <LeadManagersList leadManagers={leadManagers} />
+                )}
+              </div>
+
+              {!registrar?.registrar && (!leadManagers || leadManagers.length === 0) && (
                 <Card className="border">
-                  <CardHeader>
-                    <CardTitle className="text-base">Registrar</CardTitle>
-                  </CardHeader>
-                  <CardContent className="space-y-3">
-                    <div className="font-medium">{registrar.registrar.name}</div>
-                    {registrar.registrar.website && (
-                      <a 
-                        href={registrar.registrar.website} 
-                        target="_blank" 
-                        rel="noopener noreferrer"
-                      >
-                        <Button variant="outline" size="sm" className="w-full">
-                          Check Allotment Status
-                          <ExternalLink className="ml-2 h-3.5 w-3.5" />
-                        </Button>
-                      </a>
-                    )}
+                  <CardContent className="py-12 text-center text-muted-foreground">
+                    Contact information not available
                   </CardContent>
                 </Card>
               )}
-            </div>
-          </div>
+            </TabsContent>
+
+            {/* Tools Tab */}
+            <TabsContent value="tools" className="space-y-4 sm:space-y-6">
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6">
+                {/* GMP Calculator */}
+                {gmpData?.current_gmp !== undefined && issuePrice > 0 && lotSize > 0 && (
+                  <GMPCalculator
+                    issuePrice={issuePrice}
+                    gmp={gmpData.current_gmp}
+                    lotSize={lotSize}
+                  />
+                )}
+
+                {/* Broker Sentiment */}
+                {recommendations?.brokers && (
+                  <BrokerSentiment
+                    subscribe={recommendations.brokers.subscribe || 0}
+                    mayApply={recommendations.brokers.may_apply || 0}
+                    neutral={recommendations.brokers.neutral || 0}
+                    avoid={recommendations.brokers.avoid || 0}
+                  />
+                )}
+              </div>
+
+              {!gmpData?.current_gmp && !recommendations?.brokers && (
+                <Card className="border">
+                  <CardContent className="py-12 text-center text-muted-foreground">
+                    Tools not available for this IPO
+                  </CardContent>
+                </Card>
+              )}
+            </TabsContent>
+          </Tabs>
         </div>
       </MainLayout>
     </>

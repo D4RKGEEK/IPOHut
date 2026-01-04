@@ -10,3 +10,4 @@ export { SubscriptionTable } from "./SubscriptionTable";
 export { CompanyFinancials } from "./CompanyFinancials";
 export { AboutCompany } from "./AboutCompany";
 export { PDFDownloadButton } from "./PDFDownloadButton";
+export { MarketCandlesChart } from "./MarketCandlesChart";

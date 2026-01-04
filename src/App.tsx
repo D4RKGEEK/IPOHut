@@ -6,6 +6,7 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { HelmetProvider } from "react-helmet-async";
 import { ThemeProvider } from "next-themes";
 import { AdminProvider } from "@/contexts/AdminContext";
+import { AnalyticsProvider } from "@/components/analytics/AnalyticsProvider";
 
 import HomePage from "./pages/HomePage";
 import IPODetailPage from "./pages/IPODetailPage";
@@ -35,24 +36,26 @@ const App = () => (
             <Toaster />
             <Sonner />
             <BrowserRouter>
-              <Routes>
-                <Route path="/" element={<HomePage />} />
-                <Route path="/ipo/:slug" element={<IPODetailPage />} />
-                <Route path="/ipo/:slug/allotment" element={<IPOAllotmentCheckerPage />} />
-                <Route path="/mainboard-ipo" element={<MainboardIPOPage />} />
-                <Route path="/sme-ipo" element={<SMEIPOPage />} />
-                <Route path="/ipo-gmp-today" element={<GMPTrackerPage />} />
-                <Route path="/ipo-allotment-status" element={<AllotmentStatusPage />} />
-                <Route path="/ipo-calendar" element={<IPOCalendarPage />} />
-                <Route path="/ipo-listing-performance" element={<PerformanceTrackerPage />} />
-                <Route path="/tools" element={<ToolsPage />} />
-                <Route path="/tools/investment-calculator" element={<InvestmentCalculatorPage />} />
-                <Route path="/tools/compare" element={<CompareIPOPage />} />
-                <Route path="/tools/returns-calculator" element={<ReturnsCalculatorPage />} />
-                <Route path="/admin/login" element={<AdminLoginPage />} />
-                <Route path="/admin" element={<AdminDashboardPage />} />
-                <Route path="*" element={<NotFound />} />
-              </Routes>
+              <AnalyticsProvider>
+                <Routes>
+                  <Route path="/" element={<HomePage />} />
+                  <Route path="/ipo/:slug" element={<IPODetailPage />} />
+                  <Route path="/ipo/:slug/allotment" element={<IPOAllotmentCheckerPage />} />
+                  <Route path="/mainboard-ipo" element={<MainboardIPOPage />} />
+                  <Route path="/sme-ipo" element={<SMEIPOPage />} />
+                  <Route path="/ipo-gmp-today" element={<GMPTrackerPage />} />
+                  <Route path="/ipo-allotment-status" element={<AllotmentStatusPage />} />
+                  <Route path="/ipo-calendar" element={<IPOCalendarPage />} />
+                  <Route path="/ipo-listing-performance" element={<PerformanceTrackerPage />} />
+                  <Route path="/tools" element={<ToolsPage />} />
+                  <Route path="/tools/investment-calculator" element={<InvestmentCalculatorPage />} />
+                  <Route path="/tools/compare" element={<CompareIPOPage />} />
+                  <Route path="/tools/returns-calculator" element={<ReturnsCalculatorPage />} />
+                  <Route path="/admin/login" element={<AdminLoginPage />} />
+                  <Route path="/admin" element={<AdminDashboardPage />} />
+                  <Route path="*" element={<NotFound />} />
+                </Routes>
+              </AnalyticsProvider>
             </BrowserRouter>
           </TooltipProvider>
         </AdminProvider>

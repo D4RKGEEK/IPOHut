@@ -8,6 +8,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Share2, Check, Copy, MessageCircle } from "lucide-react";
 import { toast } from "sonner";
+import { analytics } from "@/hooks/useAnalytics";
 
 interface ShareButtonsProps {
   title: string;
@@ -26,6 +27,7 @@ export function ShareButtons({ title, url, description }: ShareButtonsProps) {
       await navigator.clipboard.writeText(shareUrl);
       setCopied(true);
       toast.success("Link copied to clipboard!");
+      analytics.copyLinkClick(title);
       setTimeout(() => setCopied(false), 2000);
     } catch {
       toast.error("Failed to copy link");
@@ -33,11 +35,13 @@ export function ShareButtons({ title, url, description }: ShareButtonsProps) {
   };
 
   const handleWhatsAppShare = () => {
+    analytics.shareClick("whatsapp", title);
     const whatsappUrl = `https://wa.me/?text=${encodeURIComponent(`${shareText}\n${shareUrl}`)}`;
     window.open(whatsappUrl, '_blank', 'noopener,noreferrer');
   };
 
   const handleTwitterShare = () => {
+    analytics.shareClick("twitter", title);
     const twitterUrl = `https://twitter.com/intent/tweet?text=${encodeURIComponent(shareText)}&url=${encodeURIComponent(shareUrl)}`;
     window.open(twitterUrl, '_blank', 'noopener,noreferrer');
   };

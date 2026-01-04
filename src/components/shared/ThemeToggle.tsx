@@ -7,9 +7,15 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { analytics } from "@/hooks/useAnalytics";
 
 export function ThemeToggle() {
   const { setTheme, theme } = useTheme();
+
+  const handleThemeChange = (newTheme: string) => {
+    setTheme(newTheme);
+    analytics.themeChange(newTheme);
+  };
 
   return (
     <DropdownMenu>
@@ -21,15 +27,15 @@ export function ThemeToggle() {
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end">
-        <DropdownMenuItem onClick={() => setTheme("light")}>
+        <DropdownMenuItem onClick={() => handleThemeChange("light")}>
           <Sun className="mr-2 h-4 w-4" />
           Light
         </DropdownMenuItem>
-        <DropdownMenuItem onClick={() => setTheme("dark")}>
+        <DropdownMenuItem onClick={() => handleThemeChange("dark")}>
           <Moon className="mr-2 h-4 w-4" />
           Dark
         </DropdownMenuItem>
-        <DropdownMenuItem onClick={() => setTheme("system")}>
+        <DropdownMenuItem onClick={() => handleThemeChange("system")}>
           <span className="mr-2 h-4 w-4 flex items-center justify-center text-xs">💻</span>
           System
         </DropdownMenuItem>

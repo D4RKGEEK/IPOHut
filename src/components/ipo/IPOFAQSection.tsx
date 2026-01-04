@@ -2,6 +2,7 @@ import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { HelpCircle } from "lucide-react";
 import { IPOBasicInfo, IPOTimeline } from "@/types/ipo";
+import { analytics } from "@/hooks/useAnalytics";
 
 interface IPOFAQSectionProps {
   ipoName: string;
@@ -23,6 +24,10 @@ export function IPOFAQSection({
   slug 
 }: IPOFAQSectionProps) {
   const companyName = ipoName.replace(" IPO", "").replace(" Ltd.", "").replace(" Limited", "");
+
+  const handleFAQExpand = (question: string) => {
+    analytics.faqExpand(question, ipoName);
+  };
 
   const faqs = [
     {
@@ -72,7 +77,12 @@ export function IPOFAQSection({
         </CardTitle>
       </CardHeader>
       <CardContent>
-        <Accordion type="single" collapsible className="w-full">
+        <Accordion type="single" collapsible className="w-full" onValueChange={(value) => {
+          if (value) {
+            const index = parseInt(value.replace("item-", ""));
+            if (faqs[index]) handleFAQExpand(faqs[index].question);
+          }
+        }}>
           {faqs.map((faq, index) => (
             <AccordionItem key={index} value={`item-${index}`}>
               <AccordionTrigger className="text-left text-xs sm:text-sm hover:no-underline">

@@ -10,7 +10,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { ExternalLink, Phone, Mail, Globe } from "lucide-react";
+import { ExternalLink, Phone, Mail, Globe, FileCheck } from "lucide-react";
 import { Link } from "react-router-dom";
 import {
   IPOVitalStats,
@@ -26,6 +26,7 @@ import {
   AboutCompany,
   PDFDownloadButton,
   MarketCandlesChart,
+  IPOFAQSection,
 } from "@/components/ipo";
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
 
@@ -492,8 +493,42 @@ export default function IPODetailPage() {
                   </CardContent>
                 </Card>
               )}
+
+              {/* Allotment Checker Link */}
+              <Card className="border border-primary/20 bg-primary/5">
+                <CardContent className="p-4 sm:p-6">
+                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                    <div className="flex items-start gap-3">
+                      <FileCheck className="h-8 w-8 text-primary shrink-0" />
+                      <div>
+                        <h3 className="font-semibold text-sm sm:text-base mb-1">Check Allotment Status</h3>
+                        <p className="text-xs sm:text-sm text-muted-foreground">
+                          Step-by-step guide to check your {basicInfo["IPO Name"]} allotment
+                        </p>
+                      </div>
+                    </div>
+                    <Link to={`/ipo/${slug}/allotment`}>
+                      <Button className="w-full sm:w-auto gap-2">
+                        Check Now
+                        <ExternalLink className="h-4 w-4" />
+                      </Button>
+                    </Link>
+                  </div>
+                </CardContent>
+              </Card>
             </TabsContent>
           </Tabs>
+
+          {/* FAQ Section */}
+          <IPOFAQSection
+            ipoName={basicInfo["IPO Name"]}
+            basicInfo={basicInfo}
+            timeline={timeline}
+            gmpValue={gmpData?.current_gmp}
+            issuePrice={issuePrice}
+            registrarName={registrar?.registrar?.name}
+            slug={slug || ""}
+          />
         </div>
       </MainLayout>
     </>

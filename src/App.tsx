@@ -17,6 +17,9 @@ import AllotmentStatusPage from "./pages/AllotmentStatusPage";
 import IPOCalendarPage from "./pages/IPOCalendarPage";
 import PerformanceTrackerPage from "./pages/PerformanceTrackerPage";
 import ToolsPage from "./pages/ToolsPage";
+import InvestmentCalculatorPage from "./pages/tools/InvestmentCalculatorPage";
+import CompareIPOPage from "./pages/tools/CompareIPOPage";
+import ReturnsCalculatorPage from "./pages/tools/ReturnsCalculatorPage";
 import AdminLoginPage from "./pages/admin/AdminLoginPage";
 import AdminDashboardPage from "./pages/admin/AdminDashboardPage";
 import NotFound from "./pages/NotFound";
@@ -43,6 +46,9 @@ const App = () => (
                 <Route path="/ipo-calendar" element={<IPOCalendarPage />} />
                 <Route path="/ipo-listing-performance" element={<PerformanceTrackerPage />} />
                 <Route path="/tools" element={<ToolsPage />} />
+                <Route path="/tools/investment-calculator" element={<InvestmentCalculatorPage />} />
+                <Route path="/tools/compare" element={<CompareIPOPage />} />
+                <Route path="/tools/returns-calculator" element={<ReturnsCalculatorPage />} />
                 <Route path="/admin/login" element={<AdminLoginPage />} />
                 <Route path="/admin" element={<AdminDashboardPage />} />
                 <Route path="*" element={<NotFound />} />

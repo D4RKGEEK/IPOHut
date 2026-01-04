@@ -166,6 +166,10 @@ export interface ApiConfig {
   cacheMinutes: number;
 }
 
+export interface SitemapConfig {
+  baseUrl: string;
+}
+
 export interface SiteSettings {
   branding: {
     siteName: string;
@@ -194,6 +198,7 @@ export interface SiteSettings {
   homePageConfig: HomePageConfig;
   ipoDetailConfig: IPODetailPageConfig;
   pageVisibility: PageVisibility;
+  sitemapConfig: SitemapConfig;
 }
 
 export interface PageSeoSettings {
@@ -227,7 +232,7 @@ export interface AdminSettings {
 export const defaultAdminSettings: AdminSettings = {
   site: {
     branding: {
-      siteName: "IPO Watch",
+      siteName: "IPOHut",
       logoUrl: "",
       faviconUrl: "",
       tagline: "Your trusted source for IPO insights",
@@ -237,7 +242,7 @@ export const defaultAdminSettings: AdminSettings = {
       footerScripts: "",
     },
     defaultSeo: {
-      titleSuffix: " | IPO Watch 2026",
+      titleSuffix: " | IPOHut 2026",
       defaultDescription: "Track live IPO GMP, subscription status, allotment dates, and listing performance. Your complete guide to Indian IPO market.",
       ogImage: "",
       twitterHandle: "",
@@ -417,10 +422,13 @@ export const defaultAdminSettings: AdminSettings = {
       performance: true,
       tools: true,
     },
+    sitemapConfig: {
+      baseUrl: "https://ipohut.in",
+    },
   },
   pages: {
     home: {
-      title: "IPO Watch 2026 | Live GMP, Subscription & Allotment Status",
+      title: "IPOHut 2026 | Live GMP, Subscription & Allotment Status",
       description: "Track live IPO GMP, subscription status, and allotment dates. Get real-time updates on Mainboard and SME IPOs in India.",
       h1: "Live IPO Dashboard",
       subheading: "Real-time GMP, subscription data & allotment updates",

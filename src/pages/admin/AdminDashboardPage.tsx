@@ -5,7 +5,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { 
   LogOut, Settings, FileText, Code, Download, Palette, 
   Home, PanelBottom, BarChart3, Save, RotateCcw, Clock,
-  AlertCircle, LayoutGrid, Menu, Eye
+  AlertCircle, LayoutGrid, Menu, Eye, Globe
 } from "lucide-react";
 import { toast } from "sonner";
 import { formatDistanceToNow } from "date-fns";
@@ -21,6 +21,7 @@ import {
   IPODetailSettings,
   NavigationSettings,
   PageVisibilitySettings,
+  SitemapSettings,
 } from "@/components/admin";
 import { cn } from "@/lib/utils";
 
@@ -160,6 +161,10 @@ export default function AdminDashboardPage() {
               <Download className="h-4 w-4" />
               <span className="hidden sm:inline">Backup</span>
             </TabsTrigger>
+            <TabsTrigger value="sitemap" className="gap-2">
+              <Globe className="h-4 w-4" />
+              <span className="hidden sm:inline">Sitemap</span>
+            </TabsTrigger>
           </TabsList>
 
           <TabsContent value="general">
@@ -204,6 +209,10 @@ export default function AdminDashboardPage() {
 
           <TabsContent value="backup">
             <BackupSettings />
+          </TabsContent>
+
+          <TabsContent value="sitemap">
+            <SitemapSettings />
           </TabsContent>
         </Tabs>
       </div>

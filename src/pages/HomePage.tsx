@@ -1,12 +1,13 @@
 import { MainLayout } from "@/components/layout";
 import { NewsTicker, IPOCard, IPOTable, IPOTableColumn, IPOTableRow } from "@/components/shared";
 import { useAdmin } from "@/contexts/AdminContext";
-import { useOpenIPOs, useIPOCalendar, useIPONews } from "@/hooks/useIPO";
+import { useOpenIPOs, useIPOCalendar, useTopGainers, useTopLosers } from "@/hooks/useIPO";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { ArrowRight, TrendingUp, Calendar, BarChart3 } from "lucide-react";
+import { ArrowRight, TrendingUp, TrendingDown, Calendar, BarChart3 } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
+import { cn } from "@/lib/utils";
 
 const tableColumns: IPOTableColumn[] = [
   { key: "name", label: "IPO Name", sortable: true },
@@ -27,6 +28,8 @@ export default function HomePage() {
     sort_by: "open_date", 
     order: "desc" 
   });
+  const { data: gainersData, isLoading: loadingGainers } = useTopGainers(5);
+  const { data: losersData, isLoading: loadingLosers } = useTopLosers(5);
 
   const pageSettings = settings.pages.home;
 
@@ -166,6 +169,127 @@ export default function HomePage() {
               </CardContent>
             </Card>
           )}
+        </section>
+
+        {/* Gainers & Losers Section */}
+        <section className="grid md:grid-cols-2 gap-6">
+          {/* Top Gainers */}
+          <Card className="border">
+            <CardHeader className="pb-3">
+              <div className="flex items-center justify-between">
+                <CardTitle className="text-base flex items-center gap-2">
+                  <TrendingUp className="h-5 w-5 text-success" />
+                  Top Gainers
+                </CardTitle>
+                <Link to="/ipo-listing-performance">
+                  <Button variant="ghost" size="sm" className="text-primary text-xs">
+                    View all <ArrowRight className="ml-1 h-3 w-3" />
+                  </Button>
+                </Link>
+              </div>
+            </CardHeader>
+            <CardContent className="pt-0">
+              {loadingGainers ? (
+                <div className="space-y-3">
+                  {[...Array(5)].map((_, i) => (
+                    <div key={i} className="flex items-center justify-between">
+                      <Skeleton className="h-4 w-2/3" />
+                      <Skeleton className="h-4 w-16" />
+                    </div>
+                  ))}
+                </div>
+              ) : gainersData?.data?.length ? (
+                <div className="space-y-2">
+                  {gainersData.data.map((ipo, idx) => (
+                    <Link 
+                      key={ipo.ipo_id} 
+                      to={`/ipo/${ipo.slug}`}
+                      className="flex items-center justify-between py-2 px-2 -mx-2 rounded-md hover:bg-muted/50 transition-colors group"
+                    >
+                      <div className="flex items-center gap-3 min-w-0">
+                        <span className="text-xs text-muted-foreground font-mono w-4">{idx + 1}</span>
+                        <span className="text-sm font-medium truncate group-hover:text-primary transition-colors">
+                          {ipo.name.replace(' IPO', '')}
+                        </span>
+                      </div>
+                      <div className="flex items-center gap-2 flex-shrink-0">
+                        <span className="text-xs text-muted-foreground font-tabular">
+                          ₹{ipo.issue_price}
+                        </span>
+                        <span className={cn(
+                          "text-sm font-semibold font-tabular",
+                          ipo.listing_gain_percent >= 0 ? "text-success" : "text-destructive"
+                        )}>
+                          {ipo.listing_gain_percent >= 0 ? "+" : ""}{ipo.listing_gain_percent?.toFixed(1)}%
+                        </span>
+                      </div>
+                    </Link>
+                  ))}
+                </div>
+              ) : (
+                <p className="text-sm text-muted-foreground text-center py-4">No data available</p>
+              )}
+            </CardContent>
+          </Card>
+
+          {/* Top Losers */}
+          <Card className="border">
+            <CardHeader className="pb-3">
+              <div className="flex items-center justify-between">
+                <CardTitle className="text-base flex items-center gap-2">
+                  <TrendingDown className="h-5 w-5 text-destructive" />
+                  Top Losers
+                </CardTitle>
+                <Link to="/ipo-listing-performance">
+                  <Button variant="ghost" size="sm" className="text-primary text-xs">
+                    View all <ArrowRight className="ml-1 h-3 w-3" />
+                  </Button>
+                </Link>
+              </div>
+            </CardHeader>
+            <CardContent className="pt-0">
+              {loadingLosers ? (
+                <div className="space-y-3">
+                  {[...Array(5)].map((_, i) => (
+                    <div key={i} className="flex items-center justify-between">
+                      <Skeleton className="h-4 w-2/3" />
+                      <Skeleton className="h-4 w-16" />
+                    </div>
+                  ))}
+                </div>
+              ) : losersData?.data?.length ? (
+                <div className="space-y-2">
+                  {losersData.data.map((ipo, idx) => (
+                    <Link 
+                      key={ipo.ipo_id} 
+                      to={`/ipo/${ipo.slug}`}
+                      className="flex items-center justify-between py-2 px-2 -mx-2 rounded-md hover:bg-muted/50 transition-colors group"
+                    >
+                      <div className="flex items-center gap-3 min-w-0">
+                        <span className="text-xs text-muted-foreground font-mono w-4">{idx + 1}</span>
+                        <span className="text-sm font-medium truncate group-hover:text-primary transition-colors">
+                          {ipo.name.replace(' IPO', '')}
+                        </span>
+                      </div>
+                      <div className="flex items-center gap-2 flex-shrink-0">
+                        <span className="text-xs text-muted-foreground font-tabular">
+                          ₹{ipo.issue_price}
+                        </span>
+                        <span className={cn(
+                          "text-sm font-semibold font-tabular",
+                          ipo.listing_gain_percent >= 0 ? "text-success" : "text-destructive"
+                        )}>
+                          {ipo.listing_gain_percent >= 0 ? "+" : ""}{ipo.listing_gain_percent?.toFixed(1)}%
+                        </span>
+                      </div>
+                    </Link>
+                  ))}
+                </div>
+              ) : (
+                <p className="text-sm text-muted-foreground text-center py-4">No data available</p>
+              )}
+            </CardContent>
+          </Card>
         </section>
 
         {/* Master Table */}

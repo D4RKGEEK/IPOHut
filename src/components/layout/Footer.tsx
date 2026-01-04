@@ -5,14 +5,16 @@ import { Twitter, Facebook, Linkedin, Youtube, Send, TrendingUp, ArrowUpRight } 
 export function Footer() {
   const { settings } = useAdmin();
   const currentYear = new Date().getFullYear();
+  const footer = settings.site.footer;
 
   // Apply template variables to copyright text
-  const copyrightText = settings.site.footer.copyrightText
+  const copyrightText = footer.copyrightText
     .replace("{year}", String(currentYear))
     .replace("{siteName}", settings.site.branding.siteName);
 
   const socialLinks = settings.site.socialLinks;
-  const hasSocialLinks = Object.values(socialLinks).some(link => link.trim() !== "");
+  const hasSocialLinks = footer.showSocialLinks && Object.values(socialLinks).some(link => link.trim() !== "");
+  const visibleSections = footer.sections.filter(s => s.visible);
 
   return (
     <footer className="border-t bg-gradient-to-b from-card to-muted/30 mt-auto">
@@ -95,84 +97,35 @@ export function Footer() {
             )}
           </div>
 
-          {/* Quick Links */}
-          <div className="md:col-span-2">
-            <h4 className="font-display font-semibold text-sm mb-4 text-foreground">IPO Types</h4>
-            <ul className="space-y-3">
-              <li>
-                <Link to="/mainboard-ipo" className="text-sm text-muted-foreground hover:text-primary transition-colors inline-flex items-center gap-1 group">
-                  Mainboard IPO
-                  <ArrowUpRight className="h-3 w-3 opacity-0 -translate-y-0.5 group-hover:opacity-100 group-hover:translate-y-0 transition-all" />
-                </Link>
-              </li>
-              <li>
-                <Link to="/sme-ipo" className="text-sm text-muted-foreground hover:text-primary transition-colors inline-flex items-center gap-1 group">
-                  SME IPO
-                  <ArrowUpRight className="h-3 w-3 opacity-0 -translate-y-0.5 group-hover:opacity-100 group-hover:translate-y-0 transition-all" />
-                </Link>
-              </li>
-            </ul>
-          </div>
+          {/* Dynamic Sections from Admin */}
+          {visibleSections.map((section) => (
+            <div key={section.id} className="md:col-span-2">
+              <h4 className="font-display font-semibold text-sm mb-4 text-foreground">{section.title}</h4>
+              <ul className="space-y-3">
+                {section.links.map((link) => (
+                  <li key={link.id}>
+                    <Link 
+                      to={link.url} 
+                      className="text-sm text-muted-foreground hover:text-primary transition-colors inline-flex items-center gap-1 group"
+                    >
+                      {link.label}
+                      <ArrowUpRight className="h-3 w-3 opacity-0 -translate-y-0.5 group-hover:opacity-100 group-hover:translate-y-0 transition-all" />
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          ))}
 
-          {/* Tools */}
-          <div className="md:col-span-3">
-            <h4 className="font-display font-semibold text-sm mb-4 text-foreground">Tools & Resources</h4>
-            <ul className="space-y-3">
-              <li>
-                <Link to="/ipo-gmp-today" className="text-sm text-muted-foreground hover:text-primary transition-colors inline-flex items-center gap-1 group">
-                  GMP Tracker
-                  <ArrowUpRight className="h-3 w-3 opacity-0 -translate-y-0.5 group-hover:opacity-100 group-hover:translate-y-0 transition-all" />
-                </Link>
-              </li>
-              <li>
-                <Link to="/ipo-allotment-status" className="text-sm text-muted-foreground hover:text-primary transition-colors inline-flex items-center gap-1 group">
-                  Allotment Status
-                  <ArrowUpRight className="h-3 w-3 opacity-0 -translate-y-0.5 group-hover:opacity-100 group-hover:translate-y-0 transition-all" />
-                </Link>
-              </li>
-              <li>
-                <Link to="/ipo-calendar" className="text-sm text-muted-foreground hover:text-primary transition-colors inline-flex items-center gap-1 group">
-                  IPO Calendar
-                  <ArrowUpRight className="h-3 w-3 opacity-0 -translate-y-0.5 group-hover:opacity-100 group-hover:translate-y-0 transition-all" />
-                </Link>
-              </li>
-              <li>
-                <Link to="/ipo-listing-performance" className="text-sm text-muted-foreground hover:text-primary transition-colors inline-flex items-center gap-1 group">
-                  Performance Tracker
-                  <ArrowUpRight className="h-3 w-3 opacity-0 -translate-y-0.5 group-hover:opacity-100 group-hover:translate-y-0 transition-all" />
-                </Link>
-              </li>
-              <li>
-                <Link to="/tools" className="text-sm text-muted-foreground hover:text-primary transition-colors inline-flex items-center gap-1 group">
-                  IPO Calculators
-                  <ArrowUpRight className="h-3 w-3 opacity-0 -translate-y-0.5 group-hover:opacity-100 group-hover:translate-y-0 transition-all" />
-                </Link>
-              </li>
-              {settings.site.footer.customLinks.map(link => (
-                <li key={link.id}>
-                  <a 
-                    href={link.url} 
-                    target={link.url.startsWith("http") ? "_blank" : undefined}
-                    rel={link.url.startsWith("http") ? "noopener noreferrer" : undefined}
-                    className="text-sm text-muted-foreground hover:text-primary transition-colors inline-flex items-center gap-1 group"
-                  >
-                    {link.label}
-                    <ArrowUpRight className="h-3 w-3 opacity-0 -translate-y-0.5 group-hover:opacity-100 group-hover:translate-y-0 transition-all" />
-                  </a>
-                </li>
-              ))}
-            </ul>
-          </div>
-
-          {/* Legal */}
-          <div className="md:col-span-3">
+          {/* Disclaimer */}
+          <div className={`md:col-span-${4 - Math.min(visibleSections.length, 2)}`}>
             <h4 className="font-display font-semibold text-sm mb-4 text-foreground">Disclaimer</h4>
             <p className="text-xs text-muted-foreground leading-relaxed mb-4">
-              {settings.site.footer.disclaimer}
+              {footer.disclaimer}
             </p>
             
             {/* Contact Info */}
-            {(settings.site.contact.email || settings.site.contact.phone) && (
+            {footer.showContact && (settings.site.contact.email || settings.site.contact.phone) && (
               <div className="space-y-2 text-sm">
                 {settings.site.contact.email && (
                   <a 
@@ -197,6 +150,24 @@ export function Footer() {
 
         <div className="mt-10 pt-8 border-t flex flex-col sm:flex-row items-center justify-between gap-4 text-sm text-muted-foreground">
           <p>{copyrightText}</p>
+          
+          {/* Custom Links */}
+          {footer.customLinks.length > 0 && (
+            <div className="flex items-center gap-4">
+              {footer.customLinks.map(link => (
+                <a 
+                  key={link.id}
+                  href={link.url} 
+                  target={link.url.startsWith("http") ? "_blank" : undefined}
+                  rel={link.url.startsWith("http") ? "noopener noreferrer" : undefined}
+                  className="text-xs hover:text-foreground transition-colors"
+                >
+                  {link.label}
+                </a>
+              ))}
+            </div>
+          )}
+          
           <p className="text-xs">
             Made with precision for Indian investors
           </p>

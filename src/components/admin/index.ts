@@ -6,3 +6,6 @@ export { FooterSettings } from "./FooterSettings";
 export { AnalyticsSettings } from "./AnalyticsSettings";
 export { ScriptsSettings } from "./ScriptsSettings";
 export { BackupSettings } from "./BackupSettings";
+export { IPODetailSettings } from "./IPODetailSettings";
+export { NavigationSettings } from "./NavigationSettings";
+export { PageVisibilitySettings } from "./PageVisibilitySettings";

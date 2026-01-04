@@ -5,7 +5,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { 
   LogOut, Settings, FileText, Code, Download, Palette, 
   Home, PanelBottom, BarChart3, Save, RotateCcw, Clock,
-  AlertCircle
+  AlertCircle, LayoutGrid, Menu, Eye
 } from "lucide-react";
 import { toast } from "sonner";
 import { formatDistanceToNow } from "date-fns";
@@ -18,6 +18,9 @@ import {
   AnalyticsSettings,
   ScriptsSettings,
   BackupSettings,
+  IPODetailSettings,
+  NavigationSettings,
+  PageVisibilitySettings,
 } from "@/components/admin";
 import { cn } from "@/lib/utils";
 
@@ -117,6 +120,26 @@ export default function AdminDashboardPage() {
               <Settings className="h-4 w-4" />
               <span className="hidden sm:inline">General</span>
             </TabsTrigger>
+            <TabsTrigger value="navigation" className="gap-2">
+              <Menu className="h-4 w-4" />
+              <span className="hidden sm:inline">Navigation</span>
+            </TabsTrigger>
+            <TabsTrigger value="pages" className="gap-2">
+              <Eye className="h-4 w-4" />
+              <span className="hidden sm:inline">Pages</span>
+            </TabsTrigger>
+            <TabsTrigger value="homepage" className="gap-2">
+              <Home className="h-4 w-4" />
+              <span className="hidden sm:inline">Home</span>
+            </TabsTrigger>
+            <TabsTrigger value="ipodetail" className="gap-2">
+              <LayoutGrid className="h-4 w-4" />
+              <span className="hidden sm:inline">IPO Detail</span>
+            </TabsTrigger>
+            <TabsTrigger value="footer" className="gap-2">
+              <PanelBottom className="h-4 w-4" />
+              <span className="hidden sm:inline">Footer</span>
+            </TabsTrigger>
             <TabsTrigger value="seo" className="gap-2">
               <FileText className="h-4 w-4" />
               <span className="hidden sm:inline">SEO</span>
@@ -124,14 +147,6 @@ export default function AdminDashboardPage() {
             <TabsTrigger value="appearance" className="gap-2">
               <Palette className="h-4 w-4" />
               <span className="hidden sm:inline">Appearance</span>
-            </TabsTrigger>
-            <TabsTrigger value="homepage" className="gap-2">
-              <Home className="h-4 w-4" />
-              <span className="hidden sm:inline">Home Page</span>
-            </TabsTrigger>
-            <TabsTrigger value="footer" className="gap-2">
-              <PanelBottom className="h-4 w-4" />
-              <span className="hidden sm:inline">Footer</span>
             </TabsTrigger>
             <TabsTrigger value="analytics" className="gap-2">
               <BarChart3 className="h-4 w-4" />
@@ -151,20 +166,32 @@ export default function AdminDashboardPage() {
             <GeneralSettings />
           </TabsContent>
 
-          <TabsContent value="seo">
-            <SEOSettings />
+          <TabsContent value="navigation">
+            <NavigationSettings />
           </TabsContent>
 
-          <TabsContent value="appearance">
-            <AppearanceSettings />
+          <TabsContent value="pages">
+            <PageVisibilitySettings />
           </TabsContent>
 
           <TabsContent value="homepage">
             <HomePageSettings />
           </TabsContent>
 
+          <TabsContent value="ipodetail">
+            <IPODetailSettings />
+          </TabsContent>
+
           <TabsContent value="footer">
             <FooterSettings />
+          </TabsContent>
+
+          <TabsContent value="seo">
+            <SEOSettings />
+          </TabsContent>
+
+          <TabsContent value="appearance">
+            <AppearanceSettings />
           </TabsContent>
 
           <TabsContent value="analytics">

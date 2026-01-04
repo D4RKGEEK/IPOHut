@@ -12,3 +12,10 @@ Allow: /
 
 User-agent: *
 Allow: /
+
+# Sitemap
+Sitemap: https://ipowatch.in/sitemap.xml
+
+# Disallow admin pages
+Disallow: /admin
+Disallow: /admin/*

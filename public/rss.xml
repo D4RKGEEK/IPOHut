@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>IPO Watch - Latest IPO Updates</title>
+    <link>https://ipowatch.in</link>
+    <description>Track IPO GMP, allotment status, listing gains, and subscription data. India's most comprehensive IPO information platform.</description>
+    <language>en-in</language>
+    <lastBuildDate>Sat, 04 Jan 2025 00:00:00 GMT</lastBuildDate>
+    <atom:link href="https://ipowatch.in/rss.xml" rel="self" type="application/rss+xml"/>
+    <image>
+      <url>https://ipowatch.in/favicon.ico</url>
+      <title>IPO Watch</title>
+      <link>https://ipowatch.in</link>
+    </image>
+    <item>
+      <title>Track Live IPO GMP Today</title>
+      <link>https://ipowatch.in/ipo-gmp-today</link>
+      <description>Check the latest Grey Market Premium (GMP) for all active and upcoming IPOs.</description>
+      <pubDate>Sat, 04 Jan 2025 00:00:00 GMT</pubDate>
+      <guid>https://ipowatch.in/ipo-gmp-today</guid>
+    </item>
+    <item>
+      <title>Mainboard IPO Listings</title>
+      <link>https://ipowatch.in/mainboard-ipo</link>
+      <description>View all mainboard IPOs with subscription status, GMP, and listing performance.</description>
+      <pubDate>Sat, 04 Jan 2025 00:00:00 GMT</pubDate>
+      <guid>https://ipowatch.in/mainboard-ipo</guid>
+    </item>
+    <item>
+      <title>SME IPO Listings</title>
+      <link>https://ipowatch.in/sme-ipo</link>
+      <description>Track SME IPOs on NSE and BSE with detailed subscription and GMP data.</description>
+      <pubDate>Sat, 04 Jan 2025 00:00:00 GMT</pubDate>
+      <guid>https://ipowatch.in/sme-ipo</guid>
+    </item>
+    <item>
+      <title>IPO Calendar 2025</title>
+      <link>https://ipowatch.in/ipo-calendar</link>
+      <description>Complete calendar of upcoming, open, and recently listed IPOs with key dates.</description>
+      <pubDate>Sat, 04 Jan 2025 00:00:00 GMT</pubDate>
+      <guid>https://ipowatch.in/ipo-calendar</guid>
+    </item>
+    <item>
+      <title>IPO Statistics &amp; Analysis</title>
+      <link>https://ipowatch.in/ipo-statistics</link>
+      <description>Year-wise IPO performance statistics, sector analysis, and historical trends.</description>
+      <pubDate>Sat, 04 Jan 2025 00:00:00 GMT</pubDate>
+      <guid>https://ipowatch.in/ipo-statistics</guid>
+    </item>
+  </channel>
+</rss>

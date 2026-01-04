@@ -1,7 +1,7 @@
 import { MainLayout } from "@/components/layout";
 import { useAdmin } from "@/contexts/AdminContext";
 import { useGMPIPOs } from "@/hooks/useIPO";
-import { IPOTable, IPOTableColumn, IPOTableRow, GMPCalculator, TypeBadge } from "@/components/shared";
+import { IPOTable, IPOTableColumn, IPOTableRow, GMPCalculator, TypeBadge, BreadcrumbNav } from "@/components/shared";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { formatCurrency, formatPercent } from "@/lib/api";
 import { TrendingUp, Calculator } from "lucide-react";
@@ -56,6 +56,8 @@ export default function GMPTrackerPage() {
       description={pageSettings.description}
     >
       <div className="container py-4 md:py-6 space-y-4">
+        <BreadcrumbNav items={[{ label: "GMP Today" }]} />
+        
         {/* Header */}
         <header>
           <h1 className="text-xl md:text-2xl font-semibold mb-1">{pageSettings.h1}</h1>

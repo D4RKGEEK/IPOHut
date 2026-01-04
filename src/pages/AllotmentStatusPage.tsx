@@ -1,7 +1,7 @@
 import { MainLayout } from "@/components/layout";
 import { useAdmin } from "@/contexts/AdminContext";
 import { useClosedIPOs } from "@/hooks/useIPO";
-import { StatusBadge, TypeBadge } from "@/components/shared";
+import { StatusBadge, TypeBadge, BreadcrumbNav } from "@/components/shared";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -21,6 +21,8 @@ export default function AllotmentStatusPage() {
       description={pageSettings.description}
     >
       <div className="container py-4 md:py-6 space-y-4">
+        <BreadcrumbNav items={[{ label: "Allotment Status" }]} />
+        
         {/* Header */}
         <header className="text-center max-w-xl mx-auto">
           <h1 className="text-xl md:text-2xl font-semibold mb-1">{pageSettings.h1}</h1>

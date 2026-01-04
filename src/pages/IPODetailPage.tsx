@@ -4,7 +4,7 @@ import { MainLayout } from "@/components/layout";
 import { useAdmin } from "@/contexts/AdminContext";
 import { useIPODetail } from "@/hooks/useIPO";
 import { applyTemplate } from "@/types/admin";
-import { StatusBadge, TypeBadge, IPOTimeline, GMPCalculator, BrokerSentiment, ShareButtons } from "@/components/shared";
+import { StatusBadge, TypeBadge, IPOTimeline, GMPCalculator, BrokerSentiment, ShareButtons, BreadcrumbNav } from "@/components/shared";
 import { parseIPODate } from "@/lib/api";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -208,6 +208,13 @@ export default function IPODetailPage() {
 
       <MainLayout>
         <div className="container px-2 sm:px-4 md:px-6 py-4 md:py-8 space-y-3 sm:space-y-4 md:space-y-6">
+          <BreadcrumbNav 
+            items={[
+              { label: ipo.ipo_type === "sme" ? "SME IPO" : "Mainboard IPO", href: ipo.ipo_type === "sme" ? "/sme-ipo" : "/mainboard-ipo" },
+              { label: basicInfo["IPO Name"]?.replace(" IPO", "") || slug || "" }
+            ]} 
+          />
+          
           {/* Header */}
           <header className="flex flex-col sm:flex-row sm:items-start gap-3 sm:gap-4">
             {ipo.logo_about?.logo && (

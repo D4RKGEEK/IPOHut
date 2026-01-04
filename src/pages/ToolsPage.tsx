@@ -1,9 +1,10 @@
 import { Helmet } from "react-helmet-async";
 import { Link } from "react-router-dom";
 import { MainLayout } from "@/components/layout";
+import { BreadcrumbNav } from "@/components/shared";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Calculator, GitCompare, TrendingUp, ArrowRight } from "lucide-react";
+import { Calculator, GitCompare, TrendingUp, ArrowRight, BarChart3 } from "lucide-react";
 import { analytics, useScrollTracking, useTimeOnPage } from "@/hooks/useAnalytics";
 
 const tools = [
@@ -31,6 +32,14 @@ const tools = [
     color: "text-accent",
     bgColor: "bg-accent/10",
   },
+  {
+    title: "IPO Statistics",
+    description: "Year-wise performance statistics, sector analysis, and historical IPO trends with interactive charts.",
+    icon: BarChart3,
+    href: "/ipo-statistics",
+    color: "text-success",
+    bgColor: "bg-success/10",
+  },
 ];
 
 export default function ToolsPage() {
@@ -54,6 +63,7 @@ export default function ToolsPage() {
       {/* Hero Section */}
       <section className="border-b">
         <div className="container py-5 md:py-8">
+          <BreadcrumbNav items={[{ label: "Tools" }]} className="mb-3" />
           <h1 className="text-xl md:text-2xl font-semibold mb-1">
             IPO Tools & Calculators
           </h1>

@@ -31,15 +31,11 @@ const getPriorityClass = (priority: string) => {
   }
 };
 
-interface NewsTickerProps {
-  initialData?: IPONews[];
-}
+export function NewsTicker() {
+  const { data, isLoading, error } = useIPONews({ limit: 20 });
 
-export function NewsTicker({ initialData }: NewsTickerProps) {
-  const { data, isLoading, error } = useIPONews({ limit: 20 }, { enabled: !initialData });
-
-  const newsData = initialData || data?.data;
-  const loading = !initialData && isLoading;
+  const newsData = data?.data;
+  const loading = isLoading;
 
   if (loading) {
     return (
@@ -53,7 +49,7 @@ export function NewsTicker({ initialData }: NewsTickerProps) {
     );
   }
 
-  if ((!initialData && error) || !newsData?.length) {
+  if (error || !newsData?.length) {
     return null;
   }
 

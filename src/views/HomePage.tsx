@@ -21,7 +21,6 @@ interface HomePageProps {
     recentlyListed?: APIResponse<IPOStatus[]>;
     gainersData?: APIResponse<IPOGain[]>;
     losersData?: APIResponse<IPOGain[]>;
-    newsData?: APIResponse<IPONews[]>;
   }
 }
 
@@ -58,7 +57,7 @@ export default function HomePage({ initialData }: HomePageProps) {
       description={pageSettings.description}
     >
       {/* News Ticker */}
-      {homeConfig.showNewsTicker && <NewsTicker initialData={initialData?.newsData?.data} />}
+      {homeConfig.showNewsTicker && <NewsTicker />}
 
       {/* Hero Section */}
       <section className="relative overflow-hidden border-b">

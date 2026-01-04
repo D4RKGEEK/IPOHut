@@ -43,14 +43,14 @@ export default function RootLayout({
 }) {
     return (
         <html lang="en" suppressHydrationWarning>
-            <head>
+            <body className={inter.className}>
                 {defaultAdminSettings.site.scripts.headerScripts && (
-                    <script
+                    <Script
+                        id="header-scripts"
+                        strategy="afterInteractive"
                         dangerouslySetInnerHTML={{ __html: defaultAdminSettings.site.scripts.headerScripts }}
                     />
                 )}
-            </head>
-            <body className={inter.className}>
                 <Providers>{children}</Providers>
             </body>
         </html>

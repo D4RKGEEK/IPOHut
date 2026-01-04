@@ -46,7 +46,7 @@ export function AdminProvider({ children }: { children: React.ReactNode }) {
   // Load saved settings from localStorage
   const loadSavedSettings = useCallback((): AdminSettings => {
     if (typeof window === "undefined") return defaultAdminSettings;
-    
+
     const stored = localStorage.getItem(STORAGE_KEY);
     if (stored) {
       try {
@@ -58,17 +58,33 @@ export function AdminProvider({ children }: { children: React.ReactNode }) {
     return defaultAdminSettings;
   }, []);
 
-  const [savedSettings, setSavedSettings] = useState<AdminSettings>(loadSavedSettings);
-  const [settings, setSettings] = useState<AdminSettings>(loadSavedSettings);
-  const [lastSavedAt, setLastSavedAt] = useState<string | null>(() => {
-    if (typeof window === "undefined") return null;
-    return localStorage.getItem(STORAGE_KEY) ? settings.updatedAt : null;
-  });
+  // Initialize with defaults to match server-side rendering
+  const [savedSettings, setSavedSettings] = useState<AdminSettings>(defaultAdminSettings);
+  const [settings, setSettings] = useState<AdminSettings>(defaultAdminSettings);
+  const [lastSavedAt, setLastSavedAt] = useState<string | null>(null);
+  const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
 
-  const [isAuthenticated, setIsAuthenticated] = useState<boolean>(() => {
-    if (typeof window === "undefined") return false;
-    return localStorage.getItem(AUTH_KEY) === "true";
-  });
+  // Hydrate from localStorage on client mount
+  useEffect(() => {
+    const storedSettings = localStorage.getItem(STORAGE_KEY);
+    const storedAuth = localStorage.getItem(AUTH_KEY);
+
+    if (storedSettings) {
+      try {
+        const parsed = JSON.parse(storedSettings);
+        const merged = deepMerge(defaultAdminSettings, parsed);
+        setSettings(merged);
+        setSavedSettings(merged);
+        setLastSavedAt(merged.updatedAt);
+      } catch {
+        // Fallback to default
+      }
+    }
+
+    if (storedAuth === "true") {
+      setIsAuthenticated(true);
+    }
+  }, []);
 
   // Check if there are unsaved changes
   const isDirty = useMemo(() => {

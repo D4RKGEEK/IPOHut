@@ -46,21 +46,31 @@ export function IPOSelector({ value, onSelect, placeholder = "Select IPO...", cl
 
   const ipos = useMemo(() => {
     if (!data?.data) return [];
-    return data.data.map((ipo) => ({
-      slug: ipo.slug,
-      name: ipo.name,
-      issuePrice: ipo.issue_price || 0,
-      lotSize: ipo.lot_size || 0,
-      gmp: ipo.gmp,
-      gmpPercent: ipo.gmp_percent,
-      subscriptionTimes: ipo.subscription_times,
-      ipoType: ipo.ipo_type,
-      status: ipo.status,
-      openDate: ipo.open_date,
-      closeDate: ipo.close_date,
-      listingDate: ipo.listing_date,
-      issueSize: ipo.issue_size,
-    }));
+    return data.data.map((ipo) => {
+      // Handle gmp - it can be a number or an object with gmp_value
+      let gmpValue: number | undefined;
+      if (typeof ipo.gmp === 'number') {
+        gmpValue = ipo.gmp;
+      } else if (ipo.gmp && typeof ipo.gmp === 'object' && 'gmp_value' in ipo.gmp) {
+        gmpValue = (ipo.gmp as { gmp_value: number }).gmp_value;
+      }
+      
+      return {
+        slug: ipo.slug,
+        name: ipo.name,
+        issuePrice: ipo.issue_price || 0,
+        lotSize: ipo.lot_size || 0,
+        gmp: gmpValue,
+        gmpPercent: ipo.gmp_percent,
+        subscriptionTimes: ipo.subscription_times,
+        ipoType: ipo.ipo_type,
+        status: ipo.status,
+        openDate: ipo.open_date,
+        closeDate: ipo.close_date,
+        listingDate: ipo.listing_date,
+        issueSize: ipo.issue_size,
+      };
+    });
   }, [data]);
 
   return (

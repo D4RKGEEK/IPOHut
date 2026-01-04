@@ -1,4 +1,5 @@
-import { Link, useLocation } from "react-router-dom";
+import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { useAdmin } from "@/contexts/AdminContext";
 import { Menu, X, TrendingUp, Calendar, BarChart3, CheckCircle, Calculator, Sparkles } from "lucide-react";
 import { useState } from "react";
@@ -27,12 +28,12 @@ const iconMap: Record<string, React.ComponentType<{ className?: string }>> = {
 export function Header() {
   const { settings } = useAdmin();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-  const location = useLocation();
+  const pathname = usePathname();
 
   const navigation = settings.site.navigation;
   const visibleMenuItems = navigation.menuItems.filter(item => item.visible);
 
-  const isActive = (href: string) => location.pathname === href;
+  const isActive = (href: string) => pathname === href;
 
   const getIcon = (iconName?: string) => {
     if (!iconName) return TrendingUp;
@@ -51,12 +52,12 @@ export function Header() {
     <header className="sticky top-0 z-50 bg-background/95 backdrop-blur-sm border-b">
       <div className="container flex h-14 items-center justify-between">
         {/* Logo */}
-        <Link to="/" className="flex items-center gap-2 text-foreground" onClick={handleLogoClick}>
+        <Link href="/" className="flex items-center gap-2 text-foreground" onClick={handleLogoClick}>
           {navigation.showLogo && (
             settings.site.branding.logoUrl ? (
-              <img 
-                src={settings.site.branding.logoUrl} 
-                alt={settings.site.branding.siteName} 
+              <img
+                src={settings.site.branding.logoUrl}
+                alt={settings.site.branding.siteName}
                 className="h-7 w-auto"
               />
             ) : (
@@ -98,7 +99,7 @@ export function Header() {
                   <DropdownMenuContent align="start">
                     {visibleChildren.map((child) => (
                       <DropdownMenuItem key={child.id} asChild>
-                        <Link to={child.url} onClick={() => handleNavClick(child.label)}>{child.label}</Link>
+                        <Link href={child.url} onClick={() => handleNavClick(child.label)}>{child.label}</Link>
                       </DropdownMenuItem>
                     ))}
                   </DropdownMenuContent>
@@ -109,7 +110,7 @@ export function Header() {
             return (
               <Link
                 key={item.id}
-                to={item.url}
+                href={item.url}
                 onClick={() => handleNavClick(item.label)}
                 className={cn(
                   "px-3 py-1.5 text-sm rounded-md transition-colors",
@@ -153,7 +154,7 @@ export function Header() {
             return (
               <div key={item.id}>
                 <Link
-                  to={item.url}
+                  href={item.url}
                   onClick={() => {
                     if (!hasChildren) {
                       setMobileMenuOpen(false);
@@ -175,7 +176,7 @@ export function Header() {
                     {item.children!.filter(c => c.visible).map((child) => (
                       <Link
                         key={child.id}
-                        to={child.url}
+                        href={child.url}
                         onClick={() => {
                           setMobileMenuOpen(false);
                           handleNavClick(child.label);

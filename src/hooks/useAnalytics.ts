@@ -1,5 +1,5 @@
 import { useEffect, useCallback } from "react";
-import { useLocation } from "react-router-dom";
+import { usePathname, useSearchParams } from "next/navigation";
 
 // Declare gtag for TypeScript
 declare global {
@@ -13,17 +13,19 @@ const GA_MEASUREMENT_ID = "G-4NKZT0DTZX";
 
 // Track page views
 export function usePageTracking() {
-  const location = useLocation();
+  const pathname = usePathname();
+  const searchParams = useSearchParams();
 
   useEffect(() => {
     if (typeof window.gtag === "function") {
+      const url = pathname + (searchParams?.toString() ? `?${searchParams.toString()}` : "");
       window.gtag("event", "page_view", {
-        page_path: location.pathname + location.search,
+        page_path: url,
         page_title: document.title,
         page_location: window.location.href,
       });
     }
-  }, [location]);
+  }, [pathname, searchParams]);
 }
 
 // Track custom events
@@ -41,79 +43,79 @@ export const analytics = {
   // Navigation events
   navClick: (menuItem: string) => trackEvent("nav_click", { menu_item: menuItem }),
   logoClick: () => trackEvent("logo_click"),
-  
+
   // IPO events
-  ipoCardClick: (ipoName: string, ipoSlug: string) => 
+  ipoCardClick: (ipoName: string, ipoSlug: string) =>
     trackEvent("ipo_card_click", { ipo_name: ipoName, ipo_slug: ipoSlug }),
-  ipoDetailView: (ipoName: string, ipoSlug: string) => 
+  ipoDetailView: (ipoName: string, ipoSlug: string) =>
     trackEvent("ipo_detail_view", { ipo_name: ipoName, ipo_slug: ipoSlug }),
-  ipoTabChange: (ipoSlug: string, tabName: string) => 
+  ipoTabChange: (ipoSlug: string, tabName: string) =>
     trackEvent("ipo_tab_change", { ipo_slug: ipoSlug, tab_name: tabName }),
-  
+
   // Allotment events
-  allotmentCheckClick: (ipoName: string) => 
+  allotmentCheckClick: (ipoName: string) =>
     trackEvent("allotment_check_click", { ipo_name: ipoName }),
-  registrarLinkClick: (registrar: string, ipoName: string) => 
+  registrarLinkClick: (registrar: string, ipoName: string) =>
     trackEvent("registrar_link_click", { registrar, ipo_name: ipoName }),
-  
+
   // Share events
-  shareClick: (platform: string, ipoName: string) => 
+  shareClick: (platform: string, ipoName: string) =>
     trackEvent("share_click", { platform, ipo_name: ipoName }),
-  copyLinkClick: (ipoName: string) => 
+  copyLinkClick: (ipoName: string) =>
     trackEvent("copy_link_click", { ipo_name: ipoName }),
-  
+
   // Download events
-  pdfDownload: (ipoName: string) => 
+  pdfDownload: (ipoName: string) =>
     trackEvent("pdf_download", { ipo_name: ipoName }),
-  
+
   // Tools events
-  toolOpen: (toolName: string) => 
+  toolOpen: (toolName: string) =>
     trackEvent("tool_open", { tool_name: toolName }),
-  ipoSelect: (toolName: string, ipoName: string) => 
+  ipoSelect: (toolName: string, ipoName: string) =>
     trackEvent("ipo_select", { tool_name: toolName, ipo_name: ipoName }),
-  calculatorUse: (calculatorType: string, values: Record<string, number>) => 
+  calculatorUse: (calculatorType: string, values: Record<string, number>) =>
     trackEvent("calculator_use", { calculator_type: calculatorType, ...values }),
-  compareAdd: (ipoName: string, position: number) => 
+  compareAdd: (ipoName: string, position: number) =>
     trackEvent("compare_add", { ipo_name: ipoName, position }),
-  compareRemove: (ipoName: string) => 
+  compareRemove: (ipoName: string) =>
     trackEvent("compare_remove", { ipo_name: ipoName }),
-  
+
   // Filter & Sort events
-  filterApply: (filterType: string, filterValue: string) => 
+  filterApply: (filterType: string, filterValue: string) =>
     trackEvent("filter_apply", { filter_type: filterType, filter_value: filterValue }),
-  sortApply: (sortBy: string, sortOrder: string) => 
+  sortApply: (sortBy: string, sortOrder: string) =>
     trackEvent("sort_apply", { sort_by: sortBy, sort_order: sortOrder }),
-  
+
   // Scroll events
-  scrollDepth: (pageName: string, depth: number) => 
+  scrollDepth: (pageName: string, depth: number) =>
     trackEvent("scroll_depth", { page_name: pageName, depth_percent: depth }),
-  
+
   // Chart events
-  chartInteraction: (chartType: string, action: string) => 
+  chartInteraction: (chartType: string, action: string) =>
     trackEvent("chart_interaction", { chart_type: chartType, action }),
-  chartPeriodChange: (ipoSlug: string, period: string) => 
+  chartPeriodChange: (ipoSlug: string, period: string) =>
     trackEvent("chart_period_change", { ipo_slug: ipoSlug, period }),
-  
+
   // Search events
-  searchQuery: (query: string, resultsCount: number) => 
+  searchQuery: (query: string, resultsCount: number) =>
     trackEvent("search_query", { query, results_count: resultsCount }),
-  searchResultClick: (query: string, resultName: string) => 
+  searchResultClick: (query: string, resultName: string) =>
     trackEvent("search_result_click", { query, result_name: resultName }),
-  
+
   // Theme events
-  themeChange: (theme: string) => 
+  themeChange: (theme: string) =>
     trackEvent("theme_change", { theme }),
-  
+
   // External link clicks
-  externalLinkClick: (url: string, linkType: string) => 
+  externalLinkClick: (url: string, linkType: string) =>
     trackEvent("external_link_click", { url, link_type: linkType }),
-  
+
   // FAQ events
-  faqExpand: (question: string, ipoName?: string) => 
+  faqExpand: (question: string, ipoName?: string) =>
     trackEvent("faq_expand", { question: question.substring(0, 100), ipo_name: ipoName || "general" }),
-  
+
   // Error events
-  errorOccurred: (errorType: string, errorMessage: string) => 
+  errorOccurred: (errorType: string, errorMessage: string) =>
     trackEvent("error_occurred", { error_type: errorType, error_message: errorMessage.substring(0, 100) }),
 };
 
@@ -131,7 +133,7 @@ export function useScrollTracking(pageName: string) {
 
       if (depth > maxDepth) {
         maxDepth = depth;
-        
+
         thresholds.forEach((threshold) => {
           if (depth >= threshold && !reportedThresholds.has(threshold)) {
             reportedThresholds.add(threshold);
@@ -150,7 +152,7 @@ export function useScrollTracking(pageName: string) {
 export function useTimeOnPage(pageName: string) {
   useEffect(() => {
     const startTime = Date.now();
-    
+
     return () => {
       const timeSpent = Math.round((Date.now() - startTime) / 1000);
       if (timeSpent > 5) { // Only track if more than 5 seconds

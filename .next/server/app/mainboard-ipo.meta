@@ -1,0 +1,15 @@
+{
+  "headers": {
+    "x-nextjs-stale-time": "300",
+    "x-nextjs-prerender": "1",
+    "x-next-cache-tags": "_N_T_/layout,_N_T_/mainboard-ipo/layout,_N_T_/mainboard-ipo/page,_N_T_/mainboard-ipo"
+  },
+  "segmentPaths": [
+    "/_tree",
+    "/_full",
+    "/mainboard-ipo/__PAGE__",
+    "/mainboard-ipo",
+    "/_index",
+    "/_head"
+  ]
+}

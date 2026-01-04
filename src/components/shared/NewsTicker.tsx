@@ -1,5 +1,5 @@
 import { useIPONews } from "@/hooks/useIPO";
-import { Link } from "react-router-dom";
+import Link from "next/link";
 import { cn } from "@/lib/utils";
 import { AlertCircle, TrendingUp, Calendar, Bell, CheckCircle } from "lucide-react";
 
@@ -74,7 +74,7 @@ export function NewsTicker() {
               return (
                 <Link
                   key={`${item.ipo_id}-${index}`}
-                  to={`/ipo/${item.ipo_slug}`}
+                  href={`/ipo/${item.ipo_slug}`}
                   className={cn(
                     "inline-flex items-center gap-2 px-4 text-sm hover:text-primary transition-colors",
                     getPriorityClass(item.priority)

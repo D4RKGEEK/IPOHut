@@ -1,4 +1,4 @@
-import { Link } from "react-router-dom";
+import Link from "next/link";
 import { Card, CardContent } from "@/components/ui/card";
 import { StatusBadge, TypeBadge } from "./StatusBadge";
 import { formatCurrency, formatPercent, formatSubscription, getDaysUntil } from "@/lib/api";
@@ -43,8 +43,8 @@ export function IPOCard({
     <Card className={cn("card-hover h-full", className)} style={style}>
       <CardContent className="p-3 md:p-4">
         {/* Header */}
-        <Link 
-          to={`/ipo/${slug}`} 
+        <Link
+          href={`/ipo/${slug}`}
           className="group block"
           onClick={() => analytics.ipoCardClick(name, slug)}
         >
@@ -68,7 +68,7 @@ export function IPOCard({
 
         {/* GMP Display */}
         {gmp !== undefined && (
-          <Link to={`/ipo/${slug}`} onClick={() => analytics.ipoCardClick(name, slug)}>
+          <Link href={`/ipo/${slug}`} onClick={() => analytics.ipoCardClick(name, slug)}>
             <div className={cn(
               "flex items-center justify-between p-2 rounded-md mb-2",
               isPositiveGMP ? "bg-success/5" : "bg-destructive/5"
@@ -115,8 +115,8 @@ export function IPOCard({
         {status.toLowerCase() === "open" && daysUntilClose !== null && daysUntilClose >= 0 && (
           <div className={cn(
             "flex items-center justify-center gap-1.5 py-1.5 rounded-md text-xs",
-            daysUntilClose === 0 
-              ? "bg-warning/10 text-warning" 
+            daysUntilClose === 0
+              ? "bg-warning/10 text-warning"
               : "bg-muted text-muted-foreground"
           )}>
             <Clock className="h-3 w-3" />
@@ -135,8 +135,8 @@ export function IPOCard({
 
         {/* Allotment Checker Link for closed/listed IPOs */}
         {showAllotmentLink && (
-          <Link 
-            to={`/ipo/${slug}/allotment`}
+          <Link
+            href={`/ipo/${slug}/allotment`}
             className="flex items-center justify-center gap-1.5 py-1.5 mt-2 rounded-md text-xs bg-primary/10 text-primary hover:bg-primary/20 transition-colors"
             onClick={() => analytics.allotmentCheckClick(name)}
           >

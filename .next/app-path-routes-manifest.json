@@ -1,0 +1,21 @@
+{
+  "/_global-error/page": "/_global-error",
+  "/_not-found/page": "/_not-found",
+  "/admin/login/page": "/admin/login",
+  "/admin/page": "/admin",
+  "/ipo-allotment-status/page": "/ipo-allotment-status",
+  "/ipo-calendar/page": "/ipo-calendar",
+  "/ipo-gmp-today/page": "/ipo-gmp-today",
+  "/ipo-listing-performance/page": "/ipo-listing-performance",
+  "/ipo-statistics/page": "/ipo-statistics",
+  "/ipo/[slug]/allotment/page": "/ipo/[slug]/allotment",
+  "/ipo/[slug]/page": "/ipo/[slug]",
+  "/mainboard-ipo/page": "/mainboard-ipo",
+  "/page": "/",
+  "/sitemap.xml/route": "/sitemap.xml",
+  "/sme-ipo/page": "/sme-ipo",
+  "/tools/compare/page": "/tools/compare",
+  "/tools/investment-calculator/page": "/tools/investment-calculator",
+  "/tools/page": "/tools",
+  "/tools/returns-calculator/page": "/tools/returns-calculator"
+}

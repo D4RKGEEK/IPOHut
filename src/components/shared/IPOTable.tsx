@@ -1,4 +1,4 @@
-import { Link } from "react-router-dom";
+import Link from "next/link";
 import {
   Table,
   TableBody,
@@ -73,8 +73,8 @@ export function IPOTable({
         const showAllotmentLink = row.status && ["closed", "recently_listed", "listed"].includes(row.status.toLowerCase());
         return (
           <div className="flex items-center gap-2">
-            <Link 
-              to={`/ipo/${row.slug}`} 
+            <Link
+              href={`/ipo/${row.slug}`}
               className="font-medium text-foreground hover:text-primary transition-colors"
             >
               {row.name}
@@ -82,8 +82,8 @@ export function IPOTable({
             {showAllotmentLink && (
               <Tooltip>
                 <TooltipTrigger asChild>
-                  <Link 
-                    to={`/ipo/${row.slug}/allotment`}
+                  <Link
+                    href={`/ipo/${row.slug}/allotment`}
                     className="text-primary hover:text-primary/80 transition-colors"
                     onClick={(e) => e.stopPropagation()}
                   >
@@ -182,8 +182,8 @@ export function IPOTable({
         <TableHeader>
           <TableRow className="bg-muted/50">
             {columns.map((col) => (
-              <TableHead 
-                key={col.key} 
+              <TableHead
+                key={col.key}
                 className={cn(
                   "font-semibold",
                   col.hideOnMobile && "hidden md:table-cell"
@@ -210,8 +210,8 @@ export function IPOTable({
           {data.map((row) => (
             <TableRow key={row.slug} className="table-row-hover">
               {columns.map((col) => (
-                <TableCell 
-                  key={col.key} 
+                <TableCell
+                  key={col.key}
                   className={cn(col.hideOnMobile && "hidden md:table-cell")}
                 >
                   {renderCell(row, col.key)}

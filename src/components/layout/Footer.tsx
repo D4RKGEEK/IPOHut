@@ -1,4 +1,4 @@
-import { Link } from "react-router-dom";
+import Link from "next/link";
 import { useAdmin } from "@/contexts/AdminContext";
 import { Twitter, Facebook, Linkedin, Youtube, Send, TrendingUp, ArrowUpRight } from "lucide-react";
 
@@ -22,11 +22,11 @@ export function Footer() {
         <div className="grid grid-cols-1 md:grid-cols-12 gap-10">
           {/* Brand - Takes more space */}
           <div className="md:col-span-4">
-            <Link to="/" className="flex items-center gap-3 font-display font-bold text-foreground mb-4 group">
+            <Link href="/" className="flex items-center gap-3 font-display font-bold text-foreground mb-4 group">
               {settings.site.branding.logoUrl ? (
-                <img 
-                  src={settings.site.branding.logoUrl} 
-                  alt={settings.site.branding.siteName} 
+                <img
+                  src={settings.site.branding.logoUrl}
+                  alt={settings.site.branding.siteName}
                   className="h-8 w-auto"
                 />
               ) : (
@@ -39,55 +39,55 @@ export function Footer() {
             <p className="text-sm text-muted-foreground mb-6 max-w-xs leading-relaxed">
               {settings.site.branding.tagline}
             </p>
-            
+
             {/* Social Links */}
             {hasSocialLinks && (
               <div className="flex items-center gap-1">
                 {socialLinks.twitter && (
-                  <a 
-                    href={socialLinks.twitter} 
-                    target="_blank" 
-                    rel="noopener noreferrer" 
+                  <a
+                    href={socialLinks.twitter}
+                    target="_blank"
+                    rel="noopener noreferrer"
                     className="p-2.5 hover:bg-primary/10 rounded-xl transition-all hover:scale-110"
                   >
                     <Twitter className="h-5 w-5 text-muted-foreground hover:text-primary transition-colors" />
                   </a>
                 )}
                 {socialLinks.facebook && (
-                  <a 
-                    href={socialLinks.facebook} 
-                    target="_blank" 
-                    rel="noopener noreferrer" 
+                  <a
+                    href={socialLinks.facebook}
+                    target="_blank"
+                    rel="noopener noreferrer"
                     className="p-2.5 hover:bg-primary/10 rounded-xl transition-all hover:scale-110"
                   >
                     <Facebook className="h-5 w-5 text-muted-foreground hover:text-primary transition-colors" />
                   </a>
                 )}
                 {socialLinks.linkedin && (
-                  <a 
-                    href={socialLinks.linkedin} 
-                    target="_blank" 
-                    rel="noopener noreferrer" 
+                  <a
+                    href={socialLinks.linkedin}
+                    target="_blank"
+                    rel="noopener noreferrer"
                     className="p-2.5 hover:bg-primary/10 rounded-xl transition-all hover:scale-110"
                   >
                     <Linkedin className="h-5 w-5 text-muted-foreground hover:text-primary transition-colors" />
                   </a>
                 )}
                 {socialLinks.youtube && (
-                  <a 
-                    href={socialLinks.youtube} 
-                    target="_blank" 
-                    rel="noopener noreferrer" 
+                  <a
+                    href={socialLinks.youtube}
+                    target="_blank"
+                    rel="noopener noreferrer"
                     className="p-2.5 hover:bg-primary/10 rounded-xl transition-all hover:scale-110"
                   >
                     <Youtube className="h-5 w-5 text-muted-foreground hover:text-primary transition-colors" />
                   </a>
                 )}
                 {socialLinks.telegram && (
-                  <a 
-                    href={socialLinks.telegram} 
-                    target="_blank" 
-                    rel="noopener noreferrer" 
+                  <a
+                    href={socialLinks.telegram}
+                    target="_blank"
+                    rel="noopener noreferrer"
                     className="p-2.5 hover:bg-primary/10 rounded-xl transition-all hover:scale-110"
                   >
                     <Send className="h-5 w-5 text-muted-foreground hover:text-primary transition-colors" />
@@ -104,8 +104,8 @@ export function Footer() {
               <ul className="space-y-3">
                 {section.links.map((link) => (
                   <li key={link.id}>
-                    <Link 
-                      to={link.url} 
+                    <Link
+                      href={link.url}
                       className="text-sm text-muted-foreground hover:text-primary transition-colors inline-flex items-center gap-1 group"
                     >
                       {link.label}
@@ -123,21 +123,21 @@ export function Footer() {
             <p className="text-xs text-muted-foreground leading-relaxed mb-4">
               {footer.disclaimer}
             </p>
-            
+
             {/* Contact Info */}
             {footer.showContact && (settings.site.contact.email || settings.site.contact.phone) && (
               <div className="space-y-2 text-sm">
                 {settings.site.contact.email && (
-                  <a 
-                    href={`mailto:${settings.site.contact.email}`} 
+                  <a
+                    href={`mailto:${settings.site.contact.email}`}
                     className="block text-muted-foreground hover:text-primary transition-colors"
                   >
                     {settings.site.contact.email}
                   </a>
                 )}
                 {settings.site.contact.phone && (
-                  <a 
-                    href={`tel:${settings.site.contact.phone}`} 
+                  <a
+                    href={`tel:${settings.site.contact.phone}`}
                     className="block text-muted-foreground hover:text-primary transition-colors"
                   >
                     {settings.site.contact.phone}
@@ -150,14 +150,14 @@ export function Footer() {
 
         <div className="mt-10 pt-8 border-t flex flex-col sm:flex-row items-center justify-between gap-4 text-sm text-muted-foreground">
           <p>{copyrightText}</p>
-          
+
           {/* Custom Links */}
           {footer.customLinks.length > 0 && (
             <div className="flex items-center gap-4">
               {footer.customLinks.map(link => (
-                <a 
+                <a
                   key={link.id}
-                  href={link.url} 
+                  href={link.url}
                   target={link.url.startsWith("http") ? "_blank" : undefined}
                   rel={link.url.startsWith("http") ? "noopener noreferrer" : undefined}
                   className="text-xs hover:text-foreground transition-colors"
@@ -167,7 +167,7 @@ export function Footer() {
               ))}
             </div>
           )}
-          
+
           <p className="text-xs">
             Made with precision for Indian investors
           </p>

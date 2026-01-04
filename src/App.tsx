@@ -24,6 +24,7 @@ import CompareIPOPage from "./pages/tools/CompareIPOPage";
 import ReturnsCalculatorPage from "./pages/tools/ReturnsCalculatorPage";
 import AdminLoginPage from "./pages/admin/AdminLoginPage";
 import AdminDashboardPage from "./pages/admin/AdminDashboardPage";
+import SitemapPage from "./pages/SitemapPage";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient({
@@ -63,6 +64,7 @@ const App = () => (
                   <Route path="/tools/returns-calculator" element={<ReturnsCalculatorPage />} />
                   <Route path="/admin/login" element={<AdminLoginPage />} />
                   <Route path="/admin" element={<AdminDashboardPage />} />
+                  <Route path="/sitemap.xml" element={<SitemapPage />} />
                   <Route path="*" element={<NotFound />} />
                 </Routes>
               </AnalyticsProvider>

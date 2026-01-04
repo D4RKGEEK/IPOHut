@@ -41,12 +41,13 @@ export function useIPONews(params?: Parameters<typeof fetchNews>[0], options?: P
   });
 }
 
-export function useIPOCalendar(params?: Parameters<typeof fetchCalendar>[0]) {
+export function useIPOCalendar(params?: Parameters<typeof fetchCalendar>[0], options?: Partial<UseQueryOptions<APIResponse<IPOCalendar[]>>>) {
   return useQuery({
     queryKey: ["ipo-calendar", params],
     queryFn: () => fetchCalendar(params),
     staleTime: STALE_TIME,
     refetchInterval: STALE_TIME,
+    ...options
   });
 }
 

@@ -22,12 +22,12 @@ export async function generateIPOPDF(ipo: IPODetail, status: string): Promise<vo
   // Header with branding
   pdf.setFillColor(...primaryColor);
   pdf.rect(0, 0, pageWidth, 25, "F");
-  
+
   pdf.setTextColor(255, 255, 255);
   pdf.setFontSize(18);
   pdf.setFont("helvetica", "bold");
   pdf.text("IPO Research Report", margin, 16);
-  
+
   pdf.setFontSize(9);
   pdf.setFont("helvetica", "normal");
   pdf.text(`Generated on ${new Date().toLocaleDateString("en-IN")}`, pageWidth - margin, 16, { align: "right" });
@@ -39,7 +39,7 @@ export async function generateIPOPDF(ipo: IPODetail, status: string): Promise<vo
   pdf.setFontSize(20);
   pdf.setFont("helvetica", "bold");
   pdf.text(basicInfo["IPO Name"], margin, y);
-  
+
   // Status badge
   const statusColors: Record<string, [number, number, number]> = {
     open: [16, 185, 129],
@@ -107,8 +107,9 @@ export async function generateIPOPDF(ipo: IPODetail, status: string): Promise<vo
     pdf.setTextColor(...textColor);
     pdf.setFontSize(10);
     pdf.setFont("helvetica", "bold");
-    const valueText = stat[1].length > 15 ? stat[1].substring(0, 15) + "..." : stat[1];
-    pdf.text(valueText, x + 4, yPos + 13);
+    const valueText = String(stat[1] || "—");
+    const displayText = valueText.length > 15 ? valueText.substring(0, 15) + "..." : valueText;
+    pdf.text(displayText, x + 4, yPos + 13);
   });
 
   y += Math.ceil(stats.length / 4) * rowHeight + 10;
@@ -150,6 +151,80 @@ export async function generateIPOPDF(ipo: IPODetail, status: string): Promise<vo
     y += 35;
   }
 
+  // Check if we need a new page
+  if (y > pageWidth - 40) {
+    pdf.addPage();
+    y = margin;
+  }
+
+  // Lot Size Table (if available)
+  const lotSizeTable = ipo.lot_size_table;
+  if (lotSizeTable && lotSizeTable.length > 0) {
+    pdf.setTextColor(...textColor);
+    pdf.setFontSize(12);
+    pdf.setFont("helvetica", "bold");
+    pdf.text("LOT SIZE & APPLICATION", margin, y);
+    y += 10;
+
+    // Table header
+    pdf.setFillColor(...primaryColor);
+    pdf.roundedRect(margin, y, contentWidth, 8, 2, 2, "F");
+    pdf.setTextColor(255, 255, 255);
+    pdf.setFontSize(8);
+    pdf.setFont("helvetica", "bold");
+    const headers = lotSizeTable[0] || [];
+    if (headers.length > 0) {
+      const colW = contentWidth / 4;
+      headers.slice(0, 4).forEach((header, idx) => {
+        pdf.text(String(header), margin + 4 + idx * colW, y + 5.5);
+      });
+    }
+
+    y += 10;
+    pdf.setFont("helvetica", "normal");
+
+    lotSizeTable.slice(1, 5).forEach((row) => {
+      pdf.setTextColor(...textColor);
+      pdf.setFontSize(9);
+      const colW = contentWidth / 4;
+      row.slice(0, 4).forEach((cell, idx) => {
+        pdf.text(String(cell), margin + 4 + idx * colW, y + 4);
+      });
+      y += 8;
+    });
+
+    y += 5;
+  }
+
+  // New page check
+  if (y > pageWidth - 40) {
+    pdf.addPage();
+    y = margin;
+  }
+
+  // About Company (if available)
+  const about = ipo.about_company?.about_company;
+  if (about) {
+    pdf.setTextColor(...textColor);
+    pdf.setFontSize(12);
+    pdf.setFont("helvetica", "bold");
+    pdf.text("ABOUT COMPANY", margin, y);
+    y += 8;
+
+    pdf.setFontSize(9);
+    pdf.setFont("helvetica", "normal");
+    pdf.setTextColor(...textColor);
+
+    // Wrap text
+    const lines = pdf.splitTextToSize(about.substring(0, 500), contentWidth);
+    lines.slice(0, 8).forEach((line: string) => {
+      pdf.text(line, margin, y);
+      y += 5;
+    });
+
+    y += 5;
+  }
+
   // IPO Timeline Section
   pdf.setTextColor(...textColor);
   pdf.setFontSize(12);
@@ -175,11 +250,11 @@ export async function generateIPOPDF(ipo: IPODetail, status: string): Promise<vo
     pdf.setTextColor(...mutedColor);
     pdf.setFontSize(8);
     pdf.text(item[0] + ":", x, yPos);
-    
+
     pdf.setTextColor(...textColor);
     pdf.setFontSize(9);
     pdf.setFont("helvetica", "bold");
-    pdf.text(item[1], x + 35, yPos);
+    pdf.text(String(item[1] || "TBA"), x + 35, yPos);
     pdf.setFont("helvetica", "normal");
   });
 
@@ -203,23 +278,23 @@ export async function generateIPOPDF(ipo: IPODetail, status: string): Promise<vo
     pdf.text("Category", margin + 4, y + 5.5);
     pdf.text("Subscription", margin + 80, y + 5.5);
     pdf.text("Shares Offered", margin + 120, y + 5.5);
-    
+
     y += 10;
     pdf.setFont("helvetica", "normal");
 
     subscription.forEach((row) => {
-      const subTimes = typeof row.subscription_times === "number" 
-        ? row.subscription_times 
+      const subTimes = typeof row.subscription_times === "number"
+        ? row.subscription_times
         : parseFloat(String(row["Subscription (times)"] || "0").replace(/[^\d.]/g, ""));
-      
+
       pdf.setTextColor(...textColor);
       pdf.setFontSize(9);
-      pdf.text(row.category, margin + 4, y + 4);
-      
+      pdf.text(String(row.category || ""), margin + 4, y + 4);
+
       pdf.setTextColor(...primaryColor);
       pdf.setFont("helvetica", "bold");
       pdf.text(`${subTimes.toFixed(2)}x`, margin + 80, y + 4);
-      
+
       pdf.setTextColor(...textColor);
       pdf.setFont("helvetica", "normal");
       const sharesOffered = row.shares_offered ?? row["Shares Offered"] ?? "—";
@@ -275,14 +350,100 @@ export async function generateIPOPDF(ipo: IPODetail, status: string): Promise<vo
     y += 15;
   }
 
+  // Check if we need a new page
+  if (y > pdf.internal.pageSize.getHeight() - 60) {
+    pdf.addPage();
+    y = margin;
+  }
+
+  // Financials Section (if available)
+  const financials = ipo.financials;
+  if (financials && Object.keys(financials).length > 0) {
+    pdf.setTextColor(...textColor);
+    pdf.setFontSize(12);
+    pdf.setFont("helvetica", "bold");
+    pdf.text("FINANCIAL HIGHLIGHTS", margin, y);
+    y += 10;
+
+    // Display key financial metrics
+    const financialMetrics: [string, any][] = [];
+
+    if (financials["Total Income"]) {
+      const latestYear = Object.keys(financials["Total Income"])[0];
+      if (latestYear) {
+        financialMetrics.push(["Total Income", financials["Total Income"][latestYear]]);
+      }
+    }
+    if (financials["Profit After Tax"]) {
+      const latestYear = Object.keys(financials["Profit After Tax"])[0];
+      if (latestYear) {
+        financialMetrics.push(["Profit After Tax", financials["Profit After Tax"][latestYear]]);
+      }
+    }
+    if (financials["NET Worth"]) {
+      const latestYear = Object.keys(financials["NET Worth"])[0];
+      if (latestYear) {
+        financialMetrics.push(["Net Worth", financials["NET Worth"][latestYear]]);
+      }
+    }
+
+    financialMetrics.forEach((metric, idx) => {
+      const x = margin + (idx % 2) * (contentWidth / 2);
+      const yPos = y + Math.floor(idx / 2) * 14;
+
+      pdf.setFillColor(248, 250, 252);
+      pdf.roundedRect(x, yPos, contentWidth / 2 - 3, 12, 2, 2, "F");
+
+      pdf.setTextColor(...mutedColor);
+      pdf.setFontSize(8);
+      pdf.text(metric[0], x + 4, yPos + 5);
+
+      pdf.setTextColor(...textColor);
+      pdf.setFontSize(9);
+      pdf.setFont("helvetica", "bold");
+      pdf.text(String(metric[1] || "—"), x + 4, yPos + 10);
+      pdf.setFont("helvetica", "normal");
+    });
+
+    y += Math.ceil(financialMetrics.length / 2) * 14 + 10;
+  }
+
+  // PE Metrics (if available)
+  const peMetrics = ipo.pe_metrics?.KPI;
+  if (peMetrics && Object.keys(peMetrics).length > 0) {
+    pdf.setTextColor(...textColor);
+    pdf.setFontSize(12);
+    pdf.setFont("helvetica", "bold");
+    pdf.text("KEY PERFORMANCE INDICATORS", margin, y);
+    y += 10;
+
+    const kpiMetrics = Object.entries(peMetrics).slice(0, 4);
+    kpiMetrics.forEach((metric, idx) => {
+      const x = margin + (idx % 2) * (contentWidth / 2);
+      const yPos = y + Math.floor(idx / 2) * 12;
+
+      pdf.setTextColor(...mutedColor);
+      pdf.setFontSize(8);
+      pdf.text(metric[0], x, yPos);
+
+      pdf.setTextColor(...textColor);
+      pdf.setFontSize(9);
+      pdf.setFont("helvetica", "bold");
+      pdf.text(String(metric[1] || "—"), x + 50, yPos);
+      pdf.setFont("helvetica", "normal");
+    });
+
+    y += Math.ceil(kpiMetrics.length / 2) * 12 + 10;
+  }
+
   // Footer
   const footerY = pdf.internal.pageSize.getHeight() - 15;
   pdf.setDrawColor(226, 232, 240);
   pdf.line(margin, footerY - 5, pageWidth - margin, footerY - 5);
-  
+
   pdf.setTextColor(...mutedColor);
   pdf.setFontSize(8);
-  pdf.text("IPO Watch • Comprehensive IPO Research & Analysis", margin, footerY);
+  pdf.text("IPOHut • Your Trusted IPO Information Platform", margin, footerY);
   pdf.text("Disclaimer: This report is for informational purposes only.", pageWidth - margin, footerY, { align: "right" });
 
   // Save PDF

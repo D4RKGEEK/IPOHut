@@ -14,7 +14,11 @@ import { Badge } from "@/components/ui/badge";
 import { Calculator, TrendingUp, Users, IndianRupee, PiggyBank, ArrowLeft, ExternalLink } from "lucide-react";
 import { analytics, useScrollTracking, useTimeOnPage } from "@/hooks/useAnalytics";
 
-export default function InvestmentCalculatorPage() {
+interface InvestmentCalculatorPageProps {
+  initialIPOList?: SelectedIPO[];
+}
+
+export default function InvestmentCalculatorPage({ initialIPOList }: InvestmentCalculatorPageProps) {
   const [selectedIPO, setSelectedIPO] = useState<SelectedIPO | null>(null);
   const [issuePrice, setIssuePrice] = useState<number>(100);
   const [lotSize, setLotSize] = useState<number>(100);
@@ -93,6 +97,7 @@ export default function InvestmentCalculatorPage() {
                 value={selectedIPO}
                 onSelect={setSelectedIPO}
                 className="w-full sm:w-[280px]"
+                initialData={initialIPOList}
               />
             </div>
             {selectedIPO && (

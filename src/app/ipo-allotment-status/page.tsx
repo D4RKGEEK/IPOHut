@@ -5,6 +5,14 @@ import { fetchStatus } from "@/lib/api";
 export const revalidate = 10800;
 
 export default async function AllotmentStatus() {
-    const data = await fetchStatus({ status: "closed", limit: 50 });
+    let data;
+    try {
+        data = await fetchStatus({ status: "closed", limit: 50 });
+    } catch (error) {
+        console.error("Failed to fetch allotment status:", error);
+        // Return empty data/error state structure depending on what the view expects
+        // Assuming APIResponse<IPOStatus[]> structure
+        data = { data: [], status: "error", message: "Failed to fetch data" } as any;
+    }
     return <AllotmentStatusPage initialData={data} />;
 }

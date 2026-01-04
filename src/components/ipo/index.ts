@@ -10,6 +10,7 @@ export { SubscriptionTable } from "./SubscriptionTable";
 export { CompanyFinancials } from "./CompanyFinancials";
 export { AboutCompany } from "./AboutCompany";
 export { PDFDownloadButton } from "./PDFDownloadButton";
+export { MarketChart } from "./MarketChart";
 export { MarketCandlesChart } from "./MarketCandlesChart";
 export { IPOFAQSection } from "./IPOFAQSection";
 export { WidgetRenderer, WidgetList } from "./WidgetRenderer";

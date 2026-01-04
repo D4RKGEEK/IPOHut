@@ -98,7 +98,9 @@ export default function AllotmentStatusPage({ initialData }: AllotmentStatusPage
                       <div className="flex justify-between">
                         <span className="text-muted-foreground">Subscription</span>
                         <span className="font-tabular text-primary">
-                          {ipo.subscription_times.toFixed(2)}x
+                          {typeof ipo.subscription_times === 'number'
+                            ? ipo.subscription_times.toFixed(2)
+                            : ipo.subscription_times}x
                         </span>
                       </div>
                     )}

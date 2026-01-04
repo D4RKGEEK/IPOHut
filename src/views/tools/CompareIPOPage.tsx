@@ -17,7 +17,11 @@ interface CompareIPO {
   selected: SelectedIPO | null;
 }
 
-export default function CompareIPOPage() {
+interface CompareIPOPageProps {
+  initialIPOList?: SelectedIPO[];
+}
+
+export default function CompareIPOPage({ initialIPOList }: CompareIPOPageProps) {
   const [ipos, setIpos] = useState<CompareIPO[]>([
     { id: crypto.randomUUID(), selected: null },
     { id: crypto.randomUUID(), selected: null },
@@ -133,6 +137,7 @@ export default function CompareIPOPage() {
                       onSelect={(ipo) => selectIPO(item.id, ipo, index + 1)}
                       className="w-full"
                       placeholder="Select IPO..."
+                      initialData={initialIPOList}
                     />
                   </div>
 

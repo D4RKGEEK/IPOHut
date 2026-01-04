@@ -38,13 +38,18 @@ interface IPOSelectorProps {
   onSelect: (ipo: SelectedIPO | null) => void;
   placeholder?: string;
   className?: string;
+  initialData?: SelectedIPO[]; // Pre-fetched data for SSG
 }
 
-export function IPOSelector({ value, onSelect, placeholder = "Select IPO...", className }: IPOSelectorProps) {
+export function IPOSelector({ value, onSelect, placeholder = "Select IPO...", className, initialData }: IPOSelectorProps) {
   const [open, setOpen] = useState(false);
-  const { data, isLoading } = useIPOCalendar({ limit: 100 });
+  const { data, isLoading } = useIPOCalendar({ limit: 100 }, { enabled: !initialData });
 
   const ipos = useMemo(() => {
+    // Use initialData if provided (SSG mode)
+    if (initialData) return initialData;
+
+    // Otherwise use fetched data (CSR mode)
     if (!data?.data) return [];
     return data.data.map((ipo) => {
       // Handle gmp - it can be a number or an object with gmp_value
@@ -54,7 +59,7 @@ export function IPOSelector({ value, onSelect, placeholder = "Select IPO...", cl
       } else if (ipo.gmp && typeof ipo.gmp === 'object' && 'gmp_value' in ipo.gmp) {
         gmpValue = (ipo.gmp as { gmp_value: number }).gmp_value;
       }
-      
+
       return {
         slug: ipo.slug,
         name: ipo.name,
@@ -71,7 +76,7 @@ export function IPOSelector({ value, onSelect, placeholder = "Select IPO...", cl
         issueSize: ipo.issue_size,
       };
     });
-  }, [data]);
+  }, [initialData, data]);
 
   return (
     <Popover open={open} onOpenChange={setOpen}>
@@ -87,7 +92,7 @@ export function IPOSelector({ value, onSelect, placeholder = "Select IPO...", cl
           ) : (
             <span className="text-muted-foreground">{placeholder}</span>
           )}
-          {isLoading ? (
+          {!initialData && isLoading ? (
             <Loader2 className="ml-2 h-4 w-4 shrink-0 animate-spin opacity-50" />
           ) : (
             <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />

@@ -13,7 +13,17 @@ export async function POST(request: NextRequest) {
     }
 
     try {
-        const { path, type } = await request.json();
+        const { path, type, revalidateAll } = await request.json();
+
+        // Revalidate everything by revalidating root layout
+        if (revalidateAll) {
+            revalidatePath("/", "layout");
+            return NextResponse.json({
+                revalidated: true,
+                message: "Revalidated entire site",
+                now: Date.now()
+            });
+        }
 
         if (path) {
             if (type === 'page' || type === 'layout') {
@@ -24,7 +34,7 @@ export async function POST(request: NextRequest) {
             return NextResponse.json({ revalidated: true, path, now: Date.now() });
         }
 
-        return NextResponse.json({ message: "Missing path param" }, { status: 400 });
+        return NextResponse.json({ message: "Missing path or revalidateAll param" }, { status: 400 });
     } catch (err) {
         return NextResponse.json({ message: "Error revalidating" }, { status: 500 });
     }

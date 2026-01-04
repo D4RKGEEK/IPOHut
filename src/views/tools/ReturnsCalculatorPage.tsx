@@ -14,7 +14,11 @@ import { Badge } from "@/components/ui/badge";
 import { TrendingUp, TrendingDown, Target, BarChart3, PieChart, ArrowLeft, ExternalLink } from "lucide-react";
 import { analytics, useScrollTracking, useTimeOnPage } from "@/hooks/useAnalytics";
 
-export default function ReturnsCalculatorPage() {
+interface ReturnsCalculatorPageProps {
+  initialIPOList?: SelectedIPO[];
+}
+
+export default function ReturnsCalculatorPage({ initialIPOList }: ReturnsCalculatorPageProps) {
   const [selectedIPO, setSelectedIPO] = useState<SelectedIPO | null>(null);
 
   // Track page
@@ -112,6 +116,7 @@ export default function ReturnsCalculatorPage() {
                 value={selectedIPO}
                 onSelect={setSelectedIPO}
                 className="w-full sm:w-[280px]"
+                initialData={initialIPOList}
               />
             </div>
             {selectedIPO && (

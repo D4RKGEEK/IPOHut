@@ -218,7 +218,14 @@ export default function IPODetailPage() {
                 {basicInfo["Listing At"]} • {basicInfo["Issue Type"] || "Book Built"}
               </p>
             </div>
-            <div className="flex items-center gap-2 shrink-0">
+            <div className="flex items-center gap-2 shrink-0 flex-wrap sm:flex-nowrap">
+              <Link to={`/ipo/${slug}/allotment`}>
+                <Button variant="default" size="sm" className="gap-1.5">
+                  <FileCheck className="h-4 w-4" />
+                  <span className="hidden sm:inline">Check Allotment</span>
+                  <span className="sm:hidden">Allotment</span>
+                </Button>
+              </Link>
               <ShareButtons 
                 title={basicInfo["IPO Name"]} 
                 description={`${basicInfo["IPO Name"]} - Issue Price: ${basicInfo["Issue Price"]}, Listing: ${timeline["Tentative Listing Date"]}`}

@@ -20,10 +20,35 @@ export interface FooterLink {
   url: string;
 }
 
+export interface FooterSection {
+  id: string;
+  title: string;
+  links: FooterLink[];
+  visible: boolean;
+}
+
 export interface FooterSettings {
   copyrightText: string;
   disclaimer: string;
   customLinks: FooterLink[];
+  sections: FooterSection[];
+  showSocialLinks: boolean;
+  showContact: boolean;
+}
+
+export interface MenuItem {
+  id: string;
+  label: string;
+  url: string;
+  icon?: string;
+  visible: boolean;
+  children?: MenuItem[];
+}
+
+export interface NavigationSettings {
+  menuItems: MenuItem[];
+  showLogo: boolean;
+  showSiteName: boolean;
 }
 
 export interface HomePageConfig {
@@ -34,6 +59,71 @@ export interface HomePageConfig {
   showGainersLosers: boolean;
   announcementBanner: string;
   announcementEnabled: boolean;
+}
+
+export interface IPODetailPageConfig {
+  // Header
+  showLogo: boolean;
+  showBadges: boolean;
+  showShareButton: boolean;
+  showPDFDownload: boolean;
+  
+  // Sections before tabs
+  showVitalStats: boolean;
+  showGMPWidget: boolean;
+  showMarketChart: boolean;
+  showTimeline: boolean;
+  
+  // Tabs visibility
+  tabs: {
+    overview: boolean;
+    subscription: boolean;
+    details: boolean;
+    financials: boolean;
+    about: boolean;
+    contacts: boolean;
+    tools: boolean;
+  };
+  
+  // Overview tab components
+  overview: {
+    showTimeline: boolean;
+    showSubscription: boolean;
+    showKeyMetrics: boolean;
+    showBrokerSentiment: boolean;
+  };
+  
+  // Details tab components
+  details: {
+    showBasicInfo: boolean;
+    showLotSize: boolean;
+    showReservation: boolean;
+    showObjectives: boolean;
+  };
+  
+  // Financials tab components
+  financials: {
+    showFinancials: boolean;
+    showKeyMetrics: boolean;
+    showPromoterHolding: boolean;
+  };
+  
+  // Tools tab components
+  tools: {
+    showGMPCalculator: boolean;
+    showBrokerSentiment: boolean;
+  };
+}
+
+export interface PageVisibility {
+  home: boolean;
+  mainboard: boolean;
+  sme: boolean;
+  gmpTracker: boolean;
+  allotmentStatus: boolean;
+  calendar: boolean;
+  performance: boolean;
+  tools: boolean;
 }
 
 export interface AnalyticsSettings {
@@ -81,11 +171,14 @@ export interface SiteSettings {
   socialLinks: SocialLinks;
   contact: ContactInfo;
   footer: FooterSettings;
+  navigation: NavigationSettings;
   analytics: AnalyticsSettings;
   theme: ThemeSettings;
   labels: ContentLabels;
   apiConfig: ApiConfig;
   homePageConfig: HomePageConfig;
+  ipoDetailConfig: IPODetailPageConfig;
+  pageVisibility: PageVisibility;
 }
 
 export interface PageSeoSettings {
@@ -150,6 +243,44 @@ export const defaultAdminSettings: AdminSettings = {
       copyrightText: "© {year} {siteName}. All rights reserved.",
       disclaimer: "The information provided is for educational purposes only. Please consult with a SEBI registered investment advisor before making any investment decisions.",
       customLinks: [],
+      sections: [
+        {
+          id: "ipo-types",
+          title: "IPO Types",
+          visible: true,
+          links: [
+            { id: "1", label: "Mainboard IPO", url: "/mainboard-ipo" },
+            { id: "2", label: "SME IPO", url: "/sme-ipo" },
+          ],
+        },
+        {
+          id: "tools-resources",
+          title: "Tools & Resources",
+          visible: true,
+          links: [
+            { id: "3", label: "GMP Tracker", url: "/ipo-gmp-today" },
+            { id: "4", label: "Allotment Status", url: "/ipo-allotment-status" },
+            { id: "5", label: "IPO Calendar", url: "/ipo-calendar" },
+            { id: "6", label: "Performance Tracker", url: "/ipo-listing-performance" },
+            { id: "7", label: "IPO Calculators", url: "/tools" },
+          ],
+        },
+      ],
+      showSocialLinks: true,
+      showContact: false,
+    },
+    navigation: {
+      showLogo: true,
+      showSiteName: true,
+      menuItems: [
+        { id: "1", label: "Mainboard", url: "/mainboard-ipo", icon: "TrendingUp", visible: true },
+        { id: "2", label: "SME", url: "/sme-ipo", icon: "BarChart3", visible: true },
+        { id: "3", label: "GMP Today", url: "/ipo-gmp-today", icon: "Sparkles", visible: true },
+        { id: "4", label: "Allotment", url: "/ipo-allotment-status", icon: "CheckCircle", visible: true },
+        { id: "5", label: "Calendar", url: "/ipo-calendar", icon: "Calendar", visible: true },
+        { id: "6", label: "Performance", url: "/ipo-listing-performance", icon: "BarChart3", visible: true },
+        { id: "7", label: "Tools", url: "/tools", icon: "Calculator", visible: true },
+      ],
     },
     analytics: {
       googleAnalyticsId: "",
@@ -180,6 +311,56 @@ export const defaultAdminSettings: AdminSettings = {
       showGainersLosers: true,
       announcementBanner: "",
       announcementEnabled: false,
+    },
+    ipoDetailConfig: {
+      showLogo: true,
+      showBadges: true,
+      showShareButton: true,
+      showPDFDownload: true,
+      showVitalStats: true,
+      showGMPWidget: true,
+      showMarketChart: true,
+      showTimeline: true,
+      tabs: {
+        overview: true,
+        subscription: true,
+        details: true,
+        financials: true,
+        about: true,
+        contacts: true,
+        tools: true,
+      },
+      overview: {
+        showTimeline: true,
+        showSubscription: true,
+        showKeyMetrics: true,
+        showBrokerSentiment: true,
+      },
+      details: {
+        showBasicInfo: true,
+        showLotSize: true,
+        showReservation: true,
+        showObjectives: true,
+      },
+      financials: {
+        showFinancials: true,
+        showKeyMetrics: true,
+        showPromoterHolding: true,
+      },
+      tools: {
+        showGMPCalculator: true,
+        showBrokerSentiment: true,
+      },
+    },
+    pageVisibility: {
+      home: true,
+      mainboard: true,
+      sme: true,
+      gmpTracker: true,
+      allotmentStatus: true,
+      calendar: true,
+      performance: true,
+      tools: true,
     },
   },
   pages: {

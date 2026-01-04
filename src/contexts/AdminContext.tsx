@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState, useEffect, useCallback } from "react";
+import React, { createContext, useContext, useState, useEffect, useCallback, useMemo } from "react";
 import { AdminSettings, defaultAdminSettings } from "@/types/admin";
 
 const STORAGE_KEY = "ipo-admin-settings";
@@ -14,6 +14,12 @@ interface AdminContextType {
   logout: () => void;
   exportSettings: () => string;
   importSettings: (json: string) => boolean;
+  // New dirty state tracking
+  isDirty: boolean;
+  saveSettings: () => void;
+  discardChanges: () => void;
+  resetToDefaults: () => void;
+  lastSavedAt: string | null;
 }
 
 const AdminContext = createContext<AdminContextType | undefined>(undefined);
@@ -22,19 +28,41 @@ const AdminContext = createContext<AdminContextType | undefined>(undefined);
 const ADMIN_USERNAME = "admin";
 const ADMIN_PASSWORD = "admin";
 
+function deepMerge<T extends Record<string, any>>(target: T, source: Partial<T>): T {
+  const result = { ...target };
+  for (const key in source) {
+    if (source[key] !== undefined) {
+      if (typeof source[key] === 'object' && source[key] !== null && !Array.isArray(source[key])) {
+        result[key] = deepMerge(result[key] as any, source[key] as any);
+      } else {
+        result[key] = source[key] as any;
+      }
+    }
+  }
+  return result;
+}
+
 export function AdminProvider({ children }: { children: React.ReactNode }) {
-  const [settings, setSettings] = useState<AdminSettings>(() => {
+  // Load saved settings from localStorage
+  const loadSavedSettings = useCallback((): AdminSettings => {
     if (typeof window === "undefined") return defaultAdminSettings;
     
     const stored = localStorage.getItem(STORAGE_KEY);
     if (stored) {
       try {
-        return { ...defaultAdminSettings, ...JSON.parse(stored) };
+        return deepMerge(defaultAdminSettings, JSON.parse(stored));
       } catch {
         return defaultAdminSettings;
       }
     }
     return defaultAdminSettings;
+  }, []);
+
+  const [savedSettings, setSavedSettings] = useState<AdminSettings>(loadSavedSettings);
+  const [settings, setSettings] = useState<AdminSettings>(loadSavedSettings);
+  const [lastSavedAt, setLastSavedAt] = useState<string | null>(() => {
+    if (typeof window === "undefined") return null;
+    return localStorage.getItem(STORAGE_KEY) ? settings.updatedAt : null;
   });
 
   const [isAuthenticated, setIsAuthenticated] = useState<boolean>(() => {
@@ -42,30 +70,45 @@ export function AdminProvider({ children }: { children: React.ReactNode }) {
     return localStorage.getItem(AUTH_KEY) === "true";
   });
 
-  // Save settings to localStorage whenever they change
-  useEffect(() => {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(settings));
+  // Check if there are unsaved changes
+  const isDirty = useMemo(() => {
+    return JSON.stringify(settings) !== JSON.stringify(savedSettings);
+  }, [settings, savedSettings]);
+
+  // Explicit save function
+  const saveSettings = useCallback(() => {
+    const updatedSettings = { ...settings, updatedAt: new Date().toISOString() };
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(updatedSettings));
+    setSettings(updatedSettings);
+    setSavedSettings(updatedSettings);
+    setLastSavedAt(updatedSettings.updatedAt);
   }, [settings]);
+
+  // Discard unsaved changes
+  const discardChanges = useCallback(() => {
+    setSettings(savedSettings);
+  }, [savedSettings]);
+
+  // Reset to defaults
+  const resetToDefaults = useCallback(() => {
+    const resetSettings = { ...defaultAdminSettings, updatedAt: new Date().toISOString() };
+    setSettings(resetSettings);
+    setSavedSettings(resetSettings);
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(resetSettings));
+    setLastSavedAt(resetSettings.updatedAt);
+  }, []);
 
   const updateSettings = useCallback((newSettings: Partial<AdminSettings>) => {
     setSettings(prev => ({
       ...prev,
       ...newSettings,
-      updatedAt: new Date().toISOString(),
     }));
   }, []);
 
   const updateSiteSettings = useCallback((site: Partial<AdminSettings["site"]>) => {
     setSettings(prev => ({
       ...prev,
-      site: {
-        ...prev.site,
-        ...site,
-        branding: { ...prev.site.branding, ...site.branding },
-        scripts: { ...prev.site.scripts, ...site.scripts },
-        defaultSeo: { ...prev.site.defaultSeo, ...site.defaultSeo },
-      },
-      updatedAt: new Date().toISOString(),
+      site: deepMerge(prev.site, site),
     }));
   }, []);
 
@@ -82,7 +125,6 @@ export function AdminProvider({ children }: { children: React.ReactNode }) {
           ...pageSettings,
         },
       },
-      updatedAt: new Date().toISOString(),
     }));
   }, []);
 
@@ -107,7 +149,12 @@ export function AdminProvider({ children }: { children: React.ReactNode }) {
   const importSettings = useCallback((json: string): boolean => {
     try {
       const imported = JSON.parse(json);
-      setSettings({ ...defaultAdminSettings, ...imported, updatedAt: new Date().toISOString() });
+      const merged = deepMerge(defaultAdminSettings, imported);
+      merged.updatedAt = new Date().toISOString();
+      setSettings(merged);
+      setSavedSettings(merged);
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(merged));
+      setLastSavedAt(merged.updatedAt);
       return true;
     } catch {
       return false;
@@ -126,6 +173,11 @@ export function AdminProvider({ children }: { children: React.ReactNode }) {
         logout,
         exportSettings,
         importSettings,
+        isDirty,
+        saveSettings,
+        discardChanges,
+        resetToDefaults,
+        lastSavedAt,
       }}
     >
       {children}

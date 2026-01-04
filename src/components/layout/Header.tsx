@@ -24,35 +24,35 @@ export function Header() {
   const isActive = (href: string) => location.pathname === href;
 
   return (
-    <header className="sticky top-0 z-50 glass-strong">
-      <div className="container flex h-16 items-center justify-between">
+    <header className="sticky top-0 z-50 bg-background/95 backdrop-blur-sm border-b">
+      <div className="container flex h-14 items-center justify-between">
         {/* Logo */}
-        <Link to="/" className="flex items-center gap-3 font-display font-bold text-foreground group">
+        <Link to="/" className="flex items-center gap-2 text-foreground">
           {settings.site.branding.logoUrl ? (
             <img 
               src={settings.site.branding.logoUrl} 
               alt={settings.site.branding.siteName} 
-              className="h-9 w-auto"
+              className="h-7 w-auto"
             />
           ) : (
-            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-primary text-primary-foreground text-sm font-bold shadow-soft group-hover:shadow-medium transition-shadow">
-              <TrendingUp className="h-5 w-5" />
+            <div className="flex h-8 w-8 items-center justify-center rounded-md bg-primary text-primary-foreground">
+              <TrendingUp className="h-4 w-4" />
             </div>
           )}
-          <span className="hidden sm:inline-block text-lg">{settings.site.branding.siteName}</span>
+          <span className="hidden sm:inline-block text-sm font-medium">{settings.site.branding.siteName}</span>
         </Link>
 
         {/* Desktop Navigation */}
-        <nav className="hidden lg:flex items-center gap-1">
+        <nav className="hidden lg:flex items-center gap-0.5">
           {navItems.map((item) => (
             <Link
               key={item.href}
               to={item.href}
               className={cn(
-                "px-4 py-2 text-sm font-medium rounded-lg transition-all duration-200",
+                "px-3 py-1.5 text-sm rounded-md transition-colors",
                 isActive(item.href)
-                  ? "bg-primary/10 text-primary"
-                  : "text-muted-foreground hover:text-foreground hover:bg-muted/60"
+                  ? "bg-muted text-foreground"
+                  : "text-muted-foreground hover:text-foreground hover:bg-muted/50"
               )}
             >
               {item.label}
@@ -61,15 +61,15 @@ export function Header() {
         </nav>
 
         {/* Actions */}
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-1">
           <ThemeToggle />
           <Button
             variant="ghost"
             size="icon"
-            className="lg:hidden"
+            className="lg:hidden h-9 w-9"
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
           >
-            {mobileMenuOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
+            {mobileMenuOpen ? <X className="h-4 w-4" /> : <Menu className="h-4 w-4" />}
           </Button>
         </div>
       </div>
@@ -77,25 +77,24 @@ export function Header() {
       {/* Mobile Navigation */}
       <div
         className={cn(
-          "lg:hidden border-t bg-card overflow-hidden transition-all duration-300 ease-out",
-          mobileMenuOpen ? "max-h-[400px] opacity-100" : "max-h-0 opacity-0"
+          "lg:hidden border-t bg-background overflow-hidden transition-all duration-200",
+          mobileMenuOpen ? "max-h-[400px]" : "max-h-0"
         )}
       >
-        <nav className="container py-4 space-y-1">
-          {navItems.map((item, idx) => (
+        <nav className="container py-2 space-y-0.5">
+          {navItems.map((item) => (
             <Link
               key={item.href}
               to={item.href}
               onClick={() => setMobileMenuOpen(false)}
               className={cn(
-                "flex items-center gap-3 px-4 py-3 text-sm font-medium rounded-xl transition-all duration-200",
+                "flex items-center gap-2 px-3 py-2.5 text-sm rounded-md transition-colors",
                 isActive(item.href)
-                  ? "bg-primary/10 text-primary"
-                  : "text-muted-foreground hover:text-foreground hover:bg-muted/60"
+                  ? "bg-muted text-foreground"
+                  : "text-muted-foreground hover:text-foreground hover:bg-muted/50"
               )}
-              style={{ animationDelay: `${idx * 50}ms` }}
             >
-              <item.icon className="h-5 w-5" />
+              <item.icon className="h-4 w-4" />
               {item.label}
             </Link>
           ))}

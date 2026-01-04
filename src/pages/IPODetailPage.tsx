@@ -25,7 +25,9 @@ import {
   CompanyFinancials,
   AboutCompany,
   PDFDownloadButton,
+  MarketCandlesChart,
 } from "@/components/ipo";
+import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
 
 export default function IPODetailPage() {
   const { slug } = useParams<{ slug: string }>();
@@ -37,9 +39,9 @@ export default function IPODetailPage() {
   if (isLoading) {
     return (
       <MainLayout>
-        <div className="container py-6 md:py-8 space-y-4">
+        <div className="container px-2 sm:px-4 md:px-6 py-4 md:py-8 space-y-4">
           <Skeleton className="h-10 w-2/3" />
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-2 sm:gap-3">
             {[...Array(8)].map((_, i) => (
               <Skeleton key={i} className="h-20" />
             ))}
@@ -54,7 +56,7 @@ export default function IPODetailPage() {
   if (error || !data?.data) {
     return (
       <MainLayout title="IPO Not Found">
-        <div className="container py-16 text-center">
+        <div className="container px-2 sm:px-4 md:px-6 py-16 text-center">
           <h1 className="text-2xl font-bold mb-4">IPO Not Found</h1>
           <p className="text-muted-foreground mb-6">The IPO you're looking for doesn't exist or has been removed.</p>
           <Link to="/">
@@ -80,6 +82,7 @@ export default function IPODetailPage() {
   const reservationTable = ipo.reservation_table;
   const aboutCompany = ipo.about_company;
   const leadManagers = registrar?.lead_managers;
+  const marketData = ipo.market_data;
 
   // Parse issue price from string
   const issuePrice = parseFloat(basicInfo["Issue Price"]?.replace(/[^\d.]/g, "") || "0");
@@ -184,19 +187,19 @@ export default function IPODetailPage() {
       </Helmet>
 
       <MainLayout>
-        <div className="container py-4 sm:py-6 md:py-8 space-y-4 sm:space-y-6">
+        <div className="container px-2 sm:px-4 md:px-6 py-4 md:py-8 space-y-3 sm:space-y-4 md:space-y-6">
           {/* Header */}
           <header className="flex flex-col sm:flex-row sm:items-start gap-3 sm:gap-4">
             {ipo.logo_about?.logo && (
               <img 
                 src={ipo.logo_about.logo} 
                 alt={basicInfo["IPO Name"]} 
-                className="h-12 w-12 sm:h-16 sm:w-16 rounded-md border object-contain bg-white p-1 shrink-0"
+                className="h-10 w-10 sm:h-16 sm:w-16 rounded-md border object-contain bg-white p-1 shrink-0"
               />
             )}
             <div className="flex-1 min-w-0">
-              <div className="flex flex-wrap items-center gap-2 mb-1 sm:mb-2">
-                <h1 className="text-xl sm:text-2xl md:text-3xl font-bold truncate">{basicInfo["IPO Name"]}</h1>
+              <div className="flex flex-wrap items-center gap-1.5 sm:gap-2 mb-1 sm:mb-2">
+                <h1 className="text-lg sm:text-2xl md:text-3xl font-bold">{basicInfo["IPO Name"]}</h1>
                 <TypeBadge type={ipo.ipo_type} />
                 <StatusBadge status={status} />
               </div>
@@ -215,36 +218,44 @@ export default function IPODetailPage() {
             <IPOGMPWidget gmpData={gmpData} issuePrice={issuePrice} lotSize={lotSize} />
           )}
 
-          {/* Tabs */}
+          {/* Market Data Chart for listed IPOs */}
+          {marketData && status === "listed" && (
+            <MarketCandlesChart marketData={marketData} issuePrice={issuePrice} />
+          )}
+
+          {/* Tabs - Horizontal scrollable on mobile */}
           <Tabs defaultValue="overview" className="w-full">
-            <TabsList className="w-full h-auto flex-wrap justify-start gap-1 bg-transparent p-0 mb-4">
-              <TabsTrigger value="overview" className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground rounded-full px-4 py-2 text-xs sm:text-sm">
-                Overview
-              </TabsTrigger>
-              <TabsTrigger value="subscription" className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground rounded-full px-4 py-2 text-xs sm:text-sm">
-                Subscription
-              </TabsTrigger>
-              <TabsTrigger value="details" className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground rounded-full px-4 py-2 text-xs sm:text-sm">
-                Details
-              </TabsTrigger>
-              <TabsTrigger value="financials" className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground rounded-full px-4 py-2 text-xs sm:text-sm">
-                Financials
-              </TabsTrigger>
-              <TabsTrigger value="about" className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground rounded-full px-4 py-2 text-xs sm:text-sm">
-                About
-              </TabsTrigger>
-              <TabsTrigger value="contacts" className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground rounded-full px-4 py-2 text-xs sm:text-sm">
-                Contacts
-              </TabsTrigger>
-              <TabsTrigger value="tools" className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground rounded-full px-4 py-2 text-xs sm:text-sm">
-                Tools
-              </TabsTrigger>
-            </TabsList>
+            <ScrollArea className="w-full whitespace-nowrap">
+              <TabsList className="inline-flex h-10 items-center gap-1 bg-muted/50 p-1 rounded-lg w-max min-w-full sm:w-auto">
+                <TabsTrigger value="overview" className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground rounded-md px-3 py-1.5 text-xs sm:text-sm whitespace-nowrap">
+                  Overview
+                </TabsTrigger>
+                <TabsTrigger value="subscription" className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground rounded-md px-3 py-1.5 text-xs sm:text-sm whitespace-nowrap">
+                  Subscription
+                </TabsTrigger>
+                <TabsTrigger value="details" className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground rounded-md px-3 py-1.5 text-xs sm:text-sm whitespace-nowrap">
+                  Details
+                </TabsTrigger>
+                <TabsTrigger value="financials" className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground rounded-md px-3 py-1.5 text-xs sm:text-sm whitespace-nowrap">
+                  Financials
+                </TabsTrigger>
+                <TabsTrigger value="about" className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground rounded-md px-3 py-1.5 text-xs sm:text-sm whitespace-nowrap">
+                  About
+                </TabsTrigger>
+                <TabsTrigger value="contacts" className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground rounded-md px-3 py-1.5 text-xs sm:text-sm whitespace-nowrap">
+                  Contacts
+                </TabsTrigger>
+                <TabsTrigger value="tools" className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground rounded-md px-3 py-1.5 text-xs sm:text-sm whitespace-nowrap">
+                  Tools
+                </TabsTrigger>
+              </TabsList>
+              <ScrollBar orientation="horizontal" className="invisible" />
+            </ScrollArea>
 
             {/* Overview Tab */}
-            <TabsContent value="overview" className="space-y-4 sm:space-y-6">
-              <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-6">
-                <div className="lg:col-span-2 space-y-4 sm:space-y-6">
+            <TabsContent value="overview" className="mt-3 sm:mt-4 space-y-3 sm:space-y-4">
+              <div className="grid grid-cols-1 lg:grid-cols-3 gap-3 sm:gap-4">
+                <div className="lg:col-span-2 space-y-3 sm:space-y-4">
                   {/* Timeline */}
                   <Card className="border">
                     <CardHeader className="pb-3">
@@ -259,7 +270,7 @@ export default function IPODetailPage() {
                   {subscription && <SubscriptionTable subscription={subscription} />}
                 </div>
 
-                <div className="space-y-4 sm:space-y-6">
+                <div className="space-y-3 sm:space-y-4">
                   {/* Key Metrics */}
                   {peMetrics && <KeyMetrics peMetrics={peMetrics} />}
 
@@ -277,7 +288,7 @@ export default function IPODetailPage() {
             </TabsContent>
 
             {/* Subscription Tab */}
-            <TabsContent value="subscription" className="space-y-4 sm:space-y-6">
+            <TabsContent value="subscription" className="mt-3 sm:mt-4 space-y-3 sm:space-y-4">
               {subscription && <SubscriptionTable subscription={subscription} />}
               
               {!subscription && (
@@ -290,8 +301,8 @@ export default function IPODetailPage() {
             </TabsContent>
 
             {/* Details Tab */}
-            <TabsContent value="details" className="space-y-4 sm:space-y-6">
-              <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6">
+            <TabsContent value="details" className="mt-3 sm:mt-4 space-y-3 sm:space-y-4">
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-3 sm:gap-4">
                 {/* Basic Info Card */}
                 <Card className="border">
                   <CardHeader className="pb-3">
@@ -334,8 +345,8 @@ export default function IPODetailPage() {
             </TabsContent>
 
             {/* Financials Tab */}
-            <TabsContent value="financials" className="space-y-4 sm:space-y-6">
-              <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6">
+            <TabsContent value="financials" className="mt-3 sm:mt-4 space-y-3 sm:space-y-4">
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-3 sm:gap-4">
                 {financials && <CompanyFinancials financials={financials} />}
                 {peMetrics && <KeyMetrics peMetrics={peMetrics} />}
               </div>
@@ -352,7 +363,7 @@ export default function IPODetailPage() {
             </TabsContent>
 
             {/* About Tab */}
-            <TabsContent value="about" className="space-y-4 sm:space-y-6">
+            <TabsContent value="about" className="mt-3 sm:mt-4 space-y-3 sm:space-y-4">
               {aboutCompany && <AboutCompany about={aboutCompany} />}
               
               {!aboutCompany && (
@@ -365,8 +376,8 @@ export default function IPODetailPage() {
             </TabsContent>
 
             {/* Contacts Tab */}
-            <TabsContent value="contacts" className="space-y-4 sm:space-y-6">
-              <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6">
+            <TabsContent value="contacts" className="mt-3 sm:mt-4 space-y-3 sm:space-y-4">
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-3 sm:gap-4">
                 {/* Registrar Info */}
                 {registrar?.registrar && (
                   <Card className="border">
@@ -436,8 +447,8 @@ export default function IPODetailPage() {
             </TabsContent>
 
             {/* Tools Tab */}
-            <TabsContent value="tools" className="space-y-4 sm:space-y-6">
-              <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6">
+            <TabsContent value="tools" className="mt-3 sm:mt-4 space-y-3 sm:space-y-4">
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-3 sm:gap-4">
                 {/* GMP Calculator */}
                 {gmpData?.current_gmp !== undefined && issuePrice > 0 && lotSize > 0 && (
                   <GMPCalculator

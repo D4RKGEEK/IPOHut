@@ -26,7 +26,63 @@ export default function IPODetailPage() {
   useTimeOnPage(`ipo-detail-${slug}`);
 
   const pageSettings = settings.pages.ipoDetail;
-  const detailConfig = settings.site.ipoDetailConfig;
+  const rawDetailConfig = settings.site.ipoDetailConfig;
+
+  // Migrate old format to new format if needed
+  const detailConfig = useMemo(() => {
+    const isNewFormat = Array.isArray(rawDetailConfig.tabs);
+    
+    if (isNewFormat && rawDetailConfig.aboveFoldWidgets) {
+      return rawDetailConfig;
+    }
+    
+    // Return defaults for old format
+    return {
+      showLogo: rawDetailConfig.showLogo ?? true,
+      showBadges: rawDetailConfig.showBadges ?? true,
+      showShareButton: rawDetailConfig.showShareButton ?? true,
+      showPDFDownload: rawDetailConfig.showPDFDownload ?? true,
+      showAllotmentButton: true,
+      aboveFoldWidgets: [
+        { id: 'vital_stats' as const, enabled: true, order: 0 },
+        { id: 'gmp_widget' as const, enabled: true, order: 1 },
+        { id: 'market_chart' as const, enabled: true, order: 2 },
+      ],
+      tabs: [
+        { id: 'overview', label: 'Overview', enabled: true, widgets: [
+          { id: 'timeline' as const, enabled: true, order: 0 },
+          { id: 'subscription_table' as const, enabled: true, order: 1 },
+          { id: 'key_metrics' as const, enabled: true, order: 2 },
+          { id: 'broker_sentiment' as const, enabled: true, order: 3 },
+        ]},
+        { id: 'subscription', label: 'Subscription', enabled: true, widgets: [
+          { id: 'subscription_table' as const, enabled: true, order: 0 },
+        ]},
+        { id: 'details', label: 'Details', enabled: true, widgets: [
+          { id: 'basic_info' as const, enabled: true, order: 0 },
+          { id: 'lot_size_table' as const, enabled: true, order: 1 },
+          { id: 'reservation_table' as const, enabled: true, order: 2 },
+          { id: 'objectives' as const, enabled: true, order: 3 },
+        ]},
+        { id: 'financials', label: 'Financials', enabled: true, widgets: [
+          { id: 'financials' as const, enabled: true, order: 0 },
+          { id: 'key_metrics' as const, enabled: true, order: 1 },
+          { id: 'promoter_holding' as const, enabled: true, order: 2 },
+        ]},
+        { id: 'about', label: 'About', enabled: true, widgets: [
+          { id: 'about_company' as const, enabled: true, order: 0 },
+          { id: 'faq_section' as const, enabled: true, order: 1 },
+        ]},
+        { id: 'contacts', label: 'Contacts', enabled: true, widgets: [
+          { id: 'contact_registrar' as const, enabled: true, order: 0 },
+        ]},
+        { id: 'tools', label: 'Tools', enabled: true, widgets: [
+          { id: 'gmp_calculator' as const, enabled: true, order: 0 },
+          { id: 'broker_sentiment' as const, enabled: true, order: 1 },
+        ]},
+      ],
+    };
+  }, [rawDetailConfig]);
 
   const handleTabChange = (tabName: string) => {
     analytics.ipoTabChange(slug || "", tabName);

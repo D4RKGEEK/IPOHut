@@ -61,59 +61,74 @@ export interface HomePageConfig {
   announcementEnabled: boolean;
 }
 
+// Widget definitions for IPO Detail Page
+export type WidgetType = 
+  | 'timeline'
+  | 'subscription_table'
+  | 'key_metrics'
+  | 'broker_sentiment'
+  | 'basic_info'
+  | 'lot_size_table'
+  | 'reservation_table'
+  | 'objectives'
+  | 'financials'
+  | 'promoter_holding'
+  | 'gmp_calculator'
+  | 'about_company'
+  | 'contact_registrar'
+  | 'faq_section'
+  | 'vital_stats'
+  | 'gmp_widget'
+  | 'market_chart';
+
+export interface WidgetConfig {
+  id: WidgetType;
+  enabled: boolean;
+  order: number;
+}
+
+export interface TabConfig {
+  id: string;
+  label: string;
+  enabled: boolean;
+  widgets: WidgetConfig[];
+}
+
 export interface IPODetailPageConfig {
   // Header
   showLogo: boolean;
   showBadges: boolean;
   showShareButton: boolean;
   showPDFDownload: boolean;
+  showAllotmentButton: boolean;
   
-  // Sections before tabs
-  showVitalStats: boolean;
-  showGMPWidget: boolean;
-  showMarketChart: boolean;
-  showTimeline: boolean;
+  // Sections before tabs (above fold)
+  aboveFoldWidgets: WidgetConfig[];
   
-  // Tabs visibility
-  tabs: {
-    overview: boolean;
-    subscription: boolean;
-    details: boolean;
-    financials: boolean;
-    about: boolean;
-    contacts: boolean;
-    tools: boolean;
-  };
-  
-  // Overview tab components
-  overview: {
-    showTimeline: boolean;
-    showSubscription: boolean;
-    showKeyMetrics: boolean;
-    showBrokerSentiment: boolean;
-  };
-  
-  // Details tab components
-  details: {
-    showBasicInfo: boolean;
-    showLotSize: boolean;
-    showReservation: boolean;
-    showObjectives: boolean;
-  };
-  
-  // Financials tab components
-  financials: {
-    showFinancials: boolean;
-    showKeyMetrics: boolean;
-    showPromoterHolding: boolean;
-  };
-  
-  // Tools tab components
-  tools: {
-    showGMPCalculator: boolean;
-    showBrokerSentiment: boolean;
-  };
+  // Tabs configuration
+  tabs: TabConfig[];
 }
+
+// Widget metadata for admin UI
+export const WIDGET_METADATA: Record<WidgetType, { label: string; description: string; icon: string }> = {
+  timeline: { label: 'IPO Timeline', description: 'Visual timeline of IPO events', icon: 'Calendar' },
+  subscription_table: { label: 'Subscription Table', description: 'Category-wise subscription data', icon: 'Table' },
+  key_metrics: { label: 'Key Metrics', description: 'RoNW, P/BV, ROE metrics', icon: 'BarChart3' },
+  broker_sentiment: { label: 'Broker Sentiment', description: 'Broker recommendations chart', icon: 'ThumbsUp' },
+  basic_info: { label: 'Basic Information', description: 'IPO details like price, lot size', icon: 'Info' },
+  lot_size_table: { label: 'Lot Size Table', description: 'Application category lot sizes', icon: 'Table' },
+  reservation_table: { label: 'Reservation Table', description: 'Category-wise reservation', icon: 'Users' },
+  objectives: { label: 'IPO Objectives', description: 'Use of IPO proceeds', icon: 'Target' },
+  financials: { label: 'Company Financials', description: 'Revenue, profit, assets data', icon: 'TrendingUp' },
+  promoter_holding: { label: 'Promoter Holding', description: 'Shareholding pattern', icon: 'PieChart' },
+  gmp_calculator: { label: 'GMP Calculator', description: 'Profit calculation tool', icon: 'Calculator' },
+  about_company: { label: 'About Company', description: 'Company description & highlights', icon: 'Building2' },
+  contact_registrar: { label: 'Registrar & Contacts', description: 'Lead managers & registrar info', icon: 'Phone' },
+  faq_section: { label: 'FAQ Section', description: 'Common questions about this IPO', icon: 'HelpCircle' },
+  vital_stats: { label: 'Vital Stats', description: 'Quick stats grid', icon: 'LayoutGrid' },
+  gmp_widget: { label: 'GMP Widget', description: 'Grey market premium display', icon: 'Sparkles' },
+  market_chart: { label: 'Market Chart', description: 'Price chart for listed IPOs', icon: 'LineChart' },
+};
 
 export interface PageVisibility {
   home: boolean;
@@ -317,40 +332,80 @@ export const defaultAdminSettings: AdminSettings = {
       showBadges: true,
       showShareButton: true,
       showPDFDownload: true,
-      showVitalStats: true,
-      showGMPWidget: true,
-      showMarketChart: true,
-      showTimeline: true,
-      tabs: {
-        overview: true,
-        subscription: true,
-        details: true,
-        financials: true,
-        about: true,
-        contacts: true,
-        tools: true,
-      },
-      overview: {
-        showTimeline: true,
-        showSubscription: true,
-        showKeyMetrics: true,
-        showBrokerSentiment: true,
-      },
-      details: {
-        showBasicInfo: true,
-        showLotSize: true,
-        showReservation: true,
-        showObjectives: true,
-      },
-      financials: {
-        showFinancials: true,
-        showKeyMetrics: true,
-        showPromoterHolding: true,
-      },
-      tools: {
-        showGMPCalculator: true,
-        showBrokerSentiment: true,
-      },
+      showAllotmentButton: true,
+      aboveFoldWidgets: [
+        { id: 'vital_stats', enabled: true, order: 0 },
+        { id: 'gmp_widget', enabled: true, order: 1 },
+        { id: 'market_chart', enabled: true, order: 2 },
+      ],
+      tabs: [
+        {
+          id: 'overview',
+          label: 'Overview',
+          enabled: true,
+          widgets: [
+            { id: 'timeline', enabled: true, order: 0 },
+            { id: 'subscription_table', enabled: true, order: 1 },
+            { id: 'key_metrics', enabled: true, order: 2 },
+            { id: 'broker_sentiment', enabled: true, order: 3 },
+          ],
+        },
+        {
+          id: 'subscription',
+          label: 'Subscription',
+          enabled: true,
+          widgets: [
+            { id: 'subscription_table', enabled: true, order: 0 },
+          ],
+        },
+        {
+          id: 'details',
+          label: 'Details',
+          enabled: true,
+          widgets: [
+            { id: 'basic_info', enabled: true, order: 0 },
+            { id: 'lot_size_table', enabled: true, order: 1 },
+            { id: 'reservation_table', enabled: true, order: 2 },
+            { id: 'objectives', enabled: true, order: 3 },
+          ],
+        },
+        {
+          id: 'financials',
+          label: 'Financials',
+          enabled: true,
+          widgets: [
+            { id: 'financials', enabled: true, order: 0 },
+            { id: 'key_metrics', enabled: true, order: 1 },
+            { id: 'promoter_holding', enabled: true, order: 2 },
+          ],
+        },
+        {
+          id: 'about',
+          label: 'About',
+          enabled: true,
+          widgets: [
+            { id: 'about_company', enabled: true, order: 0 },
+            { id: 'faq_section', enabled: true, order: 1 },
+          ],
+        },
+        {
+          id: 'contacts',
+          label: 'Contacts',
+          enabled: true,
+          widgets: [
+            { id: 'contact_registrar', enabled: true, order: 0 },
+          ],
+        },
+        {
+          id: 'tools',
+          label: 'Tools',
+          enabled: true,
+          widgets: [
+            { id: 'gmp_calculator', enabled: true, order: 0 },
+            { id: 'broker_sentiment', enabled: true, order: 1 },
+          ],
+        },
+      ],
     },
     pageVisibility: {
       home: true,

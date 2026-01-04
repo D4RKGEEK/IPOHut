@@ -89,12 +89,16 @@ export default function InvestmentCalculatorPage() {
             </div>
             {selectedIPO && (
               <div className="flex items-center gap-2 mt-3">
-                <Badge variant="outline" className="text-xs">
-                  {selectedIPO.ipoType.toUpperCase()}
-                </Badge>
-                <Badge variant="secondary" className="text-xs">
-                  {selectedIPO.status}
-                </Badge>
+                {selectedIPO.ipoType && (
+                  <Badge variant="outline" className="text-xs">
+                    {selectedIPO.ipoType.toUpperCase()}
+                  </Badge>
+                )}
+                {selectedIPO.status && (
+                  <Badge variant="secondary" className="text-xs">
+                    {selectedIPO.status}
+                  </Badge>
+                )}
                 <Link to={`/ipo/${selectedIPO.slug}`} className="text-xs text-primary hover:underline inline-flex items-center gap-1">
                   View Details <ExternalLink className="h-3 w-3" />
                 </Link>

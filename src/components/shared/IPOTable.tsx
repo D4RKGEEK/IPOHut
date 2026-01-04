@@ -10,9 +10,10 @@ import {
 import { StatusBadge, TypeBadge } from "./StatusBadge";
 import { formatCurrency, formatPercent, formatSubscription, getGainLossClass } from "@/lib/api";
 import { cn } from "@/lib/utils";
-import { ArrowUpDown, TrendingUp, TrendingDown } from "lucide-react";
+import { ArrowUpDown, TrendingUp, TrendingDown, FileCheck } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useState } from "react";
+import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 
 export interface IPOTableColumn {
   key: string;
@@ -69,13 +70,32 @@ export function IPOTable({
   const renderCell = (row: IPOTableRow, key: string) => {
     switch (key) {
       case "name":
+        const showAllotmentLink = row.status && ["closed", "recently_listed", "listed"].includes(row.status.toLowerCase());
         return (
-          <Link 
-            to={`/ipo/${row.slug}`} 
-            className="font-medium text-foreground hover:text-primary transition-colors"
-          >
-            {row.name}
-          </Link>
+          <div className="flex items-center gap-2">
+            <Link 
+              to={`/ipo/${row.slug}`} 
+              className="font-medium text-foreground hover:text-primary transition-colors"
+            >
+              {row.name}
+            </Link>
+            {showAllotmentLink && (
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <Link 
+                    to={`/ipo/${row.slug}/allotment`}
+                    className="text-primary hover:text-primary/80 transition-colors"
+                    onClick={(e) => e.stopPropagation()}
+                  >
+                    <FileCheck className="h-3.5 w-3.5" />
+                  </Link>
+                </TooltipTrigger>
+                <TooltipContent>
+                  <p>Check Allotment Status</p>
+                </TooltipContent>
+              </Tooltip>
+            )}
+          </div>
         );
       case "status":
         return row.status ? <StatusBadge status={row.status} /> : "—";

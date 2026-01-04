@@ -1,52 +1,24 @@
 import { MainLayout } from "@/components/layout";
-import { NewsTicker, IPOCard, IPOTable, IPOTableColumn, IPOTableRow } from "@/components/shared";
+import { NewsTicker, IPOCard, StatusBadge, TypeBadge } from "@/components/shared";
 import { useAdmin } from "@/contexts/AdminContext";
-import { useOpenIPOs, useIPOCalendar, useTopGainers, useTopLosers } from "@/hooks/useIPO";
+import { useOpenIPOs, useUpcomingIPOs, useRecentlyListedIPOs, useTopGainers, useTopLosers } from "@/hooks/useIPO";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { ArrowRight, TrendingUp, TrendingDown, Calendar, BarChart3 } from "lucide-react";
+import { ArrowRight, TrendingUp, TrendingDown, Calendar, BarChart3, Clock, Zap } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
 import { cn } from "@/lib/utils";
-
-const tableColumns: IPOTableColumn[] = [
-  { key: "name", label: "IPO Name", sortable: true },
-  { key: "ipoType", label: "Type", hideOnMobile: true },
-  { key: "status", label: "Status" },
-  { key: "openDate", label: "Open", hideOnMobile: true },
-  { key: "closeDate", label: "Close", hideOnMobile: true },
-  { key: "issuePrice", label: "Price", sortable: true },
-  { key: "gmp", label: "GMP", sortable: true },
-  { key: "subscriptionTimes", label: "Subscription", sortable: true, hideOnMobile: true },
-];
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 
 export default function HomePage() {
   const { settings } = useAdmin();
-  const { data: openIPOs, isLoading: loadingOpen } = useOpenIPOs(5);
-  const { data: calendarData, isLoading: loadingCalendar } = useIPOCalendar({ 
-    limit: 15, 
-    sort_by: "open_date", 
-    order: "desc" 
-  });
+  const { data: openIPOs, isLoading: loadingOpen } = useOpenIPOs(6);
+  const { data: upcomingIPOs, isLoading: loadingUpcoming } = useUpcomingIPOs(5);
+  const { data: recentlyListed, isLoading: loadingRecent } = useRecentlyListedIPOs(8);
   const { data: gainersData, isLoading: loadingGainers } = useTopGainers(5);
   const { data: losersData, isLoading: loadingLosers } = useTopLosers(5);
 
   const pageSettings = settings.pages.home;
-
-  // Transform calendar data for table
-  const tableData: IPOTableRow[] = calendarData?.data?.map(ipo => ({
-    slug: ipo.slug,
-    name: ipo.name,
-    status: ipo.status,
-    ipoType: ipo.ipo_type,
-    openDate: ipo.open_date,
-    closeDate: ipo.close_date,
-    listingDate: ipo.listing_date,
-    issuePrice: ipo.issue_price,
-    gmp: ipo.gmp,
-    gmpPercent: ipo.gmp_percent,
-    subscriptionTimes: ipo.subscription_times,
-  })) || [];
 
   return (
     <MainLayout 
@@ -123,10 +95,13 @@ export default function HomePage() {
           </Link>
         </section>
 
-        {/* Open IPOs Section */}
+        {/* Open IPOs Section - Featured Cards */}
         <section>
           <div className="flex items-center justify-between mb-4">
-            <h2 className="text-lg font-semibold">Open IPOs</h2>
+            <div className="flex items-center gap-2">
+              <div className="h-2 w-2 rounded-full bg-success animate-pulse-dot" />
+              <h2 className="text-lg font-semibold">Open for Subscription</h2>
+            </div>
             <Link to="/mainboard-ipo">
               <Button variant="ghost" size="sm" className="text-primary">
                 View all <ArrowRight className="ml-1 h-4 w-4" />
@@ -149,7 +124,7 @@ export default function HomePage() {
             </div>
           ) : openIPOs?.data?.length ? (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-              {openIPOs.data.slice(0, 3).map(ipo => (
+              {openIPOs.data.slice(0, 6).map((ipo, idx) => (
                 <IPOCard
                   key={ipo.ipo_id}
                   name={ipo.name}
@@ -159,16 +134,168 @@ export default function HomePage() {
                   issuePrice={ipo.issue_price}
                   subscriptionTimes={ipo.subscription_times}
                   closeDate={ipo.close_date}
+                  className={cn(idx < 3 ? "animate-fade-in-up" : "")}
+                  style={{ animationDelay: `${idx * 100}ms` }}
                 />
               ))}
             </div>
           ) : (
-            <Card className="border">
+            <Card className="border bg-muted/30">
               <CardContent className="p-8 text-center text-muted-foreground">
+                <Zap className="h-8 w-8 mx-auto mb-2 opacity-50" />
                 No IPOs are currently open for subscription.
               </CardContent>
             </Card>
           )}
+        </section>
+
+        {/* Upcoming IPOs - Compact List */}
+        <section>
+          <div className="flex items-center justify-between mb-4">
+            <div className="flex items-center gap-2">
+              <Clock className="h-4 w-4 text-primary" />
+              <h2 className="text-lg font-semibold">Upcoming IPOs</h2>
+            </div>
+            <Link to="/ipo-calendar">
+              <Button variant="ghost" size="sm" className="text-primary">
+                View calendar <ArrowRight className="ml-1 h-4 w-4" />
+              </Button>
+            </Link>
+          </div>
+
+          <Card className="border">
+            {loadingUpcoming ? (
+              <CardContent className="p-4 space-y-3">
+                {[...Array(4)].map((_, i) => (
+                  <div key={i} className="flex items-center justify-between py-2">
+                    <Skeleton className="h-5 w-1/2" />
+                    <Skeleton className="h-5 w-24" />
+                  </div>
+                ))}
+              </CardContent>
+            ) : upcomingIPOs?.data?.length ? (
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead>IPO Name</TableHead>
+                    <TableHead className="hidden md:table-cell">Type</TableHead>
+                    <TableHead className="text-right">Opens On</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {upcomingIPOs.data.slice(0, 5).map(ipo => (
+                    <TableRow key={ipo.ipo_id} className="table-row-hover">
+                      <TableCell>
+                        <Link 
+                          to={`/ipo/${ipo.slug}`}
+                          className="font-medium hover:text-primary transition-colors"
+                        >
+                          {ipo.name.replace(' IPO', '')}
+                        </Link>
+                      </TableCell>
+                      <TableCell className="hidden md:table-cell">
+                        <TypeBadge type={ipo.ipo_type} />
+                      </TableCell>
+                      <TableCell className="text-right">
+                        <span className="text-sm text-primary font-medium">
+                          {ipo.open_date}
+                        </span>
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            ) : (
+              <CardContent className="p-8 text-center text-muted-foreground">
+                No upcoming IPOs scheduled.
+              </CardContent>
+            )}
+          </Card>
+        </section>
+
+        {/* Recently Listed - Table with Performance */}
+        <section>
+          <div className="flex items-center justify-between mb-4">
+            <div className="flex items-center gap-2">
+              <BarChart3 className="h-4 w-4 text-chart-3" />
+              <h2 className="text-lg font-semibold">Recently Listed</h2>
+            </div>
+            <Link to="/ipo-listing-performance">
+              <Button variant="ghost" size="sm" className="text-primary">
+                All performance <ArrowRight className="ml-1 h-4 w-4" />
+              </Button>
+            </Link>
+          </div>
+
+          <Card className="border overflow-hidden">
+            {loadingRecent ? (
+              <CardContent className="p-4 space-y-3">
+                {[...Array(5)].map((_, i) => (
+                  <div key={i} className="flex items-center justify-between py-2">
+                    <Skeleton className="h-5 w-1/3" />
+                    <Skeleton className="h-5 w-20" />
+                    <Skeleton className="h-5 w-16" />
+                  </div>
+                ))}
+              </CardContent>
+            ) : recentlyListed?.data?.length ? (
+              <div className="overflow-x-auto">
+                <Table>
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead>IPO Name</TableHead>
+                      <TableHead className="hidden sm:table-cell">Type</TableHead>
+                      <TableHead className="hidden md:table-cell">Listed On</TableHead>
+                      <TableHead className="text-right">Issue Price</TableHead>
+                      <TableHead className="text-right">Gain/Loss</TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {recentlyListed.data.slice(0, 8).map(ipo => {
+                      const gainPercent = ipo.gain_loss_percent;
+                      return (
+                        <TableRow key={ipo.ipo_id} className="table-row-hover">
+                          <TableCell>
+                            <Link 
+                              to={`/ipo/${ipo.slug}`}
+                              className="font-medium hover:text-primary transition-colors"
+                            >
+                              {ipo.name.replace(' IPO', '')}
+                            </Link>
+                          </TableCell>
+                          <TableCell className="hidden sm:table-cell">
+                            <TypeBadge type={ipo.ipo_type} />
+                          </TableCell>
+                          <TableCell className="hidden md:table-cell text-muted-foreground text-sm">
+                            {ipo.listing_date}
+                          </TableCell>
+                          <TableCell className="text-right font-tabular">
+                            {ipo.issue_price ? `₹${ipo.issue_price}` : '-'}
+                          </TableCell>
+                          <TableCell className="text-right">
+                            {gainPercent !== null && gainPercent !== undefined ? (
+                              <span className={cn(
+                                "font-semibold font-tabular",
+                                gainPercent >= 0 ? "text-success" : "text-destructive"
+                              )}>
+                                {gainPercent >= 0 ? "+" : ""}{gainPercent.toFixed(1)}%
+                              </span>
+                            ) : (
+                              <span className="text-muted-foreground">-</span>
+                            )}
+                          </TableCell>
+                        </TableRow>
+                      );
+                    })}
+                  </TableBody>
+                </Table>
+              </div>
+            ) : (
+              <CardContent className="p-8 text-center text-muted-foreground">
+                No recently listed IPOs.
+              </CardContent>
+            )}
+          </Card>
         </section>
 
         {/* Gainers & Losers Section */}
@@ -290,19 +417,6 @@ export default function HomePage() {
               )}
             </CardContent>
           </Card>
-        </section>
-
-        {/* Master Table */}
-        <section>
-          <div className="flex items-center justify-between mb-4">
-            <h2 className="text-lg font-semibold">Recent & Upcoming IPOs</h2>
-          </div>
-          <IPOTable
-            columns={tableColumns}
-            data={tableData}
-            isLoading={loadingCalendar}
-            emptyMessage="No IPO data available"
-          />
         </section>
       </div>
     </MainLayout>

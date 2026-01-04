@@ -6,9 +6,10 @@ import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
-import { WIDGET_METADATA, WidgetType, WidgetConfig, TabConfig } from "@/types/admin";
-import { GripVertical, Plus, X, ChevronUp, ChevronDown } from "lucide-react";
+import { WIDGET_METADATA, WidgetType, WidgetConfig, TabConfig, IPODetailPageConfig } from "@/types/admin";
+import { Plus, X, ChevronUp, ChevronDown } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { useMemo } from "react";
 
 // All available widgets
 const ALL_WIDGETS: WidgetType[] = [
@@ -18,11 +19,125 @@ const ALL_WIDGETS: WidgetType[] = [
   'contact_registrar', 'faq_section', 'vital_stats', 'gmp_widget', 'market_chart'
 ];
 
+// Default tabs config for migration from old format
+const DEFAULT_TABS: TabConfig[] = [
+  {
+    id: 'overview',
+    label: 'Overview',
+    enabled: true,
+    widgets: [
+      { id: 'timeline', enabled: true, order: 0 },
+      { id: 'subscription_table', enabled: true, order: 1 },
+      { id: 'key_metrics', enabled: true, order: 2 },
+      { id: 'broker_sentiment', enabled: true, order: 3 },
+    ],
+  },
+  {
+    id: 'subscription',
+    label: 'Subscription',
+    enabled: true,
+    widgets: [{ id: 'subscription_table', enabled: true, order: 0 }],
+  },
+  {
+    id: 'details',
+    label: 'Details',
+    enabled: true,
+    widgets: [
+      { id: 'basic_info', enabled: true, order: 0 },
+      { id: 'lot_size_table', enabled: true, order: 1 },
+      { id: 'reservation_table', enabled: true, order: 2 },
+      { id: 'objectives', enabled: true, order: 3 },
+    ],
+  },
+  {
+    id: 'financials',
+    label: 'Financials',
+    enabled: true,
+    widgets: [
+      { id: 'financials', enabled: true, order: 0 },
+      { id: 'key_metrics', enabled: true, order: 1 },
+      { id: 'promoter_holding', enabled: true, order: 2 },
+    ],
+  },
+  {
+    id: 'about',
+    label: 'About',
+    enabled: true,
+    widgets: [
+      { id: 'about_company', enabled: true, order: 0 },
+      { id: 'faq_section', enabled: true, order: 1 },
+    ],
+  },
+  {
+    id: 'contacts',
+    label: 'Contacts',
+    enabled: true,
+    widgets: [{ id: 'contact_registrar', enabled: true, order: 0 }],
+  },
+  {
+    id: 'tools',
+    label: 'Tools',
+    enabled: true,
+    widgets: [
+      { id: 'gmp_calculator', enabled: true, order: 0 },
+      { id: 'broker_sentiment', enabled: true, order: 1 },
+    ],
+  },
+];
+
+const DEFAULT_ABOVE_FOLD: WidgetConfig[] = [
+  { id: 'vital_stats', enabled: true, order: 0 },
+  { id: 'gmp_widget', enabled: true, order: 1 },
+  { id: 'market_chart', enabled: true, order: 2 },
+];
+
 export function IPODetailSettings() {
   const { settings, updateSiteSettings } = useAdmin();
-  const config = settings.site.ipoDetailConfig;
+  const rawConfig = settings.site.ipoDetailConfig;
 
-  const updateConfig = (updates: Partial<typeof config>) => {
+  // Migrate old format to new format if needed
+  const config = useMemo((): IPODetailPageConfig => {
+    // Safety check - if rawConfig is undefined or null
+    if (!rawConfig) {
+      return {
+        showLogo: true,
+        showBadges: true,
+        showShareButton: true,
+        showPDFDownload: true,
+        showAllotmentButton: true,
+        aboveFoldWidgets: DEFAULT_ABOVE_FOLD,
+        tabs: DEFAULT_TABS,
+      };
+    }
+
+    // Check if tabs is an array (new format) or object (old format)
+    const isNewFormat = Array.isArray(rawConfig.tabs);
+    
+    if (isNewFormat) {
+      return {
+        showLogo: rawConfig.showLogo ?? true,
+        showBadges: rawConfig.showBadges ?? true,
+        showShareButton: rawConfig.showShareButton ?? true,
+        showPDFDownload: rawConfig.showPDFDownload ?? true,
+        showAllotmentButton: rawConfig.showAllotmentButton ?? true,
+        aboveFoldWidgets: rawConfig.aboveFoldWidgets || DEFAULT_ABOVE_FOLD,
+        tabs: rawConfig.tabs || DEFAULT_TABS,
+      } as IPODetailPageConfig;
+    }
+    
+    // Migrate from old format
+    return {
+      showLogo: rawConfig.showLogo ?? true,
+      showBadges: rawConfig.showBadges ?? true,
+      showShareButton: rawConfig.showShareButton ?? true,
+      showPDFDownload: rawConfig.showPDFDownload ?? true,
+      showAllotmentButton: true,
+      aboveFoldWidgets: DEFAULT_ABOVE_FOLD,
+      tabs: DEFAULT_TABS,
+    };
+  }, [rawConfig]);
+
+  const updateConfig = (updates: Partial<IPODetailPageConfig>) => {
     updateSiteSettings({
       ipoDetailConfig: { ...config, ...updates },
     });

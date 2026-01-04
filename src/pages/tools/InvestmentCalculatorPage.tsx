@@ -10,6 +10,7 @@ import { Separator } from "@/components/ui/separator";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Calculator, TrendingUp, Users, IndianRupee, PiggyBank, ArrowLeft, ExternalLink } from "lucide-react";
+import { analytics, useScrollTracking, useTimeOnPage } from "@/hooks/useAnalytics";
 
 export default function InvestmentCalculatorPage() {
   const [selectedIPO, setSelectedIPO] = useState<SelectedIPO | null>(null);
@@ -20,12 +21,17 @@ export default function InvestmentCalculatorPage() {
   const [totalApplications, setTotalApplications] = useState<number>(100000);
   const [retailShares, setRetailShares] = useState<number>(1000000);
 
+  // Track page
+  useScrollTracking("investment-calculator");
+  useTimeOnPage("investment-calculator");
+
   // Auto-fill when IPO is selected
   useEffect(() => {
     if (selectedIPO) {
       setIssuePrice(selectedIPO.issuePrice || 100);
       setLotSize(selectedIPO.lotSize || 100);
       setGmp(selectedIPO.gmp || 0);
+      analytics.ipoSelect("investment-calculator", selectedIPO.name);
     }
   }, [selectedIPO]);
 

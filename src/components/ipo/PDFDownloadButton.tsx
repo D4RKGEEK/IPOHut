@@ -4,6 +4,7 @@ import { useState } from "react";
 import { toast } from "sonner";
 import { IPODetail } from "@/types/ipo";
 import { generateIPOPDF } from "@/utils/generateIPOPDF";
+import { analytics } from "@/hooks/useAnalytics";
 
 interface PDFDownloadButtonProps {
   ipo: IPODetail;
@@ -15,6 +16,7 @@ export function PDFDownloadButton({ ipo, status }: PDFDownloadButtonProps) {
 
   const handleDownload = async () => {
     setIsGenerating(true);
+    analytics.pdfDownload(ipo.basic_info?.["IPO Name"] || "Unknown IPO");
     try {
       await generateIPOPDF(ipo, status);
       toast.success("PDF downloaded successfully!");

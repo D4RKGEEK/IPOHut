@@ -12,6 +12,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { ChevronDown } from "lucide-react";
+import { analytics } from "@/hooks/useAnalytics";
 
 // Icon mapping
 const iconMap: Record<string, React.ComponentType<{ className?: string }>> = {
@@ -38,11 +39,19 @@ export function Header() {
     return iconMap[iconName] || TrendingUp;
   };
 
+  const handleNavClick = (label: string) => {
+    analytics.navClick(label);
+  };
+
+  const handleLogoClick = () => {
+    analytics.logoClick();
+  };
+
   return (
     <header className="sticky top-0 z-50 bg-background/95 backdrop-blur-sm border-b">
       <div className="container flex h-14 items-center justify-between">
         {/* Logo */}
-        <Link to="/" className="flex items-center gap-2 text-foreground">
+        <Link to="/" className="flex items-center gap-2 text-foreground" onClick={handleLogoClick}>
           {navigation.showLogo && (
             settings.site.branding.logoUrl ? (
               <img 
@@ -89,7 +98,7 @@ export function Header() {
                   <DropdownMenuContent align="start">
                     {visibleChildren.map((child) => (
                       <DropdownMenuItem key={child.id} asChild>
-                        <Link to={child.url}>{child.label}</Link>
+                        <Link to={child.url} onClick={() => handleNavClick(child.label)}>{child.label}</Link>
                       </DropdownMenuItem>
                     ))}
                   </DropdownMenuContent>
@@ -101,6 +110,7 @@ export function Header() {
               <Link
                 key={item.id}
                 to={item.url}
+                onClick={() => handleNavClick(item.label)}
                 className={cn(
                   "px-3 py-1.5 text-sm rounded-md transition-colors",
                   isActive(item.url)
@@ -144,7 +154,12 @@ export function Header() {
               <div key={item.id}>
                 <Link
                   to={item.url}
-                  onClick={() => !hasChildren && setMobileMenuOpen(false)}
+                  onClick={() => {
+                    if (!hasChildren) {
+                      setMobileMenuOpen(false);
+                      handleNavClick(item.label);
+                    }
+                  }}
                   className={cn(
                     "flex items-center gap-2 px-3 py-2.5 text-sm rounded-md transition-colors",
                     isActive(item.url)
@@ -161,7 +176,10 @@ export function Header() {
                       <Link
                         key={child.id}
                         to={child.url}
-                        onClick={() => setMobileMenuOpen(false)}
+                        onClick={() => {
+                          setMobileMenuOpen(false);
+                          handleNavClick(child.label);
+                        }}
                         className={cn(
                           "flex items-center gap-2 px-3 py-2 text-sm rounded-md transition-colors",
                           isActive(child.url)

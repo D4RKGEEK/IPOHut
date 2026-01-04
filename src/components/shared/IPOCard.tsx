@@ -4,6 +4,7 @@ import { StatusBadge, TypeBadge } from "./StatusBadge";
 import { formatCurrency, formatPercent, formatSubscription, getDaysUntil } from "@/lib/api";
 import { TrendingUp, TrendingDown, Clock, FileCheck } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { analytics } from "@/hooks/useAnalytics";
 
 interface IPOCardProps {
   name: string;
@@ -42,7 +43,11 @@ export function IPOCard({
     <Card className={cn("card-hover h-full", className)} style={style}>
       <CardContent className="p-3 md:p-4">
         {/* Header */}
-        <Link to={`/ipo/${slug}`} className="group block">
+        <Link 
+          to={`/ipo/${slug}`} 
+          className="group block"
+          onClick={() => analytics.ipoCardClick(name, slug)}
+        >
           <div className="flex items-start justify-between gap-2 mb-3">
             <div className="min-w-0 flex-1">
               <h3 className="text-sm font-medium text-foreground line-clamp-1 group-hover:text-primary transition-colors">
@@ -63,7 +68,7 @@ export function IPOCard({
 
         {/* GMP Display */}
         {gmp !== undefined && (
-          <Link to={`/ipo/${slug}`}>
+          <Link to={`/ipo/${slug}`} onClick={() => analytics.ipoCardClick(name, slug)}>
             <div className={cn(
               "flex items-center justify-between p-2 rounded-md mb-2",
               isPositiveGMP ? "bg-success/5" : "bg-destructive/5"
@@ -133,6 +138,7 @@ export function IPOCard({
           <Link 
             to={`/ipo/${slug}/allotment`}
             className="flex items-center justify-center gap-1.5 py-1.5 mt-2 rounded-md text-xs bg-primary/10 text-primary hover:bg-primary/20 transition-colors"
+            onClick={() => analytics.allotmentCheckClick(name)}
           >
             <FileCheck className="h-3 w-3" />
             <span>Check Allotment</span>

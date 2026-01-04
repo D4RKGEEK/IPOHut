@@ -4,6 +4,7 @@ import { MainLayout } from "@/components/layout";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Calculator, GitCompare, TrendingUp, ArrowRight } from "lucide-react";
+import { analytics, useScrollTracking, useTimeOnPage } from "@/hooks/useAnalytics";
 
 const tools = [
   {
@@ -33,6 +34,13 @@ const tools = [
 ];
 
 export default function ToolsPage() {
+  // Track page
+  useScrollTracking("tools");
+  useTimeOnPage("tools");
+
+  const handleToolClick = (toolName: string) => {
+    analytics.toolOpen(toolName);
+  };
   return (
     <MainLayout>
       <Helmet>
@@ -58,7 +66,7 @@ export default function ToolsPage() {
       <div className="container py-6 md:py-8">
         <div className="grid gap-4 md:gap-6 md:grid-cols-2 lg:grid-cols-3">
           {tools.map((tool) => (
-            <Link key={tool.href} to={tool.href} className="group">
+            <Link key={tool.href} to={tool.href} className="group" onClick={() => handleToolClick(tool.title)}>
               <Card className="h-full card-hover border-2 hover:border-primary/30 transition-colors">
                 <CardHeader className="pb-3">
                   <div className={`w-12 h-12 rounded-lg ${tool.bgColor} flex items-center justify-center mb-3`}>

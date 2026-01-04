@@ -4,10 +4,12 @@ import { AreaChart, Area, XAxis, YAxis, Tooltip, ResponsiveContainer, ReferenceL
 import { IPOMarketData } from "@/types/ipo";
 import { TrendingUp, TrendingDown } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { analytics } from "@/hooks/useAnalytics";
 
 interface MarketCandlesChartProps {
   marketData: IPOMarketData | Record<string, any>;
   issuePrice?: number;
+  ipoSlug?: string;
 }
 
 interface CandleData {
@@ -30,8 +32,13 @@ const timeRanges: { value: TimeRange; label: string }[] = [
   { value: "ALL", label: "All" },
 ];
 
-export function MarketCandlesChart({ marketData, issuePrice }: MarketCandlesChartProps) {
+export function MarketCandlesChart({ marketData, issuePrice, ipoSlug }: MarketCandlesChartProps) {
   const [selectedRange, setSelectedRange] = useState<TimeRange>("7D");
+
+  const handleRangeChange = (range: TimeRange) => {
+    setSelectedRange(range);
+    analytics.chartPeriodChange(ipoSlug || "unknown", range);
+  };
 
   // Parse all candles from market data
   const allCandles = useMemo(() => {
@@ -141,7 +148,7 @@ export function MarketCandlesChart({ marketData, issuePrice }: MarketCandlesChar
           {timeRanges.map((range) => (
             <button
               key={range.value}
-              onClick={() => setSelectedRange(range.value)}
+              onClick={() => handleRangeChange(range.value)}
               className={cn(
                 "px-2 py-1 text-[10px] sm:text-xs font-medium rounded-md transition-colors",
                 selectedRange === range.value

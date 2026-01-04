@@ -10,9 +10,14 @@ import { Separator } from "@/components/ui/separator";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
 import { TrendingUp, TrendingDown, Target, BarChart3, PieChart, ArrowLeft, ExternalLink } from "lucide-react";
+import { analytics, useScrollTracking, useTimeOnPage } from "@/hooks/useAnalytics";
 
 export default function ReturnsCalculatorPage() {
   const [selectedIPO, setSelectedIPO] = useState<SelectedIPO | null>(null);
+
+  // Track page
+  useScrollTracking("returns-calculator");
+  useTimeOnPage("returns-calculator");
 
   // Listing gain calculator
   const [listingIssuePrice, setListingIssuePrice] = useState<number>(100);
@@ -41,6 +46,7 @@ export default function ReturnsCalculatorPage() {
       setBuyPrice(selectedIPO.issuePrice || 100);
       setQuantity(selectedIPO.lotSize || 100);
       setTargetIssuePrice(selectedIPO.issuePrice || 100);
+      analytics.ipoSelect("returns-calculator", selectedIPO.name);
     }
   }, [selectedIPO]);
 

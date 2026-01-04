@@ -8,6 +8,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { GitCompare, Plus, Trash2, Trophy, ArrowLeft, ExternalLink } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { analytics, useScrollTracking, useTimeOnPage } from "@/hooks/useAnalytics";
 
 interface CompareIPO {
   id: string;
@@ -20,22 +21,28 @@ export default function CompareIPOPage() {
     { id: crypto.randomUUID(), selected: null },
   ]);
 
+  // Track page
+  useScrollTracking("compare-ipo");
+  useTimeOnPage("compare-ipo");
+
   const addIPO = () => {
     if (ipos.length < 5) {
       setIpos([...ipos, { id: crypto.randomUUID(), selected: null }]);
     }
   };
 
-  const removeIPO = (id: string) => {
+  const removeIPO = (id: string, ipoName?: string) => {
     if (ipos.length > 2) {
       setIpos(ipos.filter((ipo) => ipo.id !== id));
+      if (ipoName) analytics.compareRemove(ipoName);
     }
   };
 
-  const selectIPO = (id: string, ipo: SelectedIPO | null) => {
+  const selectIPO = (id: string, ipo: SelectedIPO | null, position: number) => {
     setIpos(ipos.map((item) => 
       item.id === id ? { ...item, selected: ipo } : item
     ));
+    if (ipo) analytics.compareAdd(ipo.name, position);
   };
 
   // Calculate derived values
@@ -111,7 +118,7 @@ export default function CompareIPOPage() {
                       variant="ghost"
                       size="icon"
                       className="absolute top-2 right-2 h-6 w-6 text-muted-foreground hover:text-destructive"
-                      onClick={() => removeIPO(item.id)}
+                      onClick={() => removeIPO(item.id, item.selected?.name)}
                     >
                       <Trash2 className="h-3 w-3" />
                     </Button>
@@ -121,7 +128,7 @@ export default function CompareIPOPage() {
                     <p className="text-xs font-medium text-muted-foreground">IPO {index + 1}</p>
                     <IPOSelector
                       value={item.selected}
-                      onSelect={(ipo) => selectIPO(item.id, ipo)}
+                      onSelect={(ipo) => selectIPO(item.id, ipo, index + 1)}
                       className="w-full"
                       placeholder="Select IPO..."
                     />

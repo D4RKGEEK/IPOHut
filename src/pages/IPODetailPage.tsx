@@ -12,6 +12,7 @@ import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { ExternalLink, Phone, Mail, Globe, FileCheck } from "lucide-react";
 import { Link } from "react-router-dom";
+import { analytics, useScrollTracking, useTimeOnPage } from "@/hooks/useAnalytics";
 import {
   IPOVitalStats,
   IPOGMPWidget,
@@ -35,7 +36,15 @@ export default function IPODetailPage() {
   const { settings } = useAdmin();
   const { data, isLoading, error } = useIPODetail(slug || "");
 
+  // Track scroll and time on page
+  useScrollTracking(`ipo-detail-${slug}`);
+  useTimeOnPage(`ipo-detail-${slug}`);
+
   const pageSettings = settings.pages.ipoDetail;
+
+  const handleTabChange = (tabName: string) => {
+    analytics.ipoTabChange(slug || "", tabName);
+  };
 
   if (isLoading) {
     return (
@@ -244,11 +253,11 @@ export default function IPODetailPage() {
 
           {/* Market Data Chart for listed IPOs */}
           {marketData && status === "listed" && (
-            <MarketCandlesChart marketData={marketData} issuePrice={issuePrice} />
+            <MarketCandlesChart marketData={marketData} issuePrice={issuePrice} ipoSlug={slug} />
           )}
 
           {/* Tabs - Horizontal scrollable on mobile */}
-          <Tabs defaultValue="overview" className="w-full">
+          <Tabs defaultValue="overview" className="w-full" onValueChange={handleTabChange}>
             <ScrollArea className="w-full whitespace-nowrap">
               <TabsList className="inline-flex h-10 items-center gap-1 bg-muted/50 p-1 rounded-lg w-max min-w-full sm:w-auto">
                 <TabsTrigger value="overview" className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground rounded-md px-3 py-1.5 text-xs sm:text-sm whitespace-nowrap">

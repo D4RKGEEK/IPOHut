@@ -22,10 +22,23 @@ import {
   ChevronRight,
   HelpCircle
 } from "lucide-react";
+import { analytics, useScrollTracking, useTimeOnPage } from "@/hooks/useAnalytics";
 
 export default function IPOAllotmentCheckerPage() {
   const { slug } = useParams<{ slug: string }>();
   const { data, isLoading, error } = useIPODetail(slug || "");
+
+  // Track page
+  useScrollTracking(`allotment-checker-${slug}`);
+  useTimeOnPage(`allotment-checker-${slug}`);
+
+  const handleRegistrarClick = (registrarName: string, ipoName: string) => {
+    analytics.registrarLinkClick(registrarName, ipoName);
+  };
+
+  const handleFAQExpand = (question: string, ipoName: string) => {
+    analytics.faqExpand(question, ipoName);
+  };
 
   if (isLoading) {
     return (

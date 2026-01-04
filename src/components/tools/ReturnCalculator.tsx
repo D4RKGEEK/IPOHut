@@ -4,7 +4,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Calculator, TrendingUp, TrendingDown, DollarSign } from "lucide-react";
+import { Calculator, TrendingUp, TrendingDown, Target, BarChart3, PieChart } from "lucide-react";
 
 export function ReturnCalculator() {
   // Listing gain calculator
@@ -43,65 +43,91 @@ export function ReturnCalculator() {
   const isCurrentProfit = currentReturnPercent >= 0;
 
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle className="flex items-center gap-2">
-          <Calculator className="h-5 w-5 text-primary" />
-          Return Calculator
-        </CardTitle>
-        <CardDescription>
-          Calculate listing gains, current returns, and target prices
-        </CardDescription>
+    <Card className="overflow-hidden">
+      <CardHeader className="bg-gradient-to-r from-accent/10 to-transparent border-b">
+        <div className="flex items-center gap-3">
+          <div className="p-3 bg-accent/20 rounded-xl">
+            <BarChart3 className="h-6 w-6 text-accent" />
+          </div>
+          <div>
+            <CardTitle className="font-display">Return Calculator</CardTitle>
+            <CardDescription>
+              Calculate listing gains, current returns, and target prices
+            </CardDescription>
+          </div>
+        </div>
       </CardHeader>
-      <CardContent>
-        <Tabs defaultValue="listing" className="space-y-4">
-          <TabsList className="grid w-full grid-cols-3">
-            <TabsTrigger value="listing">Listing Gain</TabsTrigger>
-            <TabsTrigger value="current">Current Return</TabsTrigger>
-            <TabsTrigger value="target">Target Price</TabsTrigger>
+      <CardContent className="p-6">
+        <Tabs defaultValue="listing" className="space-y-6">
+          <TabsList className="w-full h-auto p-1.5 bg-muted/50 rounded-xl grid grid-cols-3 gap-1">
+            <TabsTrigger 
+              value="listing" 
+              className="py-3 rounded-lg data-[state=active]:bg-card data-[state=active]:shadow-soft font-medium"
+            >
+              <BarChart3 className="h-4 w-4 mr-2" />
+              Listing Gain
+            </TabsTrigger>
+            <TabsTrigger 
+              value="current" 
+              className="py-3 rounded-lg data-[state=active]:bg-card data-[state=active]:shadow-soft font-medium"
+            >
+              <PieChart className="h-4 w-4 mr-2" />
+              Current
+            </TabsTrigger>
+            <TabsTrigger 
+              value="target" 
+              className="py-3 rounded-lg data-[state=active]:bg-card data-[state=active]:shadow-soft font-medium"
+            >
+              <Target className="h-4 w-4 mr-2" />
+              Target
+            </TabsTrigger>
           </TabsList>
 
           {/* Listing Gain Calculator */}
-          <TabsContent value="listing" className="space-y-4">
+          <TabsContent value="listing" className="space-y-6 animate-fade-in">
             <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
               <div className="space-y-2">
-                <Label htmlFor="listingIssuePrice">Issue Price (₹)</Label>
+                <Label htmlFor="listingIssuePrice" className="text-sm font-medium">Issue Price (₹)</Label>
                 <Input
                   id="listingIssuePrice"
                   type="number"
                   value={listingIssuePrice}
                   onChange={(e) => setListingIssuePrice(Number(e.target.value))}
                   min={0}
+                  className="h-12 text-lg font-tabular"
                 />
               </div>
               <div className="space-y-2">
-                <Label htmlFor="listingPrice">Listing Price (₹)</Label>
+                <Label htmlFor="listingPrice" className="text-sm font-medium">Listing Price (₹)</Label>
                 <Input
                   id="listingPrice"
                   type="number"
                   value={listingPrice}
                   onChange={(e) => setListingPrice(Number(e.target.value))}
                   min={0}
+                  className="h-12 text-lg font-tabular"
                 />
               </div>
               <div className="space-y-2">
-                <Label htmlFor="listingLotSize">Lot Size</Label>
+                <Label htmlFor="listingLotSize" className="text-sm font-medium">Lot Size</Label>
                 <Input
                   id="listingLotSize"
                   type="number"
                   value={listingLotSize}
                   onChange={(e) => setListingLotSize(Number(e.target.value))}
                   min={1}
+                  className="h-12 text-lg font-tabular"
                 />
               </div>
               <div className="space-y-2">
-                <Label htmlFor="listingLots">Lots Allotted</Label>
+                <Label htmlFor="listingLots" className="text-sm font-medium">Lots Allotted</Label>
                 <Input
                   id="listingLots"
                   type="number"
                   value={listingLots}
                   onChange={(e) => setListingLots(Number(e.target.value))}
                   min={1}
+                  className="h-12 text-lg font-tabular"
                 />
               </div>
             </div>
@@ -109,76 +135,71 @@ export function ReturnCalculator() {
             <Separator />
 
             <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-              <Card className="bg-muted/50">
-                <CardContent className="pt-4">
-                  <p className="text-sm text-muted-foreground mb-1">Listing Gain</p>
-                  <p className={`text-2xl font-bold ${isListingProfit ? "text-green-600 dark:text-green-400" : "text-red-600 dark:text-red-400"}`}>
-                    {isListingProfit ? "+" : ""}{listingGainPercent.toFixed(2)}%
-                  </p>
-                </CardContent>
-              </Card>
+              <div className="p-5 rounded-2xl bg-muted/50 border">
+                <p className="text-sm text-muted-foreground mb-2">Listing Gain</p>
+                <p className={`text-2xl font-display font-bold font-tabular ${isListingProfit ? "text-success" : "text-destructive"}`}>
+                  {isListingProfit ? "+" : ""}{listingGainPercent.toFixed(2)}%
+                </p>
+              </div>
 
-              <Card className="bg-muted/50">
-                <CardContent className="pt-4">
-                  <p className="text-sm text-muted-foreground mb-1">Gain per Share</p>
-                  <p className={`text-2xl font-bold ${isListingProfit ? "text-green-600 dark:text-green-400" : "text-red-600 dark:text-red-400"}`}>
-                    {isListingProfit ? "+" : ""}₹{listingGainPerShare.toLocaleString()}
-                  </p>
-                </CardContent>
-              </Card>
+              <div className="p-5 rounded-2xl bg-muted/50 border">
+                <p className="text-sm text-muted-foreground mb-2">Gain per Share</p>
+                <p className={`text-2xl font-display font-bold font-tabular ${isListingProfit ? "text-success" : "text-destructive"}`}>
+                  {isListingProfit ? "+" : ""}₹{listingGainPerShare.toLocaleString()}
+                </p>
+              </div>
 
-              <Card className="bg-muted/50">
-                <CardContent className="pt-4">
-                  <p className="text-sm text-muted-foreground mb-1">Total Investment</p>
-                  <p className="text-2xl font-bold">₹{listingTotalInvestment.toLocaleString()}</p>
-                </CardContent>
-              </Card>
+              <div className="p-5 rounded-2xl bg-muted/50 border">
+                <p className="text-sm text-muted-foreground mb-2">Total Investment</p>
+                <p className="text-2xl font-display font-bold font-tabular">₹{listingTotalInvestment.toLocaleString()}</p>
+              </div>
 
-              <Card className={isListingProfit ? "bg-green-500/10 border-green-500/20" : "bg-red-500/10 border-red-500/20"}>
-                <CardContent className="pt-4">
-                  <div className="flex items-center gap-2 text-sm text-muted-foreground mb-1">
-                    {isListingProfit ? <TrendingUp className="h-4 w-4" /> : <TrendingDown className="h-4 w-4" />}
-                    Total {isListingProfit ? "Profit" : "Loss"}
-                  </div>
-                  <p className={`text-2xl font-bold ${isListingProfit ? "text-green-600 dark:text-green-400" : "text-red-600 dark:text-red-400"}`}>
-                    {isListingProfit ? "+" : ""}₹{listingTotalProfit.toLocaleString()}
-                  </p>
-                </CardContent>
-              </Card>
+              <div className={`p-5 rounded-2xl border ${isListingProfit ? "bg-success/5 border-success/20" : "bg-destructive/5 border-destructive/20"}`}>
+                <div className="flex items-center gap-2 text-sm text-muted-foreground mb-2">
+                  {isListingProfit ? <TrendingUp className="h-4 w-4 text-success" /> : <TrendingDown className="h-4 w-4 text-destructive" />}
+                  Total {isListingProfit ? "Profit" : "Loss"}
+                </div>
+                <p className={`text-2xl font-display font-bold font-tabular ${isListingProfit ? "text-success" : "text-destructive"}`}>
+                  {isListingProfit ? "+" : ""}₹{listingTotalProfit.toLocaleString()}
+                </p>
+              </div>
             </div>
           </TabsContent>
 
           {/* Current Return Calculator */}
-          <TabsContent value="current" className="space-y-4">
+          <TabsContent value="current" className="space-y-6 animate-fade-in">
             <div className="grid gap-4 sm:grid-cols-3">
               <div className="space-y-2">
-                <Label htmlFor="buyPrice">Buy Price (₹)</Label>
+                <Label htmlFor="buyPrice" className="text-sm font-medium">Buy Price (₹)</Label>
                 <Input
                   id="buyPrice"
                   type="number"
                   value={buyPrice}
                   onChange={(e) => setBuyPrice(Number(e.target.value))}
                   min={0}
+                  className="h-12 text-lg font-tabular"
                 />
               </div>
               <div className="space-y-2">
-                <Label htmlFor="currentPrice">Current Price (₹)</Label>
+                <Label htmlFor="currentPrice" className="text-sm font-medium">Current Price (₹)</Label>
                 <Input
                   id="currentPrice"
                   type="number"
                   value={currentPrice}
                   onChange={(e) => setCurrentPrice(Number(e.target.value))}
                   min={0}
+                  className="h-12 text-lg font-tabular"
                 />
               </div>
               <div className="space-y-2">
-                <Label htmlFor="quantity">Quantity</Label>
+                <Label htmlFor="quantity" className="text-sm font-medium">Quantity</Label>
                 <Input
                   id="quantity"
                   type="number"
                   value={quantity}
                   onChange={(e) => setQuantity(Number(e.target.value))}
                   min={1}
+                  className="h-12 text-lg font-tabular"
                 />
               </div>
             </div>
@@ -186,63 +207,57 @@ export function ReturnCalculator() {
             <Separator />
 
             <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-              <Card className="bg-muted/50">
-                <CardContent className="pt-4">
-                  <p className="text-sm text-muted-foreground mb-1">Return</p>
-                  <p className={`text-2xl font-bold ${isCurrentProfit ? "text-green-600 dark:text-green-400" : "text-red-600 dark:text-red-400"}`}>
-                    {isCurrentProfit ? "+" : ""}{currentReturnPercent.toFixed(2)}%
-                  </p>
-                </CardContent>
-              </Card>
+              <div className="p-5 rounded-2xl bg-muted/50 border">
+                <p className="text-sm text-muted-foreground mb-2">Return</p>
+                <p className={`text-2xl font-display font-bold font-tabular ${isCurrentProfit ? "text-success" : "text-destructive"}`}>
+                  {isCurrentProfit ? "+" : ""}{currentReturnPercent.toFixed(2)}%
+                </p>
+              </div>
 
-              <Card className="bg-muted/50">
-                <CardContent className="pt-4">
-                  <p className="text-sm text-muted-foreground mb-1">Investment</p>
-                  <p className="text-2xl font-bold">₹{currentTotalInvestment.toLocaleString()}</p>
-                </CardContent>
-              </Card>
+              <div className="p-5 rounded-2xl bg-muted/50 border">
+                <p className="text-sm text-muted-foreground mb-2">Investment</p>
+                <p className="text-2xl font-display font-bold font-tabular">₹{currentTotalInvestment.toLocaleString()}</p>
+              </div>
 
-              <Card className="bg-muted/50">
-                <CardContent className="pt-4">
-                  <p className="text-sm text-muted-foreground mb-1">Current Value</p>
-                  <p className="text-2xl font-bold">₹{currentTotalValue.toLocaleString()}</p>
-                </CardContent>
-              </Card>
+              <div className="p-5 rounded-2xl bg-muted/50 border">
+                <p className="text-sm text-muted-foreground mb-2">Current Value</p>
+                <p className="text-2xl font-display font-bold font-tabular">₹{currentTotalValue.toLocaleString()}</p>
+              </div>
 
-              <Card className={isCurrentProfit ? "bg-green-500/10 border-green-500/20" : "bg-red-500/10 border-red-500/20"}>
-                <CardContent className="pt-4">
-                  <div className="flex items-center gap-2 text-sm text-muted-foreground mb-1">
-                    {isCurrentProfit ? <TrendingUp className="h-4 w-4" /> : <TrendingDown className="h-4 w-4" />}
-                    {isCurrentProfit ? "Profit" : "Loss"}
-                  </div>
-                  <p className={`text-2xl font-bold ${isCurrentProfit ? "text-green-600 dark:text-green-400" : "text-red-600 dark:text-red-400"}`}>
-                    {isCurrentProfit ? "+" : ""}₹{currentTotalProfit.toLocaleString()}
-                  </p>
-                </CardContent>
-              </Card>
+              <div className={`p-5 rounded-2xl border ${isCurrentProfit ? "bg-success/5 border-success/20" : "bg-destructive/5 border-destructive/20"}`}>
+                <div className="flex items-center gap-2 text-sm text-muted-foreground mb-2">
+                  {isCurrentProfit ? <TrendingUp className="h-4 w-4 text-success" /> : <TrendingDown className="h-4 w-4 text-destructive" />}
+                  {isCurrentProfit ? "Profit" : "Loss"}
+                </div>
+                <p className={`text-2xl font-display font-bold font-tabular ${isCurrentProfit ? "text-success" : "text-destructive"}`}>
+                  {isCurrentProfit ? "+" : ""}₹{currentTotalProfit.toLocaleString()}
+                </p>
+              </div>
             </div>
           </TabsContent>
 
           {/* Target Price Calculator */}
-          <TabsContent value="target" className="space-y-4">
+          <TabsContent value="target" className="space-y-6 animate-fade-in">
             <div className="grid gap-4 sm:grid-cols-2">
               <div className="space-y-2">
-                <Label htmlFor="targetIssuePrice">Issue Price (₹)</Label>
+                <Label htmlFor="targetIssuePrice" className="text-sm font-medium">Issue Price (₹)</Label>
                 <Input
                   id="targetIssuePrice"
                   type="number"
                   value={targetIssuePrice}
                   onChange={(e) => setTargetIssuePrice(Number(e.target.value))}
                   min={0}
+                  className="h-12 text-lg font-tabular"
                 />
               </div>
               <div className="space-y-2">
-                <Label htmlFor="desiredReturn">Desired Return (%)</Label>
+                <Label htmlFor="desiredReturn" className="text-sm font-medium">Desired Return (%)</Label>
                 <Input
                   id="desiredReturn"
                   type="number"
                   value={desiredReturn}
                   onChange={(e) => setDesiredReturn(Number(e.target.value))}
+                  className="h-12 text-lg font-tabular"
                 />
               </div>
             </div>
@@ -250,36 +265,32 @@ export function ReturnCalculator() {
             <Separator />
 
             <div className="grid gap-4 sm:grid-cols-2">
-              <Card className="bg-primary/5 border-primary/20">
-                <CardContent className="pt-4">
-                  <div className="flex items-center gap-2 text-sm text-muted-foreground mb-1">
-                    <DollarSign className="h-4 w-4" />
-                    Required Listing Price
-                  </div>
-                  <p className="text-3xl font-bold text-primary">₹{targetPrice.toFixed(2)}</p>
-                  <p className="text-sm text-muted-foreground mt-2">
-                    For {desiredReturn}% return
-                  </p>
-                </CardContent>
-              </Card>
+              <div className="p-6 rounded-2xl bg-gradient-to-br from-primary/10 to-primary/5 border border-primary/20">
+                <div className="flex items-center gap-2 text-sm text-muted-foreground mb-2">
+                  <Target className="h-4 w-4 text-primary" />
+                  Required Listing Price
+                </div>
+                <p className="text-4xl font-display font-bold text-primary font-tabular">₹{targetPrice.toFixed(2)}</p>
+                <p className="text-sm text-muted-foreground mt-2">
+                  For {desiredReturn}% return on investment
+                </p>
+              </div>
 
-              <Card className="bg-muted/50">
-                <CardContent className="pt-4">
-                  <p className="text-sm text-muted-foreground mb-1">Required GMP</p>
-                  <p className={`text-3xl font-bold ${requiredGMP >= 0 ? "text-green-600 dark:text-green-400" : "text-red-600 dark:text-red-400"}`}>
-                    {requiredGMP >= 0 ? "+" : ""}₹{requiredGMP.toFixed(2)}
-                  </p>
-                  <p className="text-sm text-muted-foreground mt-2">
-                    GMP needed to achieve target
-                  </p>
-                </CardContent>
-              </Card>
+              <div className="p-6 rounded-2xl bg-muted/50 border">
+                <p className="text-sm text-muted-foreground mb-2">Required GMP</p>
+                <p className={`text-4xl font-display font-bold font-tabular ${requiredGMP >= 0 ? "text-success" : "text-destructive"}`}>
+                  {requiredGMP >= 0 ? "+" : ""}₹{requiredGMP.toFixed(2)}
+                </p>
+                <p className="text-sm text-muted-foreground mt-2">
+                  GMP needed to achieve your target
+                </p>
+              </div>
             </div>
           </TabsContent>
         </Tabs>
 
-        <p className="text-xs text-muted-foreground text-center mt-6">
-          * All calculations are for educational purposes only. Actual returns may vary.
+        <p className="text-xs text-muted-foreground text-center mt-8">
+          * All calculations are for educational purposes only. Actual returns may vary based on market conditions.
         </p>
       </CardContent>
     </Card>

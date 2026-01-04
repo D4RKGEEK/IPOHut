@@ -4,7 +4,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { GitCompare, Plus, Trash2 } from "lucide-react";
+import { GitCompare, Plus, Trash2, Trophy } from "lucide-react";
 
 interface IPOData {
   id: string;
@@ -79,83 +79,93 @@ export function IPOComparisonTool() {
   };
 
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle className="flex items-center gap-2">
-          <GitCompare className="h-5 w-5 text-primary" />
-          IPO Comparison Tool
-        </CardTitle>
-        <CardDescription>
-          Compare multiple IPOs side by side
-        </CardDescription>
+    <Card className="overflow-hidden">
+      <CardHeader className="bg-gradient-to-r from-chart-3/5 to-transparent border-b">
+        <div className="flex items-center gap-3">
+          <div className="p-3 bg-chart-3/10 rounded-xl">
+            <GitCompare className="h-6 w-6 text-chart-3" />
+          </div>
+          <div>
+            <CardTitle className="font-display">IPO Comparison Tool</CardTitle>
+            <CardDescription>
+              Compare multiple IPOs side by side to find the best opportunity
+            </CardDescription>
+          </div>
+        </div>
       </CardHeader>
-      <CardContent className="space-y-6">
+      <CardContent className="p-6 space-y-8">
         {/* IPO Input Cards */}
         <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-          {ipos.map((ipo) => (
-            <Card key={ipo.id} className="relative">
-              <CardContent className="pt-4 space-y-3">
+          {ipos.map((ipo, index) => (
+            <Card key={ipo.id} className="relative border-2 hover:border-primary/30 transition-colors">
+              <CardContent className="pt-5 space-y-4">
                 {ipos.length > 2 && (
                   <Button
                     variant="ghost"
                     size="icon"
-                    className="absolute top-2 right-2 h-6 w-6"
+                    className="absolute top-3 right-3 h-7 w-7 text-muted-foreground hover:text-destructive"
                     onClick={() => removeIPO(ipo.id)}
                   >
-                    <Trash2 className="h-4 w-4 text-muted-foreground" />
+                    <Trash2 className="h-4 w-4" />
                   </Button>
                 )}
                 
                 <div className="space-y-2">
-                  <Label>IPO Name</Label>
+                  <Label className="text-sm font-medium">IPO Name</Label>
                   <Input
                     value={ipo.name}
                     onChange={(e) => updateIPO(ipo.id, "name", e.target.value)}
                     placeholder="Enter IPO name"
+                    className="h-11"
                   />
                 </div>
                 
-                <div className="grid grid-cols-2 gap-2">
-                  <div className="space-y-1">
-                    <Label className="text-xs">Issue Price (₹)</Label>
+                <div className="grid grid-cols-2 gap-3">
+                  <div className="space-y-1.5">
+                    <Label className="text-xs text-muted-foreground">Issue Price (₹)</Label>
                     <Input
                       type="number"
                       value={ipo.issuePrice || ""}
                       onChange={(e) => updateIPO(ipo.id, "issuePrice", Number(e.target.value))}
+                      className="font-tabular"
                     />
                   </div>
-                  <div className="space-y-1">
-                    <Label className="text-xs">Lot Size</Label>
+                  <div className="space-y-1.5">
+                    <Label className="text-xs text-muted-foreground">Lot Size</Label>
                     <Input
                       type="number"
                       value={ipo.lotSize || ""}
                       onChange={(e) => updateIPO(ipo.id, "lotSize", Number(e.target.value))}
+                      className="font-tabular"
                     />
                   </div>
-                  <div className="space-y-1">
-                    <Label className="text-xs">GMP (₹)</Label>
+                  <div className="space-y-1.5">
+                    <Label className="text-xs text-muted-foreground">GMP (₹)</Label>
                     <Input
                       type="number"
                       value={ipo.gmp || ""}
                       onChange={(e) => updateIPO(ipo.id, "gmp", Number(e.target.value))}
+                      className="font-tabular"
                     />
                   </div>
-                  <div className="space-y-1">
-                    <Label className="text-xs">Subscription (x)</Label>
+                  <div className="space-y-1.5">
+                    <Label className="text-xs text-muted-foreground">Subscription (x)</Label>
                     <Input
                       type="number"
                       value={ipo.subscription || ""}
                       onChange={(e) => updateIPO(ipo.id, "subscription", Number(e.target.value))}
+                      className="font-tabular"
                     />
                   </div>
                 </div>
 
-                <div className="space-y-1">
-                  <Label className="text-xs">Issue Size (₹ Cr)</Label>
+                <div className="space-y-1.5">
+                  <Label className="text-xs text-muted-foreground">Issue Size (₹ Cr)</Label>
                   <Input
                     type="number"
                     value={ipo.issueSize || ""}
                     onChange={(e) => updateIPO(ipo.id, "issueSize", Number(e.target.value))}
+                    className="font-tabular"
                   />
                 </div>
               </CardContent>
@@ -164,25 +174,27 @@ export function IPOComparisonTool() {
 
           {ipos.length < 5 && (
             <Card 
-              className="border-dashed cursor-pointer hover:bg-muted/50 transition-colors flex items-center justify-center min-h-[200px]"
+              className="border-2 border-dashed cursor-pointer hover:bg-muted/30 hover:border-primary/40 transition-all flex items-center justify-center min-h-[280px] group"
               onClick={addIPO}
             >
-              <CardContent className="flex flex-col items-center gap-2 text-muted-foreground">
-                <Plus className="h-8 w-8" />
-                <span className="text-sm">Add IPO</span>
+              <CardContent className="flex flex-col items-center gap-3 text-muted-foreground group-hover:text-primary transition-colors">
+                <div className="p-4 rounded-2xl bg-muted/50 group-hover:bg-primary/10 transition-colors">
+                  <Plus className="h-8 w-8" />
+                </div>
+                <span className="font-medium">Add IPO</span>
               </CardContent>
             </Card>
           )}
         </div>
 
         {/* Comparison Table */}
-        <div className="rounded-lg border overflow-x-auto">
+        <div className="rounded-2xl border overflow-hidden">
           <Table>
             <TableHeader>
-              <TableRow>
-                <TableHead className="min-w-[120px]">Metric</TableHead>
+              <TableRow className="bg-muted/50 hover:bg-muted/50">
+                <TableHead className="min-w-[140px] font-display font-semibold">Metric</TableHead>
                 {ipos.map((ipo) => (
-                  <TableHead key={ipo.id} className="min-w-[100px] text-center">
+                  <TableHead key={ipo.id} className="min-w-[120px] text-center font-display font-semibold">
                     {ipo.name || "—"}
                   </TableHead>
                 ))}
@@ -192,7 +204,7 @@ export function IPOComparisonTool() {
               <TableRow>
                 <TableCell className="font-medium">Issue Price</TableCell>
                 {ipos.map((ipo) => (
-                  <TableCell key={ipo.id} className="text-center">
+                  <TableCell key={ipo.id} className="text-center font-tabular">
                     ₹{ipo.issuePrice.toLocaleString()}
                   </TableCell>
                 ))}
@@ -200,7 +212,7 @@ export function IPOComparisonTool() {
               <TableRow>
                 <TableCell className="font-medium">Lot Size</TableCell>
                 {ipos.map((ipo) => (
-                  <TableCell key={ipo.id} className="text-center">
+                  <TableCell key={ipo.id} className="text-center font-tabular">
                     {ipo.lotSize.toLocaleString()}
                   </TableCell>
                 ))}
@@ -211,8 +223,11 @@ export function IPOComparisonTool() {
                   const metrics = calculateMetrics(ipo);
                   const isBest = metrics.minInvestment === getBestValue("minInvestment") && metrics.minInvestment > 0;
                   return (
-                    <TableCell key={ipo.id} className={`text-center ${isBest ? "text-green-600 dark:text-green-400 font-semibold" : ""}`}>
-                      ₹{metrics.minInvestment.toLocaleString()}
+                    <TableCell key={ipo.id} className="text-center">
+                      <span className={`font-tabular ${isBest ? "text-success font-semibold inline-flex items-center gap-1" : ""}`}>
+                        {isBest && <Trophy className="h-3.5 w-3.5" />}
+                        ₹{metrics.minInvestment.toLocaleString()}
+                      </span>
                     </TableCell>
                   );
                 })}
@@ -220,31 +235,37 @@ export function IPOComparisonTool() {
               <TableRow>
                 <TableCell className="font-medium">GMP</TableCell>
                 {ipos.map((ipo) => (
-                  <TableCell key={ipo.id} className={`text-center ${ipo.gmp >= 0 ? "text-green-600 dark:text-green-400" : "text-red-600 dark:text-red-400"}`}>
+                  <TableCell key={ipo.id} className={`text-center font-tabular font-semibold ${ipo.gmp >= 0 ? "text-success" : "text-destructive"}`}>
                     {ipo.gmp >= 0 ? "+" : ""}₹{ipo.gmp}
                   </TableCell>
                 ))}
               </TableRow>
-              <TableRow>
+              <TableRow className="bg-muted/30">
                 <TableCell className="font-medium">Expected Return</TableCell>
                 {ipos.map((ipo) => {
                   const metrics = calculateMetrics(ipo);
                   const isBest = metrics.expectedReturn === getBestValue("expectedReturn") && metrics.expectedReturn > 0;
                   return (
-                    <TableCell key={ipo.id} className={`text-center font-semibold ${isBest ? "text-green-600 dark:text-green-400" : ""}`}>
-                      {metrics.expectedReturn >= 0 ? "+" : ""}{metrics.expectedReturn.toFixed(1)}%
+                    <TableCell key={ipo.id} className="text-center">
+                      <span className={`font-tabular font-semibold inline-flex items-center gap-1 justify-center ${isBest ? "text-success" : ""}`}>
+                        {isBest && <Trophy className="h-3.5 w-3.5" />}
+                        {metrics.expectedReturn >= 0 ? "+" : ""}{metrics.expectedReturn.toFixed(1)}%
+                      </span>
                     </TableCell>
                   );
                 })}
               </TableRow>
-              <TableRow>
+              <TableRow className="bg-muted/30">
                 <TableCell className="font-medium">Profit per Lot</TableCell>
                 {ipos.map((ipo) => {
                   const metrics = calculateMetrics(ipo);
                   const isBest = metrics.profitPerLot === getBestValue("profitPerLot") && metrics.profitPerLot > 0;
                   return (
-                    <TableCell key={ipo.id} className={`text-center ${isBest ? "text-green-600 dark:text-green-400 font-semibold" : ""}`}>
-                      {metrics.profitPerLot >= 0 ? "+" : ""}₹{metrics.profitPerLot.toLocaleString()}
+                    <TableCell key={ipo.id} className="text-center">
+                      <span className={`font-tabular font-semibold inline-flex items-center gap-1 justify-center ${isBest ? "text-success" : ""}`}>
+                        {isBest && <Trophy className="h-3.5 w-3.5" />}
+                        {metrics.profitPerLot >= 0 ? "+" : ""}₹{metrics.profitPerLot.toLocaleString()}
+                      </span>
                     </TableCell>
                   );
                 })}
@@ -252,7 +273,7 @@ export function IPOComparisonTool() {
               <TableRow>
                 <TableCell className="font-medium">Subscription</TableCell>
                 {ipos.map((ipo) => (
-                  <TableCell key={ipo.id} className="text-center">
+                  <TableCell key={ipo.id} className="text-center font-tabular">
                     {ipo.subscription}x
                   </TableCell>
                 ))}
@@ -260,7 +281,7 @@ export function IPOComparisonTool() {
               <TableRow>
                 <TableCell className="font-medium">Issue Size</TableCell>
                 {ipos.map((ipo) => (
-                  <TableCell key={ipo.id} className="text-center">
+                  <TableCell key={ipo.id} className="text-center font-tabular">
                     ₹{ipo.issueSize} Cr
                   </TableCell>
                 ))}
@@ -269,8 +290,9 @@ export function IPOComparisonTool() {
           </Table>
         </div>
 
-        <p className="text-xs text-muted-foreground text-center">
-          * Highlighted values indicate the best option for each metric
+        <p className="text-xs text-muted-foreground text-center flex items-center justify-center gap-2">
+          <Trophy className="h-3.5 w-3.5 text-success" />
+          Trophy indicates the best value for each metric
         </p>
       </CardContent>
     </Card>

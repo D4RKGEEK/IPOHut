@@ -108,6 +108,9 @@ export default function IPODetailPage() {
   const now = new Date();
   const openDate = parseIPODate(timeline["IPO Open Date"]);
   const closeDate = parseIPODate(timeline["IPO Close Date"]);
+  const allotmentDate = parseIPODate(timeline["Tentative Allotment"]);
+  const refundDate = parseIPODate(timeline["Initiation of Refunds"]);
+  const creditDate = parseIPODate(timeline["Credit of Shares to Demat"]);
   const listingDate = parseIPODate(timeline["Tentative Listing Date"]);
   
   let status = "upcoming";
@@ -115,14 +118,21 @@ export default function IPODetailPage() {
   else if (closeDate && now > closeDate) status = "closed";
   else if (openDate && now >= openDate) status = "open";
 
+  // Helper to determine step status
+  const getStepStatus = (date: Date | null): "completed" | "current" | "upcoming" => {
+    if (!date) return "upcoming";
+    if (now >= date) return "completed";
+    return "upcoming";
+  };
+
   // Build timeline steps
   const timelineSteps = [
-    { label: "IPO Open", date: timeline["IPO Open Date"] || "TBA", status: openDate && now >= openDate ? "completed" : now < (openDate || new Date()) ? "upcoming" : "current" },
-    { label: "IPO Close", date: timeline["IPO Close Date"] || "TBA", status: closeDate && now >= closeDate ? "completed" : "upcoming" },
-    { label: "Allotment", date: timeline["Tentative Allotment"] || "TBA", status: "upcoming" },
-    { label: "Refund Initiation", date: timeline["Initiation of Refunds"] || "TBA", status: "upcoming" },
-    { label: "Credit to Demat", date: timeline["Credit of Shares to Demat"] || "TBA", status: "upcoming" },
-    { label: "Listing", date: timeline["Tentative Listing Date"] || "TBA", status: listingDate && now >= listingDate ? "completed" : "upcoming" },
+    { label: "IPO Open", date: timeline["IPO Open Date"] || "TBA", status: getStepStatus(openDate) },
+    { label: "IPO Close", date: timeline["IPO Close Date"] || "TBA", status: getStepStatus(closeDate) },
+    { label: "Allotment", date: timeline["Tentative Allotment"] || "TBA", status: getStepStatus(allotmentDate) },
+    { label: "Refund Initiation", date: timeline["Initiation of Refunds"] || "TBA", status: getStepStatus(refundDate) },
+    { label: "Credit to Demat", date: timeline["Credit of Shares to Demat"] || "TBA", status: getStepStatus(creditDate) },
+    { label: "Listing", date: timeline["Tentative Listing Date"] || "TBA", status: getStepStatus(listingDate) },
   ].map(step => ({
     ...step,
     status: step.status as "completed" | "current" | "upcoming",

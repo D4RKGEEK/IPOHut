@@ -4,7 +4,7 @@ import { MainLayout } from "@/components/layout";
 import { useAdmin } from "@/contexts/AdminContext";
 import { useIPODetail } from "@/hooks/useIPO";
 import { applyTemplate } from "@/types/admin";
-import { StatusBadge, TypeBadge, IPOTimeline, GMPCalculator, BrokerSentiment } from "@/components/shared";
+import { StatusBadge, TypeBadge, IPOTimeline, GMPCalculator, BrokerSentiment, ShareButtons } from "@/components/shared";
 import { parseIPODate } from "@/lib/api";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -217,7 +217,13 @@ export default function IPODetailPage() {
                 {basicInfo["Listing At"]} • {basicInfo["Issue Type"] || "Book Built"}
               </p>
             </div>
-            <PDFDownloadButton ipo={ipo} status={status} />
+            <div className="flex items-center gap-2 shrink-0">
+              <ShareButtons 
+                title={basicInfo["IPO Name"]} 
+                description={`${basicInfo["IPO Name"]} - Issue Price: ${basicInfo["Issue Price"]}, Listing: ${timeline["Tentative Listing Date"]}`}
+              />
+              <PDFDownloadButton ipo={ipo} status={status} />
+            </div>
           </header>
 
           {/* Vital Stats */}

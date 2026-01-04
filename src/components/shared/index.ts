@@ -6,3 +6,4 @@ export { GMPCalculator } from "./GMPCalculator";
 export { BrokerSentiment } from "./BrokerSentiment";
 export { IPOTimeline } from "./IPOTimeline";
 export { ThemeToggle } from "./ThemeToggle";
+export { ShareButtons } from "./ShareButtons";

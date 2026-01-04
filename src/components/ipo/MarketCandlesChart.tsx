@@ -1,6 +1,6 @@
 import { useState, useMemo } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { LineChart, Line, XAxis, YAxis, Tooltip, ResponsiveContainer, ReferenceLine } from "recharts";
+import { AreaChart, Area, XAxis, YAxis, Tooltip, ResponsiveContainer, ReferenceLine } from "recharts";
 import { IPOMarketData } from "@/types/ipo";
 import { TrendingUp, TrendingDown } from "lucide-react";
 import { cn } from "@/lib/utils";
@@ -158,7 +158,17 @@ export function MarketCandlesChart({ marketData, issuePrice }: MarketCandlesChar
       <CardContent className="px-2 sm:px-6">
         <div className="h-48 sm:h-64">
           <ResponsiveContainer width="100%" height="100%">
-            <LineChart data={chartData} margin={{ top: 5, right: 10, left: 0, bottom: 5 }}>
+            <AreaChart data={chartData} margin={{ top: 5, right: 10, left: 0, bottom: 5 }}>
+              <defs>
+                <linearGradient id="colorGain" x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="5%" stopColor="hsl(var(--success))" stopOpacity={0.3}/>
+                  <stop offset="95%" stopColor="hsl(var(--success))" stopOpacity={0.05}/>
+                </linearGradient>
+                <linearGradient id="colorLoss" x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="5%" stopColor="hsl(var(--destructive))" stopOpacity={0.3}/>
+                  <stop offset="95%" stopColor="hsl(var(--destructive))" stopOpacity={0.05}/>
+                </linearGradient>
+              </defs>
               <XAxis 
                 dataKey="time" 
                 tick={{ fontSize: 9 }}
@@ -200,15 +210,15 @@ export function MarketCandlesChart({ marketData, issuePrice }: MarketCandlesChar
                   }}
                 />
               )}
-              <Line
+              <Area
                 type="monotone"
                 dataKey="close"
                 stroke={isPositive ? 'hsl(var(--success))' : 'hsl(var(--destructive))'}
                 strokeWidth={2}
-                dot={false}
-                activeDot={{ r: 4 }}
+                fill={isPositive ? 'url(#colorGain)' : 'url(#colorLoss)'}
+                activeDot={{ r: 4, strokeWidth: 2 }}
               />
-            </LineChart>
+            </AreaChart>
           </ResponsiveContainer>
         </div>
 

@@ -8,13 +8,15 @@ import { ChevronLeft, ChevronRight, Calendar as CalendarIcon } from "lucide-reac
 import { cn } from "@/lib/utils";
 import { Link } from "react-router-dom";
 import { parseIPODate } from "@/lib/api";
+import { useIsMobile } from "@/hooks/use-mobile";
 
 const MONTHS = [
   "January", "February", "March", "April", "May", "June",
   "July", "August", "September", "October", "November", "December"
 ];
 
-const WEEKDAYS = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
+const WEEKDAYS = ["S", "M", "T", "W", "T", "F", "S"];
+const WEEKDAYS_FULL = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
 
 interface CalendarEvent {
   date: Date;
@@ -27,6 +29,7 @@ interface CalendarEvent {
 
 export default function IPOCalendarPage() {
   const { settings } = useAdmin();
+  const isMobile = useIsMobile();
   const now = new Date();
   const [currentMonth, setCurrentMonth] = useState(now.getMonth());
   const [currentYear, setCurrentYear] = useState(now.getFullYear());
@@ -120,69 +123,69 @@ export default function IPOCalendarPage() {
       title={pageSettings.title}
       description={pageSettings.description}
     >
-      <div className="container py-6 md:py-8 space-y-6">
+      <div className="container py-4 md:py-6 space-y-4">
         {/* Header */}
         <header>
-          <h1 className="text-2xl md:text-3xl font-bold mb-2">{pageSettings.h1}</h1>
-          <p className="text-muted-foreground">{pageSettings.subheading}</p>
+          <h1 className="text-xl md:text-2xl font-semibold mb-1">{pageSettings.h1}</h1>
+          <p className="text-sm text-muted-foreground">{pageSettings.subheading}</p>
         </header>
 
         {/* Legend */}
-        <div className="flex flex-wrap items-center gap-4 text-sm">
-          <div className="flex items-center gap-2">
-            <div className="w-3 h-3 rounded-full bg-primary" />
-            <span>IPO Open</span>
+        <div className="flex flex-wrap items-center gap-3 text-xs">
+          <div className="flex items-center gap-1.5">
+            <div className="w-2 h-2 rounded-full bg-primary" />
+            <span>Open</span>
           </div>
-          <div className="flex items-center gap-2">
-            <div className="w-3 h-3 rounded-full bg-destructive" />
-            <span>IPO Close</span>
+          <div className="flex items-center gap-1.5">
+            <div className="w-2 h-2 rounded-full bg-destructive" />
+            <span>Close</span>
           </div>
-          <div className="flex items-center gap-2">
-            <div className="w-3 h-3 rounded-full bg-warning" />
+          <div className="flex items-center gap-1.5">
+            <div className="w-2 h-2 rounded-full bg-warning" />
             <span>Allotment</span>
           </div>
-          <div className="flex items-center gap-2">
-            <div className="w-3 h-3 rounded-full bg-success" />
+          <div className="flex items-center gap-1.5">
+            <div className="w-2 h-2 rounded-full bg-success" />
             <span>Listing</span>
           </div>
         </div>
 
         {/* Calendar */}
-        <Card className="border">
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-4">
+        <Card>
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 p-3 md:p-4 border-b">
             <div className="flex items-center gap-2">
-              <CalendarIcon className="h-5 w-5 text-muted-foreground" />
-              <CardTitle className="text-xl">
+              <CalendarIcon className="h-4 w-4 text-muted-foreground" />
+              <CardTitle className="text-sm md:text-base font-medium">
                 {MONTHS[currentMonth]} {currentYear}
               </CardTitle>
             </div>
-            <div className="flex items-center gap-2">
-              <Button variant="outline" size="sm" onClick={goToToday}>
+            <div className="flex items-center gap-1">
+              <Button variant="ghost" size="sm" onClick={goToToday} className="h-7 text-xs hidden sm:inline-flex">
                 Today
               </Button>
-              <Button variant="outline" size="icon" onClick={goToPrevMonth}>
+              <Button variant="ghost" size="icon" onClick={goToPrevMonth} className="h-7 w-7">
                 <ChevronLeft className="h-4 w-4" />
               </Button>
-              <Button variant="outline" size="icon" onClick={goToNextMonth}>
+              <Button variant="ghost" size="icon" onClick={goToNextMonth} className="h-7 w-7">
                 <ChevronRight className="h-4 w-4" />
               </Button>
             </div>
           </CardHeader>
-          <CardContent>
+          <CardContent className="p-2 md:p-4">
             {/* Weekday headers */}
-            <div className="grid grid-cols-7 gap-1 mb-2">
-              {WEEKDAYS.map(day => (
-                <div key={day} className="text-center text-xs font-medium text-muted-foreground py-2">
+            <div className="grid grid-cols-7 gap-0.5 mb-1">
+              {(isMobile ? WEEKDAYS : WEEKDAYS_FULL).map((day, i) => (
+                <div key={i} className="text-center text-[10px] md:text-xs text-muted-foreground py-1">
                   {day}
                 </div>
               ))}
             </div>
 
             {/* Calendar grid */}
-            <div className="grid grid-cols-7 gap-1">
+            <div className="grid grid-cols-7 gap-0.5">
               {calendarDays.map((day, index) => {
                 if (day === null) {
-                  return <div key={`empty-${index}`} className="h-24 md:h-28" />;
+                  return <div key={`empty-${index}`} className="h-12 md:h-20" />;
                 }
 
                 const dayEvents = getEventsForDay(day);
@@ -192,35 +195,51 @@ export default function IPOCalendarPage() {
                   <div 
                     key={day} 
                     className={cn(
-                      "h-24 md:h-28 p-1 border rounded-md overflow-hidden",
+                      "h-12 md:h-20 p-0.5 md:p-1 border rounded overflow-hidden",
                       today && "border-primary bg-primary/5"
                     )}
                   >
                     <div className={cn(
-                      "text-sm font-medium mb-1",
-                      today && "text-primary"
+                      "text-[10px] md:text-xs mb-0.5",
+                      today && "text-primary font-medium"
                     )}>
                       {day}
                     </div>
-                    <div className="space-y-0.5 overflow-y-auto max-h-16 md:max-h-20">
-                      {dayEvents.slice(0, 3).map((event, idx) => (
-                        <Link 
-                          key={`${event.ipo.slug}-${event.type}-${idx}`}
-                          to={`/ipo/${event.ipo.slug}`}
-                          className="block"
-                        >
-                          <div className={cn(
-                            "text-[10px] px-1 py-0.5 rounded text-white truncate",
-                            getEventColor(event.type)
-                          )}>
-                            {event.ipo.name.replace(" IPO", "")}
+                    <div className="space-y-0.5 overflow-hidden">
+                      {/* Mobile: just show dots */}
+                      {isMobile ? (
+                        dayEvents.length > 0 && (
+                          <div className="flex gap-0.5 flex-wrap">
+                            {dayEvents.slice(0, 4).map((event, idx) => (
+                              <div 
+                                key={idx}
+                                className={cn("w-1.5 h-1.5 rounded-full", getEventColor(event.type))}
+                              />
+                            ))}
                           </div>
-                        </Link>
-                      ))}
-                      {dayEvents.length > 3 && (
-                        <div className="text-[10px] text-muted-foreground px-1">
-                          +{dayEvents.length - 3} more
-                        </div>
+                        )
+                      ) : (
+                        <>
+                          {dayEvents.slice(0, 2).map((event, idx) => (
+                            <Link 
+                              key={`${event.ipo.slug}-${event.type}-${idx}`}
+                              to={`/ipo/${event.ipo.slug}`}
+                              className="block"
+                            >
+                              <div className={cn(
+                                "text-[8px] px-1 py-0.5 rounded text-white truncate",
+                                getEventColor(event.type)
+                              )}>
+                                {event.ipo.name.replace(" IPO", "")}
+                              </div>
+                            </Link>
+                          ))}
+                          {dayEvents.length > 2 && (
+                            <div className="text-[8px] text-muted-foreground px-0.5">
+                              +{dayEvents.length - 2}
+                            </div>
+                          )}
+                        </>
                       )}
                     </div>
                   </div>
@@ -231,39 +250,39 @@ export default function IPOCalendarPage() {
         </Card>
 
         {/* Upcoming Events List */}
-        <Card className="border">
-          <CardHeader>
-            <CardTitle className="text-base">Upcoming Events This Month</CardTitle>
+        <Card>
+          <CardHeader className="p-3 md:p-4 border-b">
+            <CardTitle className="text-sm font-medium">Upcoming Events</CardTitle>
           </CardHeader>
-          <CardContent>
+          <CardContent className="p-0">
             {isLoading ? (
-              <div className="space-y-3">
-                {[...Array(5)].map((_, i) => (
-                  <div key={i} className="h-10 bg-muted animate-pulse rounded" />
+              <div className="p-3 space-y-2">
+                {[...Array(4)].map((_, i) => (
+                  <div key={i} className="h-8 bg-muted/50 animate-pulse rounded" />
                 ))}
               </div>
             ) : events.filter(e => e.date >= now).length === 0 ? (
-              <p className="text-muted-foreground text-center py-4">No upcoming events this month.</p>
+              <p className="text-muted-foreground text-center text-sm p-6">No upcoming events.</p>
             ) : (
-              <div className="space-y-2">
+              <div className="divide-y">
                 {events
                   .filter(e => e.date >= now)
                   .sort((a, b) => a.date.getTime() - b.date.getTime())
-                  .slice(0, 10)
+                  .slice(0, 8)
                   .map((event, idx) => (
                     <Link 
                       key={`${event.ipo.slug}-${event.type}-${idx}`}
                       to={`/ipo/${event.ipo.slug}`}
-                      className="flex items-center gap-3 p-2 rounded-md hover:bg-muted transition-colors"
+                      className="flex items-center gap-2 p-3 hover:bg-muted/50 transition-colors"
                     >
-                      <div className={cn("w-2 h-2 rounded-full", getEventColor(event.type))} />
+                      <div className={cn("w-1.5 h-1.5 rounded-full shrink-0", getEventColor(event.type))} />
                       <div className="flex-1 min-w-0">
-                        <div className="font-medium text-sm truncate">{event.ipo.name}</div>
-                        <div className="text-xs text-muted-foreground capitalize">
+                        <div className="text-sm truncate">{event.ipo.name}</div>
+                        <div className="text-[10px] text-muted-foreground capitalize">
                           {event.type === "open" ? "Opens" : event.type === "close" ? "Closes" : event.type}
                         </div>
                       </div>
-                      <div className="text-sm text-muted-foreground">
+                      <div className="text-xs text-muted-foreground shrink-0">
                         {event.date.toLocaleDateString("en-IN", { day: "numeric", month: "short" })}
                       </div>
                     </Link>

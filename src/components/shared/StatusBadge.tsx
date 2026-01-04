@@ -1,6 +1,5 @@
 import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
-import { Circle } from "lucide-react";
 
 interface StatusBadgeProps {
   status: string;
@@ -27,19 +26,6 @@ export function StatusBadge({ status, className, showDot = true }: StatusBadgePr
     }
   };
 
-  const getDotColor = () => {
-    switch (statusLower) {
-      case "open":
-        return "fill-success text-success";
-      case "closed":
-        return "fill-destructive text-destructive";
-      case "upcoming":
-        return "fill-primary text-primary";
-      default:
-        return "fill-muted-foreground text-muted-foreground";
-    }
-  };
-
   const getLabel = () => {
     switch (statusLower) {
       case "open":
@@ -51,7 +37,7 @@ export function StatusBadge({ status, className, showDot = true }: StatusBadgePr
       case "listed":
         return "Listed";
       case "recently listed":
-        return "Recently Listed";
+        return "Listed";
       default:
         return status;
     }
@@ -61,13 +47,13 @@ export function StatusBadge({ status, className, showDot = true }: StatusBadgePr
     <Badge 
       variant="outline" 
       className={cn(
-        "font-medium text-xs gap-1.5 px-2.5 py-1",
+        "text-[10px] px-1.5 py-0.5 font-normal",
         getVariant(), 
         className
       )}
     >
       {showDot && statusLower === "open" && (
-        <Circle className={cn("h-2 w-2 animate-pulse", getDotColor())} />
+        <span className="h-1.5 w-1.5 rounded-full bg-success animate-pulse mr-1" />
       )}
       {getLabel()}
     </Badge>
@@ -84,14 +70,14 @@ export function TypeBadge({ type, className }: TypeBadgeProps) {
     <Badge 
       variant="outline" 
       className={cn(
-        "font-medium text-xs px-2.5 py-1",
+        "text-[10px] px-1.5 py-0.5 font-normal",
         type === "mainboard" 
-          ? "bg-chart-3/8 text-chart-3 border-chart-3/25" 
-          : "bg-warning/8 text-warning border-warning/25",
+          ? "bg-chart-3/10 text-chart-3 border-chart-3/30" 
+          : "bg-warning/10 text-warning border-warning/30",
         className
       )}
     >
-      {type === "mainboard" ? "Mainboard" : "SME"}
+      {type === "mainboard" ? "MB" : "SME"}
     </Badge>
   );
 }

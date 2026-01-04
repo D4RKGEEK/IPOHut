@@ -9,12 +9,12 @@ import { useIsMobile } from "@/hooks/use-mobile";
 const tableColumns: IPOTableColumn[] = [
   { key: "name", label: "IPO Name", sortable: true },
   { key: "status", label: "Status" },
-  { key: "openDate", label: "Open Date", hideOnMobile: true },
-  { key: "closeDate", label: "Close Date", hideOnMobile: true },
-  { key: "listingDate", label: "Listing Date", hideOnMobile: true },
+  { key: "openDate", label: "Open", hideOnMobile: true },
+  { key: "closeDate", label: "Close", hideOnMobile: true },
+  { key: "listingDate", label: "Listing", hideOnMobile: true },
   { key: "issuePrice", label: "Price", sortable: true },
   { key: "gmp", label: "GMP", sortable: true },
-  { key: "subscriptionTimes", label: "Subscription", sortable: true, hideOnMobile: true },
+  { key: "subscriptionTimes", label: "Subs", sortable: true, hideOnMobile: true },
 ];
 
 export default function SMEIPOPage() {
@@ -55,33 +55,43 @@ export default function SMEIPOPage() {
       title={pageSettings.title}
       description={pageSettings.description}
     >
-      <div className="container py-6 md:py-8 space-y-6">
+      <div className="container py-4 md:py-6 space-y-4">
         {/* Header */}
         <header>
-          <h1 className="text-2xl md:text-3xl font-bold mb-2">{pageSettings.h1}</h1>
-          <p className="text-muted-foreground">{pageSettings.subheading}</p>
+          <h1 className="text-xl md:text-2xl font-semibold mb-1">{pageSettings.h1}</h1>
+          <p className="text-sm text-muted-foreground">{pageSettings.subheading}</p>
         </header>
 
         {/* Tabs for filtering */}
         <Tabs value={statusFilter} onValueChange={setStatusFilter}>
-          <TabsList className="grid w-full grid-cols-5 lg:w-auto lg:inline-flex">
-            <TabsTrigger value="all">All ({allData.length})</TabsTrigger>
-            <TabsTrigger value="open">Open ({openCount})</TabsTrigger>
-            <TabsTrigger value="upcoming">Upcoming ({upcomingCount})</TabsTrigger>
-            <TabsTrigger value="closed">Closed ({closedCount})</TabsTrigger>
-            <TabsTrigger value="listed">Listed ({listedCount})</TabsTrigger>
+          <TabsList className="w-full h-auto p-1 bg-muted/50 rounded-md grid grid-cols-5 gap-0.5 text-xs">
+            <TabsTrigger value="all" className="py-1.5 px-2 data-[state=active]:bg-background">
+              All <span className="hidden sm:inline ml-1">({allData.length})</span>
+            </TabsTrigger>
+            <TabsTrigger value="open" className="py-1.5 px-2 data-[state=active]:bg-background">
+              Open <span className="hidden sm:inline ml-1">({openCount})</span>
+            </TabsTrigger>
+            <TabsTrigger value="upcoming" className="py-1.5 px-2 data-[state=active]:bg-background">
+              Soon <span className="hidden sm:inline ml-1">({upcomingCount})</span>
+            </TabsTrigger>
+            <TabsTrigger value="closed" className="py-1.5 px-2 data-[state=active]:bg-background">
+              Closed <span className="hidden sm:inline ml-1">({closedCount})</span>
+            </TabsTrigger>
+            <TabsTrigger value="listed" className="py-1.5 px-2 data-[state=active]:bg-background">
+              Listed <span className="hidden sm:inline ml-1">({listedCount})</span>
+            </TabsTrigger>
           </TabsList>
 
-          <TabsContent value={statusFilter} className="mt-6">
+          <TabsContent value={statusFilter} className="mt-4">
             {isMobile ? (
-              <div className="grid grid-cols-1 gap-4">
+              <div className="grid grid-cols-1 gap-2">
                 {isLoading ? (
                   [...Array(5)].map((_, i) => (
-                    <div key={i} className="h-40 bg-muted animate-pulse rounded-md" />
+                    <div key={i} className="h-32 bg-muted/50 animate-pulse rounded-md" />
                   ))
                 ) : filteredData.length === 0 ? (
-                  <div className="text-center py-8 text-muted-foreground">
-                    No IPOs found in this category.
+                  <div className="text-center py-8 text-sm text-muted-foreground">
+                    No IPOs found.
                   </div>
                 ) : (
                   filteredData.map(ipo => (
@@ -106,7 +116,7 @@ export default function SMEIPOPage() {
                 columns={tableColumns}
                 data={tableData}
                 isLoading={isLoading}
-                emptyMessage="No IPOs found in this category"
+                emptyMessage="No IPOs found"
               />
             )}
           </TabsContent>

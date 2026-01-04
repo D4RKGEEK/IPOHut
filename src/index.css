@@ -138,28 +138,34 @@
 
   html {
     scroll-behavior: smooth;
+    -webkit-tap-highlight-color: transparent;
   }
 
   body {
     @apply bg-background text-foreground antialiased;
     font-family: 'Inter', system-ui, -apple-system, sans-serif;
+    font-weight: 400;
     font-feature-settings: "rlig" 1, "calt" 1;
   }
 
-  /* Display font for headings */
+  /* Display font for headings - lighter weight */
   h1, h2, h3, .font-display {
-    font-family: 'Outfit', system-ui, -apple-system, sans-serif;
-    letter-spacing: -0.02em;
+    font-family: 'Inter', system-ui, -apple-system, sans-serif;
+    font-weight: 500;
+    letter-spacing: -0.01em;
   }
+
+  h1 { font-weight: 600; }
 
   /* Monospace for financial numbers */
   .font-tabular {
     font-variant-numeric: tabular-nums;
-    font-family: 'JetBrains Mono', ui-monospace, SFMono-Regular, monospace;
+    font-family: 'SF Mono', 'JetBrains Mono', ui-monospace, monospace;
+    font-weight: 500;
   }
 
   .font-mono {
-    font-family: 'JetBrains Mono', ui-monospace, SFMono-Regular, monospace;
+    font-family: 'SF Mono', 'JetBrains Mono', ui-monospace, monospace;
   }
 }
 

@@ -2,6 +2,7 @@ import { useIPONews } from "@/hooks/useIPO";
 import Link from "next/link";
 import { cn } from "@/lib/utils";
 import { AlertCircle, TrendingUp, Calendar, Bell, CheckCircle } from "lucide-react";
+import { IPONews } from "@/types/ipo";
 
 const getNewsIcon = (type: string) => {
   switch (type) {
@@ -30,10 +31,17 @@ const getPriorityClass = (priority: string) => {
   }
 };
 
-export function NewsTicker() {
-  const { data, isLoading, error } = useIPONews({ limit: 20 });
+interface NewsTickerProps {
+  initialData?: IPONews[];
+}
 
-  if (isLoading) {
+export function NewsTicker({ initialData }: NewsTickerProps) {
+  const { data, isLoading, error } = useIPONews({ limit: 20 }, { enabled: !initialData });
+
+  const newsData = initialData || data?.data;
+  const loading = !initialData && isLoading;
+
+  if (loading) {
     return (
       <div className="bg-muted/50 border-y overflow-hidden py-2">
         <div className="flex items-center gap-4 animate-pulse">
@@ -45,11 +53,11 @@ export function NewsTicker() {
     );
   }
 
-  if (error || !data?.data?.length) {
+  if ((!initialData && error) || !newsData?.length) {
     return null;
   }
 
-  const newsItems = data.data;
+  const newsItems = newsData;
 
   // Duplicate items for seamless loop
   const tickerItems = [...newsItems, ...newsItems];

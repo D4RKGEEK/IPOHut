@@ -27,10 +27,18 @@ import {
 } from "lucide-react";
 import { analytics, useScrollTracking, useTimeOnPage } from "@/hooks/useAnalytics";
 
-export default function IPOAllotmentCheckerPage() {
+import { IPODetail, APIResponse } from "@/types/ipo";
+
+interface IPOAllotmentCheckerPageProps {
+  initialData?: IPODetail;
+}
+
+export default function IPOAllotmentCheckerPage({ initialData }: IPOAllotmentCheckerPageProps) {
   const params = useParams();
   const slug = params?.slug as string;
-  const { data, isLoading, error } = useIPODetail(slug || "");
+  const { data: queryData, isLoading, error } = useIPODetail(slug || "", { enabled: !initialData });
+
+  const data = initialData ? { success: true, data: initialData } : queryData;
 
   // Track page
   useScrollTracking(`allotment-checker-${slug}`);

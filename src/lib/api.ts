@@ -49,14 +49,14 @@ export async function fetchStatus(params: {
 // News API
 export async function fetchNews(params?: {
   type?:
-    | "announcement"
-    | "opening_today"
-    | "closing_today"
-    | "listing"
-    | "subscription"
-    | "gmp"
-    | "allotment_date"
-    | "shares_credited";
+  | "announcement"
+  | "opening_today"
+  | "closing_today"
+  | "listing"
+  | "subscription"
+  | "gmp"
+  | "allotment_date"
+  | "shares_credited";
   priority?: "high" | "medium" | "low";
   limit?: number;
   offset?: number;
@@ -86,6 +86,13 @@ export async function fetchCalendar(params?: {
 // Detail API
 export async function fetchIPODetail(slug: string): Promise<APIResponse<IPODetail>> {
   return fetchAPI<IPODetail>(`/api/ipos/${slug}/details`);
+}
+
+// Metadata API (for sitemap/static params)
+export async function fetchIPOMetadata(): Promise<APIResponse<Array<{ slug: string; name: string; updated_at: string }>>> {
+  // The user specified: https://ipo-api-production.up.railway.app/api/ipos/metadata
+  // Our base URL is already set to that domain.
+  return fetchAPI<Array<{ slug: string; name: string; updated_at: string }>>("/api/ipos/metadata");
 }
 
 // Helper to format currency

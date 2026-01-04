@@ -22,9 +22,18 @@ const tableColumns: IPOTableColumn[] = [
   { key: "estimatedListing", label: "Est. Listing", hideOnMobile: true },
 ];
 
-export default function GMPTrackerPage() {
+import { IPOStatus, APIResponse } from "@/types/ipo";
+
+interface GMPTrackerPageProps {
+  initialData?: APIResponse<IPOStatus[]>;
+}
+
+export default function GMPTrackerPage({ initialData }: GMPTrackerPageProps) {
   const { settings } = useAdmin();
-  const { data, isLoading } = useGMPIPOs(100);
+  const { data: queryData, isLoading: queryLoading } = useGMPIPOs(100);
+
+  const data = initialData || queryData;
+  const isLoading = !initialData && queryLoading;
   const isMobile = useIsMobile();
   const [selectedIPO, setSelectedIPO] = useState<{
     name: string;

@@ -12,14 +12,43 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { cn } from "@/lib/utils";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 
-export default function HomePage() {
+import { IPOStatus, IPOGain, APIResponse, IPONews } from "@/types/ipo";
+
+interface HomePageProps {
+  initialData?: {
+    openIPOs?: APIResponse<IPOStatus[]>;
+    upcomingIPOs?: APIResponse<IPOStatus[]>;
+    recentlyListed?: APIResponse<IPOStatus[]>;
+    gainersData?: APIResponse<IPOGain[]>;
+    losersData?: APIResponse<IPOGain[]>;
+    newsData?: APIResponse<IPONews[]>;
+  }
+}
+
+export default function HomePage({ initialData }: HomePageProps) {
   const { settings } = useAdmin();
   const homeConfig = settings.site.homePageConfig;
-  const { data: openIPOs, isLoading: loadingOpen } = useOpenIPOs(6);
-  const { data: upcomingIPOs, isLoading: loadingUpcoming } = useUpcomingIPOs(5);
-  const { data: recentlyListed, isLoading: loadingRecent } = useRecentlyListedIPOs(8);
-  const { data: gainersData, isLoading: loadingGainers } = useTopGainers(5);
-  const { data: losersData, isLoading: loadingLosers } = useTopLosers(5);
+
+  const { data: qOpen, isLoading: lOpen } = useOpenIPOs(6, { enabled: !initialData?.openIPOs });
+  const { data: qUpcoming, isLoading: lUpcoming } = useUpcomingIPOs(5, { enabled: !initialData?.upcomingIPOs });
+  const { data: qRecent, isLoading: lRecent } = useRecentlyListedIPOs(8, { enabled: !initialData?.recentlyListed });
+
+  // Note: custom hooks like useTopGainers/Losers wrap useQuery but don't expose options in current implementation
+  // We need to update useIPO.ts to allow passing options to these specific hooks too
+  const { data: qGainers, isLoading: lGainers } = useTopGainers(5, { enabled: !initialData?.gainersData });
+  const { data: qLosers, isLoading: lLosers } = useTopLosers(5, { enabled: !initialData?.losersData });
+
+  const openIPOs = initialData?.openIPOs || qOpen;
+  const upcomingIPOs = initialData?.upcomingIPOs || qUpcoming;
+  const recentlyListed = initialData?.recentlyListed || qRecent;
+  const gainersData = initialData?.gainersData || qGainers;
+  const losersData = initialData?.losersData || qLosers;
+
+  const loadingOpen = !initialData?.openIPOs && lOpen;
+  const loadingUpcoming = !initialData?.upcomingIPOs && lUpcoming;
+  const loadingRecent = !initialData?.recentlyListed && lRecent;
+  const loadingGainers = !initialData?.gainersData && lGainers;
+  const loadingLosers = !initialData?.losersData && lLosers;
 
   const pageSettings = settings.pages.home;
 
@@ -29,7 +58,7 @@ export default function HomePage() {
       description={pageSettings.description}
     >
       {/* News Ticker */}
-      {homeConfig.showNewsTicker && <NewsTicker />}
+      {homeConfig.showNewsTicker && <NewsTicker initialData={initialData?.newsData?.data} />}
 
       {/* Hero Section */}
       <section className="relative overflow-hidden border-b">

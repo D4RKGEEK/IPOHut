@@ -1,5 +1,5 @@
 import { MetadataRoute } from 'next';
-import { fetchStatus } from '@/lib/api';
+import { fetchIPOMetadata } from '@/lib/api';
 
 const BASE_URL = 'https://ipohut.in';
 
@@ -19,42 +19,23 @@ const STATIC_ROUTES = [
 ];
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-    const [open, upcoming, recently, closed] = await Promise.all([
-        fetchStatus({ status: 'open', limit: 100 }),
-        fetchStatus({ status: 'upcoming', limit: 100 }),
-        fetchStatus({ status: 'recently_listed', limit: 100 }),
-        fetchStatus({ status: 'closed', limit: 100 }),
-    ]);
+    const response = await fetchIPOMetadata();
+    const allIPOs = response.data || [];
 
-    const allIPOs = [
-        ...(open.data || []),
-        ...(upcoming.data || []),
-        ...(recently.data || []),
-        ...(closed.data || [])
-    ];
-
-    // Dedup by slug
-    const uniqueSlugs = new Set();
-    const ipoEntries = allIPOs
-        .filter(ipo => {
-            if (!ipo.slug || uniqueSlugs.has(ipo.slug)) return false;
-            uniqueSlugs.add(ipo.slug);
-            return true;
-        })
-        .flatMap(ipo => ([
-            {
-                url: `${BASE_URL}/ipo/${ipo.slug}`,
-                lastModified: new Date(),
-                changeFrequency: 'daily' as const,
-                priority: 0.8,
-            },
-            {
-                url: `${BASE_URL}/ipo/${ipo.slug}/allotment`,
-                lastModified: new Date(),
-                changeFrequency: 'daily' as const,
-                priority: 0.7,
-            }
-        ]));
+    const ipoEntries = allIPOs.map(ipo => ([
+        {
+            url: `${BASE_URL}/ipo/${ipo.slug}`,
+            lastModified: new Date(ipo.updated_at || new Date()),
+            changeFrequency: 'daily' as const,
+            priority: 0.8,
+        },
+        {
+            url: `${BASE_URL}/ipo/${ipo.slug}/allotment`,
+            lastModified: new Date(ipo.updated_at || new Date()),
+            changeFrequency: 'daily' as const,
+            priority: 0.7,
+        }
+    ])).flat();
 
     const staticEntries = STATIC_ROUTES.map(route => ({
         url: `${BASE_URL}${route.url}`,

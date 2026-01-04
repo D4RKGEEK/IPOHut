@@ -27,6 +27,10 @@ export interface IPOStatus {
   subscription_times?: number;
   listed_on?: string;
   ipo_type: "mainboard" | "sme";
+  gmp?: number;
+  gmp_percent?: number;
+  estimated_listing?: number;
+  lot_size?: number;
 }
 
 export interface IPONews {

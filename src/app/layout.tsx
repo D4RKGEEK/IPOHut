@@ -4,9 +4,36 @@ import { Inter } from 'next/font/google';
 
 const inter = Inter({ subsets: ['latin'] });
 
+import { defaultAdminSettings } from "@/types/admin";
+import Script from "next/script";
+
 export const metadata = {
-    title: 'IPO Hut',
-    description: 'Track Latest IPOs',
+    title: {
+        default: defaultAdminSettings.site.branding.siteName,
+        template: `%s${defaultAdminSettings.site.defaultSeo.titleSuffix}`,
+    },
+    description: defaultAdminSettings.site.defaultSeo.defaultDescription,
+    keywords: defaultAdminSettings.site.defaultSeo.defaultKeywords,
+    openGraph: {
+        title: {
+            default: defaultAdminSettings.site.branding.siteName,
+            template: `%s${defaultAdminSettings.site.defaultSeo.titleSuffix}`,
+        },
+        description: defaultAdminSettings.site.defaultSeo.defaultDescription,
+        siteName: defaultAdminSettings.site.branding.siteName,
+        images: defaultAdminSettings.site.defaultSeo.ogImage ? [defaultAdminSettings.site.defaultSeo.ogImage] : [],
+        type: "website",
+    },
+    twitter: {
+        card: "summary_large_image",
+        title: {
+            default: defaultAdminSettings.site.branding.siteName,
+            template: `%s${defaultAdminSettings.site.defaultSeo.titleSuffix}`,
+        },
+        description: defaultAdminSettings.site.defaultSeo.defaultDescription,
+        site: defaultAdminSettings.site.defaultSeo.twitterHandle,
+        creator: defaultAdminSettings.site.defaultSeo.twitterHandle,
+    },
 };
 
 export default function RootLayout({
@@ -16,6 +43,13 @@ export default function RootLayout({
 }) {
     return (
         <html lang="en" suppressHydrationWarning>
+            <head>
+                {defaultAdminSettings.site.scripts.headerScripts && (
+                    <script
+                        dangerouslySetInnerHTML={{ __html: defaultAdminSettings.site.scripts.headerScripts }}
+                    />
+                )}
+            </head>
             <body className={inter.className}>
                 <Providers>{children}</Providers>
             </body>

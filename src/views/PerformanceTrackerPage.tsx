@@ -22,11 +22,26 @@ const tableColumns: IPOTableColumn[] = [
   { key: "subscriptionTimes", label: "Subs", hideOnMobile: true },
 ];
 
-export default function PerformanceTrackerPage() {
+import { IPOGain, APIResponse } from "@/types/ipo";
+
+interface PerformanceTrackerPageProps {
+  initialData?: {
+    gainers?: APIResponse<IPOGain[]>;
+    losers?: APIResponse<IPOGain[]>;
+  }
+}
+
+export default function PerformanceTrackerPage({ initialData }: PerformanceTrackerPageProps) {
   const { settings } = useAdmin();
   const isMobile = useIsMobile();
-  const { data: gainersData, isLoading: loadingGainers } = useTopGainers(50);
-  const { data: losersData, isLoading: loadingLosers } = useTopLosers(50);
+  const { data: qGainers, isLoading: lGainers } = useTopGainers(50);
+  const { data: qLosers, isLoading: lLosers } = useTopLosers(50);
+
+  const gainersData = initialData?.gainers || qGainers;
+  const losersData = initialData?.losers || qLosers;
+
+  const loadingGainers = !initialData?.gainers && lGainers;
+  const loadingLosers = !initialData?.losers && lLosers;
 
   const pageSettings = settings.pages.performance;
 

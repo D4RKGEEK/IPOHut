@@ -30,18 +30,27 @@ interface CalendarEvent {
   };
 }
 
-export default function IPOCalendarPage() {
+import { IPOCalendar, APIResponse } from "@/types/ipo";
+
+interface IPOCalendarPageProps {
+  initialData?: APIResponse<IPOCalendar[]>;
+}
+
+export default function IPOCalendarPage({ initialData }: IPOCalendarPageProps) {
   const { settings } = useAdmin();
   const isMobile = useIsMobile();
   const now = new Date();
   const [currentMonth, setCurrentMonth] = useState(now.getMonth());
   const [currentYear, setCurrentYear] = useState(now.getFullYear());
 
-  const { data, isLoading } = useIPOCalendar({
+  const { data: queryData, isLoading: queryLoading } = useIPOCalendar({
     month: currentMonth + 1,
     year: currentYear,
     limit: 100,
   });
+
+  const data = initialData || queryData;
+  const isLoading = !initialData && queryLoading;
 
   const pageSettings = settings.pages.calendar;
   const ipos = data?.data || [];

@@ -2,7 +2,6 @@
 
 import { useParams } from "next/navigation";
 import Link from "next/link";
-import { Helmet } from "react-helmet-async";
 import { MainLayout } from "@/components/layout";
 import { useAdmin } from "@/contexts/AdminContext";
 import { useIPODetail } from "@/hooks/useIPO";
@@ -19,11 +18,21 @@ import { PDFDownloadButton, WidgetRenderer } from "@/components/ipo";
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
 import { useMemo } from "react";
 
-export default function IPODetailPage() {
+import { IPODetail } from "@/types/ipo";
+
+interface IPODetailPageProps {
+  initialData?: IPODetail;
+}
+
+export default function IPODetailPage({ initialData }: IPODetailPageProps) {
   const params = useParams();
   const slug = params?.slug as string;
   const { settings } = useAdmin();
-  const { data, isLoading, error } = useIPODetail(slug || "");
+  const { data: queryData, isLoading, error } = useIPODetail(slug || "", {
+    enabled: !initialData, // Only fetch if no initial data
+  });
+
+  const data = initialData ? { data: initialData } : queryData;
 
   // Track scroll and time on page
   useScrollTracking(`ipo-detail-${slug}`);
@@ -293,13 +302,6 @@ export default function IPODetailPage() {
 
   return (
     <>
-      <Helmet>
-        <title>{pageTitle}</title>
-        <meta name="description" content={pageDescription} />
-        <script type="application/ld+json">{JSON.stringify(structuredData)}</script>
-        <script type="application/ld+json">{JSON.stringify(faqStructuredData)}</script>
-      </Helmet>
-
       <MainLayout>
         <div className="container px-2 sm:px-4 md:px-6 py-4 md:py-8 space-y-3 sm:space-y-4 md:space-y-6">
           <BreadcrumbNav
@@ -403,6 +405,10 @@ export default function IPODetailPage() {
           )}
         </div>
       </MainLayout>
+
+      {/* JSON-LD - Injected in Body for now, or use next/script if needed, but plain script works */}
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }} />
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(faqStructuredData) }} />
     </>
   );
 }

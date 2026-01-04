@@ -12,9 +12,18 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { ExternalLink, Search, CheckCircle } from "lucide-react";
 import Link from "next/link";
 
-export default function AllotmentStatusPage() {
+import { IPOStatus, APIResponse } from "@/types/ipo";
+
+interface AllotmentStatusPageProps {
+  initialData?: APIResponse<IPOStatus[]>;
+}
+
+export default function AllotmentStatusPage({ initialData }: AllotmentStatusPageProps) {
   const { settings } = useAdmin();
-  const { data, isLoading } = useClosedIPOs(50);
+  const { data: queryData, isLoading: queryLoading } = useClosedIPOs(50);
+
+  const data = initialData || queryData;
+  const isLoading = !initialData && queryLoading;
 
   const pageSettings = settings.pages.allotmentStatus;
   const closedIPOs = data?.data || [];

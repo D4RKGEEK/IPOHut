@@ -6,6 +6,7 @@ import { useAdmin } from "@/contexts/AdminContext";
 import { useMainboardIPOs } from "@/hooks/useIPO";
 import { IPOTable, IPOTableColumn, IPOTableRow, IPOCard, BreadcrumbNav } from "@/components/shared";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Button } from "@/components/ui/button";
 import { useIsMobile } from "@/hooks/use-mobile";
 
 const tableColumns: IPOTableColumn[] = [
@@ -19,9 +20,18 @@ const tableColumns: IPOTableColumn[] = [
   { key: "subscriptionTimes", label: "Subs", sortable: true, hideOnMobile: true },
 ];
 
-export default function MainboardIPOPage() {
+import { IPOStatus, APIResponse } from "@/types/ipo";
+
+interface MainboardIPOPageProps {
+  initialData?: APIResponse<IPOStatus[]>;
+}
+
+export default function MainboardIPOPage({ initialData }: MainboardIPOPageProps) {
   const { settings } = useAdmin();
-  const { data, isLoading } = useMainboardIPOs(100);
+  const { data: queryData, isLoading: queryLoading } = useMainboardIPOs(100);
+
+  const data = initialData || queryData;
+  const isLoading = !initialData && queryLoading;
   const isMobile = useIsMobile();
   const [statusFilter, setStatusFilter] = useState<string>("all");
 
@@ -29,11 +39,21 @@ export default function MainboardIPOPage() {
 
   const allData = data?.data || [];
 
+  // Pagination
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 20;
+
   const filteredData = statusFilter === "all"
     ? allData
     : allData.filter(ipo => ipo.status === statusFilter);
 
-  const tableData: IPOTableRow[] = filteredData.map(ipo => ({
+  const totalPages = Math.ceil(filteredData.length / itemsPerPage);
+  const paginatedData = filteredData.slice(
+    (currentPage - 1) * itemsPerPage,
+    currentPage * itemsPerPage
+  );
+
+  const tableData: IPOTableRow[] = paginatedData.map(ipo => ({
     slug: ipo.slug,
     name: ipo.name,
     status: ipo.status,
@@ -52,6 +72,12 @@ export default function MainboardIPOPage() {
   const closedCount = allData.filter(i => i.status === "closed").length;
   const listedCount = allData.filter(i => i.status === "listed").length;
 
+  // Reset page when filter changes
+  const handleFilterChange = (value: string) => {
+    setStatusFilter(value);
+    setCurrentPage(1);
+  };
+
   return (
     <MainLayout
       title={pageSettings.title}
@@ -67,7 +93,7 @@ export default function MainboardIPOPage() {
         </header>
 
         {/* Tabs for filtering */}
-        <Tabs value={statusFilter} onValueChange={setStatusFilter}>
+        <Tabs value={statusFilter} onValueChange={handleFilterChange}>
           <TabsList className="w-full h-auto p-1 bg-muted/50 rounded-md grid grid-cols-5 gap-0.5 text-xs">
             <TabsTrigger value="all" className="py-1.5 px-2 data-[state=active]:bg-background">
               All <span className="hidden sm:inline ml-1">({allData.length})</span>
@@ -94,12 +120,12 @@ export default function MainboardIPOPage() {
                   [...Array(5)].map((_, i) => (
                     <div key={i} className="h-32 bg-muted/50 animate-pulse rounded-md" />
                   ))
-                ) : filteredData.length === 0 ? (
+                ) : paginatedData.length === 0 ? (
                   <div className="text-center py-8 text-sm text-muted-foreground">
                     No IPOs found.
                   </div>
                 ) : (
-                  filteredData.map(ipo => (
+                  paginatedData.map(ipo => (
                     <IPOCard
                       key={ipo.ipo_id}
                       name={ipo.name}
@@ -124,6 +150,33 @@ export default function MainboardIPOPage() {
                 isLoading={isLoading}
                 emptyMessage="No IPOs found"
               />
+            )}
+
+            {/* Pagination Controls */}
+            {totalPages > 1 && (
+              <div className="flex items-center justify-between mt-6 border-t pt-4">
+                <div className="text-sm text-muted-foreground">
+                  Page {currentPage} of {totalPages}
+                </div>
+                <div className="flex gap-2">
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
+                    disabled={currentPage === 1}
+                  >
+                    Previous
+                  </Button>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))}
+                    disabled={currentPage === totalPages}
+                  >
+                    Next
+                  </Button>
+                </div>
+              </div>
             )}
           </TabsContent>
         </Tabs>

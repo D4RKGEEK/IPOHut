@@ -9,6 +9,7 @@ import { AdminProvider } from "@/contexts/AdminContext";
 
 import HomePage from "./pages/HomePage";
 import IPODetailPage from "./pages/IPODetailPage";
+import IPOAllotmentCheckerPage from "./pages/IPOAllotmentCheckerPage";
 import MainboardIPOPage from "./pages/MainboardIPOPage";
 import SMEIPOPage from "./pages/SMEIPOPage";
 import GMPTrackerPage from "./pages/GMPTrackerPage";
@@ -34,6 +35,7 @@ const App = () => (
               <Routes>
                 <Route path="/" element={<HomePage />} />
                 <Route path="/ipo/:slug" element={<IPODetailPage />} />
+                <Route path="/ipo/:slug/allotment" element={<IPOAllotmentCheckerPage />} />
                 <Route path="/mainboard-ipo" element={<MainboardIPOPage />} />
                 <Route path="/sme-ipo" element={<SMEIPOPage />} />
                 <Route path="/ipo-gmp-today" element={<GMPTrackerPage />} />

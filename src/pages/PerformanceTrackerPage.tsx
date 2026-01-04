@@ -1,7 +1,7 @@
 import { MainLayout } from "@/components/layout";
 import { useAdmin } from "@/contexts/AdminContext";
 import { useTopGainers, useTopLosers } from "@/hooks/useIPO";
-import { IPOTable, IPOTableColumn, IPOTableRow } from "@/components/shared";
+import { IPOTable, IPOTableColumn, IPOTableRow, BreadcrumbNav } from "@/components/shared";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { formatPercent, getGainLossClass } from "@/lib/api";
@@ -62,6 +62,8 @@ export default function PerformanceTrackerPage() {
       description={pageSettings.description}
     >
       <div className="container py-4 md:py-6 space-y-4">
+        <BreadcrumbNav items={[{ label: "Performance Tracker" }]} />
+        
         {/* Header */}
         <header>
           <h1 className="text-xl md:text-2xl font-semibold mb-1">{pageSettings.h1}</h1>

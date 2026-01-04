@@ -2,7 +2,7 @@ import { useState } from "react";
 import { MainLayout } from "@/components/layout";
 import { useAdmin } from "@/contexts/AdminContext";
 import { useSMEIPOs } from "@/hooks/useIPO";
-import { IPOTable, IPOTableColumn, IPOTableRow, IPOCard } from "@/components/shared";
+import { IPOTable, IPOTableColumn, IPOTableRow, IPOCard, BreadcrumbNav } from "@/components/shared";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useIsMobile } from "@/hooks/use-mobile";
 
@@ -56,6 +56,8 @@ export default function SMEIPOPage() {
       description={pageSettings.description}
     >
       <div className="container py-4 md:py-6 space-y-4">
+        <BreadcrumbNav items={[{ label: "SME IPO" }]} />
+        
         {/* Header */}
         <header>
           <h1 className="text-xl md:text-2xl font-semibold mb-1">{pageSettings.h1}</h1>

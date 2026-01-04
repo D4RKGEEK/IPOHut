@@ -8,3 +8,5 @@ export { ThemeToggle } from "./ThemeToggle";
 export { NewsTicker } from "./NewsTicker";
 export { ShareButtons } from "./ShareButtons";
 export { IPOSelector, type SelectedIPO } from "./IPOSelector";
+export { BreadcrumbNav, useBreadcrumbs } from "./BreadcrumbNav";
+export { LazyImage } from "./LazyImage";

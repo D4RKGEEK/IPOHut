@@ -2,6 +2,7 @@ import { useState } from "react";
 import { MainLayout } from "@/components/layout";
 import { useAdmin } from "@/contexts/AdminContext";
 import { useIPOCalendar } from "@/hooks/useIPO";
+import { BreadcrumbNav } from "@/components/shared";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { ChevronLeft, ChevronRight, Calendar as CalendarIcon } from "lucide-react";
@@ -124,6 +125,8 @@ export default function IPOCalendarPage() {
       description={pageSettings.description}
     >
       <div className="container py-4 md:py-6 space-y-4">
+        <BreadcrumbNav items={[{ label: "IPO Calendar" }]} />
+        
         {/* Header */}
         <header>
           <h1 className="text-xl md:text-2xl font-semibold mb-1">{pageSettings.h1}</h1>

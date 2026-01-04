@@ -17,6 +17,7 @@ import GMPTrackerPage from "./pages/GMPTrackerPage";
 import AllotmentStatusPage from "./pages/AllotmentStatusPage";
 import IPOCalendarPage from "./pages/IPOCalendarPage";
 import PerformanceTrackerPage from "./pages/PerformanceTrackerPage";
+import IPOStatisticsPage from "./pages/IPOStatisticsPage";
 import ToolsPage from "./pages/ToolsPage";
 import InvestmentCalculatorPage from "./pages/tools/InvestmentCalculatorPage";
 import CompareIPOPage from "./pages/tools/CompareIPOPage";
@@ -25,8 +26,16 @@ import AdminLoginPage from "./pages/admin/AdminLoginPage";
 import AdminDashboardPage from "./pages/admin/AdminDashboardPage";
 import NotFound from "./pages/NotFound";
 
-const queryClient = new QueryClient();
-
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      staleTime: 5 * 60 * 1000, // 5 minutes
+      gcTime: 10 * 60 * 1000, // 10 minutes (formerly cacheTime)
+      refetchOnWindowFocus: false,
+      retry: 2,
+    },
+  },
+});
 const App = () => (
   <HelmetProvider>
     <ThemeProvider attribute="class" defaultTheme="light" enableSystem>
@@ -47,6 +56,7 @@ const App = () => (
                   <Route path="/ipo-allotment-status" element={<AllotmentStatusPage />} />
                   <Route path="/ipo-calendar" element={<IPOCalendarPage />} />
                   <Route path="/ipo-listing-performance" element={<PerformanceTrackerPage />} />
+                  <Route path="/ipo-statistics" element={<IPOStatisticsPage />} />
                   <Route path="/tools" element={<ToolsPage />} />
                   <Route path="/tools/investment-calculator" element={<InvestmentCalculatorPage />} />
                   <Route path="/tools/compare" element={<CompareIPOPage />} />

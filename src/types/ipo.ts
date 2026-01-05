@@ -90,12 +90,12 @@ export interface IPOBasicInfo {
 }
 
 export interface IPOTimeline {
-  "IPO Open Date": string;
-  "IPO Close Date": string;
-  "Tentative Allotment"?: string;
-  "Initiation of Refunds"?: string;
-  "Credit of Shares to Demat"?: string;
-  "Tentative Listing Date": string;
+  "IPO Open": string;
+  "IPO Close": string;
+  "Allotment"?: string;
+  "Refund"?: string;
+  "Credit of Shares"?: string;
+  "Listing": string;
 }
 
 export interface IPOFinancials {
@@ -108,12 +108,14 @@ export interface IPOFinancials {
 
 export interface IPOSubscriptionRow {
   category: string;
+  Category?: string;
   subscription_times?: number;
   "Subscription (times)"?: string;
   shares_offered?: number | string;
   shares_bid?: number | string;
   "Shares Offered"?: number | string;
   "Shares Bid For"?: number | string;
+  "Shares bid for"?: number | string;
 }
 
 export interface IPOSubscriptionStatus {
@@ -277,6 +279,7 @@ export interface IPODetail {
   }> | IPOMarketData;
   slug: string;
   ipo_type: "mainboard" | "sme";
+  gain_loss_percent?: number;
 }
 
 export interface APIResponse<T> {

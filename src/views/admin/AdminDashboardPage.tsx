@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import { useEffect } from "react";
 import {
   LogOut, Settings, FileText, Code, Download, Palette,
   Home, PanelBottom, BarChart3, Save, RotateCcw, Clock,
@@ -39,8 +40,13 @@ export default function AdminDashboardPage() {
   } = useAdmin();
   const router = useRouter();
 
+  useEffect(() => {
+    if (!isAuthenticated) {
+      router.push("/admin/login");
+    }
+  }, [isAuthenticated, router]);
+
   if (!isAuthenticated) {
-    router.push("/admin/login");
     return null;
   }
 

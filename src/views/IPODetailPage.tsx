@@ -108,6 +108,10 @@ export default function IPODetailPage({ initialData }: IPODetailPageProps) {
           ]
         },
       ],
+      sidebarWidgets: [
+        { id: 'key_metrics' as const, enabled: true, order: 0 },
+        { id: 'broker_sentiment' as const, enabled: true, order: 1 },
+      ]
     };
   }, [rawDetailConfig]);
 
@@ -178,11 +182,13 @@ export default function IPODetailPage({ initialData }: IPODetailPageProps) {
     company_name: basicInfo["IPO Name"] || slug,
     gmp_value: gmpData?.current_gmp ?? 0,
     gmp_percent: gmpData?.current_gmp && issuePrice ? ((gmpData.current_gmp / issuePrice) * 100).toFixed(2) : "0",
-    listing_date: timeline["Tentative Listing Date"] || "TBA",
-    open_date: timeline["IPO Open Date"] || "",
-    close_date: timeline["IPO Close Date"] || "",
+    listing_date: timeline["Listing"] || "TBA",
+    open_date: timeline["IPO Open"] || "",
+    close_date: timeline["IPO Close"] || "",
     issue_price: issuePrice,
-    subscription_times: subscription?.SubscriptionTable?.[0]?.subscription_times ?? 0,
+    subscription_times: subscription?.SubscriptionTable?.[0]?.["Subscription (times)"]
+      ? parseFloat(String(subscription.SubscriptionTable[0]["Subscription (times)"]).replace(/,/g, ""))
+      : 0,
   };
 
   const pageTitle = applyTemplate(pageSettings.titleTemplate, templateVars);
@@ -190,12 +196,12 @@ export default function IPODetailPage({ initialData }: IPODetailPageProps) {
 
   // Determine status
   const now = new Date();
-  const openDate = parseIPODate(timeline["IPO Open Date"]);
-  const closeDate = parseIPODate(timeline["IPO Close Date"]);
-  const allotmentDate = parseIPODate(timeline["Tentative Allotment"]);
-  const refundDate = parseIPODate(timeline["Initiation of Refunds"]);
-  const creditDate = parseIPODate(timeline["Credit of Shares to Demat"]);
-  const listingDate = parseIPODate(timeline["Tentative Listing Date"]);
+  const openDate = parseIPODate(timeline["IPO Open"]);
+  const closeDate = parseIPODate(timeline["IPO Close"]);
+  const allotmentDate = parseIPODate(timeline["Allotment"]);
+  const refundDate = parseIPODate(timeline["Refund"]);
+  const creditDate = parseIPODate(timeline["Credit of Shares"]);
+  const listingDate = parseIPODate(timeline["Listing"]);
 
   let status = "upcoming";
   if (listingDate && now > listingDate) status = "listed";
@@ -209,14 +215,14 @@ export default function IPODetailPage({ initialData }: IPODetailPageProps) {
     return "upcoming";
   };
 
-  // Build timeline steps
+  // Build timeline steps with correct API keys
   const timelineSteps = [
-    { label: "IPO Open", date: timeline["IPO Open Date"] || "TBA", status: getStepStatus(openDate) },
-    { label: "IPO Close", date: timeline["IPO Close Date"] || "TBA", status: getStepStatus(closeDate) },
-    { label: "Allotment", date: timeline["Tentative Allotment"] || "TBA", status: getStepStatus(allotmentDate) },
-    { label: "Refund Initiation", date: timeline["Initiation of Refunds"] || "TBA", status: getStepStatus(refundDate) },
-    { label: "Credit to Demat", date: timeline["Credit of Shares to Demat"] || "TBA", status: getStepStatus(creditDate) },
-    { label: "Listing", date: timeline["Tentative Listing Date"] || "TBA", status: getStepStatus(listingDate) },
+    { label: "IPO Open", date: timeline["IPO Open"] || "TBA", status: getStepStatus(openDate) },
+    { label: "IPO Close", date: timeline["IPO Close"] || "TBA", status: getStepStatus(closeDate) },
+    { label: "Allotment", date: timeline["Allotment"] || "TBA", status: getStepStatus(allotmentDate) },
+    { label: "Refund Initiation", date: timeline["Refund"] || "TBA", status: getStepStatus(refundDate) },
+    { label: "Credit to Demat", date: timeline["Credit of Shares"] || "TBA", status: getStepStatus(creditDate) },
+    { label: "Listing", date: timeline["Listing"] || "TBA", status: getStepStatus(listingDate) },
   ].map(step => ({
     ...step,
     status: step.status as "completed" | "current" | "upcoming",
@@ -244,6 +250,8 @@ export default function IPODetailPage({ initialData }: IPODetailPageProps) {
     lotSize,
     status,
     slug: slug || "",
+    listingInfo: ipo.listing_info,
+    gainLossPercent: ipo.gain_loss_percent
   };
 
   // JSON-LD structured data
@@ -281,7 +289,7 @@ export default function IPODetailPage({ initialData }: IPODetailPageProps) {
         "name": `When is the allotment of ${basicInfo["IPO Name"]}?`,
         "acceptedAnswer": {
           "@type": "Answer",
-          "text": `The tentative allotment date for ${basicInfo["IPO Name"]} is ${timeline["Tentative Allotment"] || "to be announced"}.`,
+          "text": `The tentative allotment date for ${basicInfo["IPO Name"]} is ${timeline["Allotment"] || "to be announced"}.`,
         },
       },
       {
@@ -295,8 +303,19 @@ export default function IPODetailPage({ initialData }: IPODetailPageProps) {
     ],
   };
 
-  // Sort above fold widgets
+  // Sort widgets
   const sortedAboveFoldWidgets = [...detailConfig.aboveFoldWidgets]
+    .filter(w => w.enabled)
+    .sort((a, b) => a.order - b.order);
+
+  const sidebarWidgets = (detailConfig.sidebarWidgets || []).length > 0
+    ? detailConfig.sidebarWidgets
+    : [
+      { id: 'key_metrics' as const, enabled: true, order: 0 },
+      { id: 'broker_sentiment' as const, enabled: true, order: 1 },
+    ];
+
+  const sortedSidebarWidgets = [...sidebarWidgets]
     .filter(w => w.enabled)
     .sort((a, b) => a.order - b.order);
 
@@ -348,7 +367,7 @@ export default function IPODetailPage({ initialData }: IPODetailPageProps) {
               {detailConfig.showShareButton && (
                 <ShareButtons
                   title={basicInfo["IPO Name"]}
-                  description={`${basicInfo["IPO Name"]} - Issue Price: ${basicInfo["Issue Price"]}, Listing: ${timeline["Tentative Listing Date"]}`}
+                  description={`${basicInfo["IPO Name"]} - Issue Price: ${basicInfo["Issue Price"]}, Listing: ${timeline["Listing"]}`}
                 />
               )}
               {detailConfig.showPDFDownload && (
@@ -357,52 +376,67 @@ export default function IPODetailPage({ initialData }: IPODetailPageProps) {
             </div>
           </header>
 
-          {/* Above Fold Widgets */}
-          {sortedAboveFoldWidgets.map(widget => (
-            <WidgetRenderer key={widget.id} widgetId={widget.id} data={widgetData} />
-          ))}
+          {/* Above Fold Widgets - Full Width */}
+          <div className="space-y-6">
+            {sortedAboveFoldWidgets.map(widget => (
+              <WidgetRenderer key={widget.id} widgetId={widget.id} data={widgetData} />
+            ))}
+          </div>
 
-          {/* Tabs */}
-          {enabledTabs.length > 0 && (
-            <Tabs defaultValue={enabledTabs[0]?.id} className="w-full" onValueChange={handleTabChange}>
-              <ScrollArea className="w-full whitespace-nowrap">
-                <TabsList className="inline-flex h-10 items-center gap-1 bg-muted/50 p-1 rounded-lg w-max min-w-full sm:w-auto">
-                  {enabledTabs.map(tab => (
-                    <TabsTrigger
-                      key={tab.id}
-                      value={tab.id}
-                      className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground rounded-md px-3 py-1.5 text-xs sm:text-sm whitespace-nowrap"
-                    >
-                      {tab.label}
-                    </TabsTrigger>
-                  ))}
-                </TabsList>
-                <ScrollBar orientation="horizontal" className="invisible" />
-              </ScrollArea>
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 pt-2">
+            <div className="lg:col-span-2 space-y-6">
+              {/* Tabs */}
 
-              {enabledTabs.map(tab => {
-                const sortedWidgets = [...tab.widgets]
-                  .filter(w => w.enabled)
-                  .sort((a, b) => a.order - b.order);
+              {/* Tabs */}
+              {enabledTabs.length > 0 && (
+                <Tabs defaultValue={enabledTabs[0]?.id} className="w-full" onValueChange={handleTabChange}>
+                  <ScrollArea className="w-full whitespace-nowrap">
+                    <TabsList className="flex h-auto items-center gap-1 bg-muted/50 p-1 rounded-lg w-full">
+                      {enabledTabs.map(tab => (
+                        <TabsTrigger
+                          key={tab.id}
+                          value={tab.id}
+                          className="flex-1 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground rounded-md px-3 py-1.5 text-xs sm:text-sm whitespace-nowrap"
+                        >
+                          {tab.label}
+                        </TabsTrigger>
+                      ))}
+                    </TabsList>
+                    <ScrollBar orientation="horizontal" className="invisible" />
+                  </ScrollArea>
 
-                return (
-                  <TabsContent key={tab.id} value={tab.id} className="mt-3 sm:mt-4 space-y-3 sm:space-y-4">
-                    {sortedWidgets.length > 0 ? (
-                      sortedWidgets.map(widget => (
-                        <WidgetRenderer key={widget.id} widgetId={widget.id} data={widgetData} />
-                      ))
-                    ) : (
-                      <Card className="border">
-                        <CardContent className="py-12 text-center text-muted-foreground">
-                          No content available for this tab
-                        </CardContent>
-                      </Card>
-                    )}
-                  </TabsContent>
-                );
-              })}
-            </Tabs>
-          )}
+                  {enabledTabs.map(tab => {
+                    const sortedWidgets = [...tab.widgets]
+                      .filter(w => w.enabled)
+                      .sort((a, b) => a.order - b.order);
+
+                    return (
+                      <TabsContent key={tab.id} value={tab.id} className="mt-3 sm:mt-4 space-y-3 sm:space-y-4">
+                        {sortedWidgets.length > 0 ? (
+                          sortedWidgets.map(widget => (
+                            <WidgetRenderer key={widget.id} widgetId={widget.id} data={widgetData} />
+                          ))
+                        ) : (
+                          <Card className="border">
+                            <CardContent className="py-12 text-center text-muted-foreground">
+                              No content available for this tab
+                            </CardContent>
+                          </Card>
+                        )}
+                      </TabsContent>
+                    );
+                  })}
+                </Tabs>
+              )}
+            </div>
+
+            {/* Sidebar */}
+            <div className="hidden lg:block space-y-6">
+              {sortedSidebarWidgets.map(widget => (
+                <WidgetRenderer key={widget.id} widgetId={widget.id} data={widgetData} />
+              ))}
+            </div>
+          </div>
         </div>
       </MainLayout>
 

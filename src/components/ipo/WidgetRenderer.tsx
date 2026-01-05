@@ -42,6 +42,8 @@ interface WidgetRendererProps {
     lotSize: number;
     status: string;
     slug: string;
+    listingInfo?: any;
+    gainLossPercent?: number;
   };
 }
 
@@ -71,7 +73,13 @@ export function WidgetRenderer({ widgetId, data }: WidgetRendererProps) {
 
   switch (widgetId) {
     case 'vital_stats':
-      return <IPOVitalStats basicInfo={basicInfo} timeline={timeline} />;
+      return <IPOVitalStats
+        basicInfo={basicInfo}
+        timeline={timeline}
+        subscription={subscription}
+        listingInfo={data.listingInfo}
+        gainLossPercent={data.gainLossPercent}
+      />;
 
     case 'gmp_widget':
       if (gmpData?.current_gmp !== undefined && issuePrice > 0) {
@@ -212,37 +220,37 @@ export function WidgetRenderer({ widgetId, data }: WidgetRendererProps) {
               </CardHeader>
               <CardContent className="space-y-4">
                 <div className="font-medium text-sm sm:text-base">{registrar.registrar.name}</div>
-                
+
                 {registrar.registrar.phone && (
                   <div className="flex items-center gap-2 text-xs sm:text-sm text-muted-foreground">
                     <Phone className="h-4 w-4" />
                     {registrar.registrar.phone}
                   </div>
                 )}
-                
+
                 {registrar.registrar.email && (
                   <div className="flex items-center gap-2 text-xs sm:text-sm text-muted-foreground">
                     <Mail className="h-4 w-4" />
                     {registrar.registrar.email}
                   </div>
                 )}
-                
+
                 {registrar.registrar.website && (
                   <>
                     <div className="flex items-center gap-2 text-xs sm:text-sm text-muted-foreground">
                       <Globe className="h-4 w-4" />
-                      <a 
-                        href={registrar.registrar.website} 
-                        target="_blank" 
+                      <a
+                        href={registrar.registrar.website}
+                        target="_blank"
                         rel="noopener noreferrer"
                         className="text-primary hover:underline"
                       >
                         {registrar.registrar.website}
                       </a>
                     </div>
-                    <a 
-                      href={registrar.registrar.website} 
-                      target="_blank" 
+                    <a
+                      href={registrar.registrar.website}
+                      target="_blank"
                       rel="noopener noreferrer"
                     >
                       <Button variant="outline" size="sm" className="w-full mt-2">

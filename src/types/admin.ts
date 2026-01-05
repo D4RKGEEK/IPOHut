@@ -62,7 +62,7 @@ export interface HomePageConfig {
 }
 
 // Widget definitions for IPO Detail Page
-export type WidgetType = 
+export type WidgetType =
   | 'timeline'
   | 'subscription_table'
   | 'key_metrics'
@@ -101,12 +101,15 @@ export interface IPODetailPageConfig {
   showShareButton: boolean;
   showPDFDownload: boolean;
   showAllotmentButton: boolean;
-  
+
   // Sections before tabs (above fold)
   aboveFoldWidgets: WidgetConfig[];
-  
+
   // Tabs configuration
   tabs: TabConfig[];
+
+  // Sidebar configuration
+  sidebarWidgets: WidgetConfig[];
 }
 
 // Widget metadata for admin UI
@@ -410,6 +413,10 @@ export const defaultAdminSettings: AdminSettings = {
             { id: 'broker_sentiment', enabled: true, order: 1 },
           ],
         },
+      ],
+      sidebarWidgets: [
+        { id: 'key_metrics', enabled: true, order: 0 },
+        { id: 'broker_sentiment', enabled: true, order: 1 },
       ],
     },
     pageVisibility: {

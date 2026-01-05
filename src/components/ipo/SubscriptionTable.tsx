@@ -11,8 +11,9 @@ interface SubscriptionTableProps {
 // Helper to parse subscription times from various formats
 function getSubscriptionTimes(row: IPOSubscriptionRow): number {
   if (typeof row.subscription_times === "number") return row.subscription_times;
-  if (row["Subscription (times)"]) {
-    const parsed = parseFloat(String(row["Subscription (times)"]).replace(/[^\d.]/g, ""));
+  const val = row["Subscription (times)"] || row["Subscription (x)"];
+  if (val) {
+    const parsed = parseFloat(String(val).replace(/[^\d.]/g, ""));
     return isNaN(parsed) ? 0 : parsed;
   }
   return 0;
@@ -30,7 +31,7 @@ function parseShares(value: number | string | undefined): string {
 
 export function SubscriptionTable({ subscription }: SubscriptionTableProps) {
   const rows = subscription?.SubscriptionTable;
-  
+
   if (!rows || rows.length === 0) return null;
 
   return (
@@ -59,11 +60,11 @@ export function SubscriptionTable({ subscription }: SubscriptionTableProps) {
             {rows.map((row, index) => {
               const subTimes = getSubscriptionTimes(row);
               const sharesOffered = row.shares_offered ?? row["Shares Offered"];
-              const sharesBid = row.shares_bid ?? row["Shares Bid For"];
+              const sharesBid = row.shares_bid ?? row["Shares Bid For"] ?? row["Shares bid for"];
 
               return (
                 <TableRow key={index}>
-                  <TableCell className="font-medium text-xs sm:text-sm">{row.category}</TableCell>
+                  <TableCell className="font-medium text-xs sm:text-sm">{row.category || row.Category}</TableCell>
                   <TableCell className="text-right font-tabular font-semibold text-primary text-xs sm:text-sm">
                     {formatSubscription(subTimes)}
                   </TableCell>
@@ -78,11 +79,13 @@ export function SubscriptionTable({ subscription }: SubscriptionTableProps) {
             })}
           </TableBody>
         </Table>
-        {subscription.TotalApplications && (
+        {subscription?.TotalApplications || subscription?.["Total Application"] ? (
           <div className="mt-4 text-xs sm:text-sm text-muted-foreground text-center">
-            Total Applications: <span className="font-semibold text-foreground font-tabular">{subscription.TotalApplications.toLocaleString()}</span>
+            Total Applications: <span className="font-semibold text-foreground font-tabular">
+              {String(subscription.TotalApplications || subscription["Total Application"]).toLocaleString()}
+            </span>
           </div>
-        )}
+        ) : null}
       </CardContent>
     </Card>
   );

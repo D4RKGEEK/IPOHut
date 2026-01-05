@@ -16,10 +16,10 @@ interface IPOTimelineProps {
 export function IPOTimeline({ steps, className }: IPOTimelineProps) {
   return (
     <ScrollArea className={cn("w-full", className)}>
-      <div className="flex items-start gap-0 min-w-max pb-2">
+      <div className="flex items-start justify-center gap-0 min-w-max pb-2">
         {steps.map((step, index) => {
           const isLast = index === steps.length - 1;
-          
+
           return (
             <div key={step.label} className="flex items-start">
               {/* Step */}

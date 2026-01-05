@@ -9,7 +9,7 @@ import { useEffect } from "react";
 import {
   LogOut, Settings, FileText, Code, Download, Palette,
   Home, PanelBottom, BarChart3, Save, RotateCcw, Clock,
-  AlertCircle, LayoutGrid, Menu, Eye, Globe
+  AlertCircle, LayoutGrid, Menu, Eye, Globe, RefreshCw
 } from "lucide-react";
 import { toast } from "sonner";
 import { formatDistanceToNow } from "date-fns";
@@ -26,6 +26,7 @@ import {
   NavigationSettings,
   PageVisibilitySettings,
   SitemapSettings,
+  RevalidationSettings,
 } from "@/components/admin";
 import { cn } from "@/lib/utils";
 
@@ -174,6 +175,10 @@ export default function AdminDashboardPage() {
               <Globe className="h-4 w-4" />
               <span className="hidden sm:inline">Sitemap</span>
             </TabsTrigger>
+            <TabsTrigger value="cache" className="gap-2">
+              <RefreshCw className="h-4 w-4" />
+              <span className="hidden sm:inline">Cache Control</span>
+            </TabsTrigger>
           </TabsList>
 
           <TabsContent value="general">
@@ -222,6 +227,10 @@ export default function AdminDashboardPage() {
 
           <TabsContent value="sitemap">
             <SitemapSettings />
+          </TabsContent>
+
+          <TabsContent value="cache">
+            <RevalidationSettings />
           </TabsContent>
         </Tabs>
       </div>

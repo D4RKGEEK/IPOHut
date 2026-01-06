@@ -12,7 +12,7 @@ import { formatCurrency, formatPercent, formatSubscription, getGainLossClass } f
 import { cn } from "@/lib/utils";
 import { ArrowUpDown, TrendingUp, TrendingDown, FileCheck } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { useState } from "react";
+import React, { useState } from "react";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 
 export interface IPOTableColumn {
@@ -25,17 +25,17 @@ export interface IPOTableColumn {
 export interface IPOTableRow {
   slug: string;
   name: string;
-  status?: string;
-  ipoType?: "mainboard" | "sme";
-  openDate?: string;
-  closeDate?: string;
-  listingDate?: string;
-  issuePrice?: number;
-  gmp?: number;
-  gmpPercent?: number;
-  subscriptionTimes?: number;
-  listingGainPercent?: number;
-  [key: string]: string | number | undefined;
+  status?: string | React.ReactNode;
+  ipoType?: "mainboard" | "sme" | string;
+  openDate?: string | React.ReactNode;
+  closeDate?: string | React.ReactNode;
+  listingDate?: string | React.ReactNode;
+  issuePrice?: number | React.ReactNode;
+  gmp?: number | React.ReactNode;
+  gmpPercent?: number | React.ReactNode;
+  subscriptionTimes?: number | React.ReactNode;
+  listingGainPercent?: number | React.ReactNode;
+  [key: string]: string | number | boolean | React.ReactNode | undefined | null;
 }
 
 interface IPOTableProps {
@@ -46,36 +46,67 @@ interface IPOTableProps {
   onSort?: (key: string, order: "asc" | "desc") => void;
   sortKey?: string;
   sortOrder?: "asc" | "desc";
+  onRowClick?: (row: any) => void;
 }
 
 export function IPOTable({
   columns,
   data,
   isLoading,
-  emptyMessage = "No IPOs found",
+  emptyMessage = "No data available",
   onSort,
-  sortKey,
-  sortOrder,
+  sortKey: initialSortKey, // Renamed to avoid conflict with local state
+  sortOrder: initialSortOrder, // Renamed to avoid conflict with local state
+  onRowClick,
 }: IPOTableProps) {
-  const [localSortKey, setLocalSortKey] = useState<string | undefined>(sortKey);
-  const [localSortOrder, setLocalSortOrder] = useState<"asc" | "desc">(sortOrder || "desc");
+  const [sortKey, setSortKey] = useState<string | null>(initialSortKey || null);
+  const [sortDirection, setSortDirection] = useState<"asc" | "desc">(initialSortOrder || "desc");
 
   const handleSort = (key: string) => {
-    const newOrder = localSortKey === key && localSortOrder === "desc" ? "asc" : "desc";
-    setLocalSortKey(key);
-    setLocalSortOrder(newOrder);
-    onSort?.(key, newOrder);
+    if (sortKey === key) {
+      const newDirection = sortDirection === "asc" ? "desc" : "asc";
+      setSortDirection(newDirection);
+      onSort?.(key, newDirection);
+    } else {
+      setSortKey(key);
+      setSortDirection("asc");
+      onSort?.(key, "asc");
+    }
   };
 
+  const sortedData = [...data].sort((a, b) => {
+    if (!sortKey) return 0;
+
+    // Look for a raw value key first for sorting (e.g. rawValue_gmp instead of gmp element)
+    const rawKey = `rawValue_${sortKey}`;
+    const valA = a[rawKey] !== undefined ? a[rawKey] : a[sortKey];
+    const valB = b[rawKey] !== undefined ? b[rawKey] : b[sortKey];
+
+    if (valA === valB) return 0;
+
+    // Handle null/undefined
+    if (valA === null || valA === undefined) return 1;
+    if (valB === null || valB === undefined) return -1;
+
+    const result = valA < valB ? -1 : 1;
+    return sortDirection === "asc" ? result : -result;
+  });
+
   const renderCell = (row: IPOTableRow, key: string) => {
+    // If the value is a React node (and not one of the special handled strings/numbers), render it directly
+    if (React.isValidElement(row[key])) {
+      return row[key] as React.ReactNode;
+    }
+
     switch (key) {
       case "name":
-        const showAllotmentLink = row.status && ["closed", "recently_listed", "listed"].includes(row.status.toLowerCase());
+        const showAllotmentLink = row.status && typeof row.status === 'string' && ["closed", "recently_listed", "listed"].includes(row.status.toLowerCase());
         return (
           <div className="flex items-center gap-2">
             <Link
               href={`/ipo/${row.slug}`}
               className="font-medium text-foreground hover:text-primary transition-colors"
+              onClick={(e) => onRowClick && e.stopPropagation()}
             >
               {row.name}
             </Link>
@@ -98,13 +129,13 @@ export function IPOTable({
           </div>
         );
       case "status":
-        return row.status ? <StatusBadge status={row.status} /> : "—";
+        return typeof row.status === 'string' ? <StatusBadge status={row.status} /> : "—";
       case "ipoType":
-        return row.ipoType ? <TypeBadge type={row.ipoType} /> : "—";
+        return typeof row.ipoType === 'string' && (row.ipoType === "mainboard" || row.ipoType === "sme") ? <TypeBadge type={row.ipoType} /> : "—";
       case "issuePrice":
-        return <span className="font-tabular">{formatCurrency(row.issuePrice)}</span>;
+        return typeof row.issuePrice === 'number' ? <span className="font-tabular">{formatCurrency(row.issuePrice)}</span> : row.issuePrice || "—";
       case "gmp":
-        if (row.gmp === undefined) return "—";
+        if (typeof row.gmp !== 'number') return row.gmp || "—";
         const isPositive = row.gmp >= 0;
         return (
           <div className="flex items-center gap-1">
@@ -119,23 +150,24 @@ export function IPOTable({
           </div>
         );
       case "gmpPercent":
-        if (row.gmpPercent === undefined) return "—";
+        if (typeof row.gmpPercent !== 'number') return row.gmpPercent || "—";
         return (
           <span className={cn("font-tabular", getGainLossClass(row.gmpPercent))}>
             {formatPercent(row.gmpPercent)}
           </span>
         );
       case "subscriptionTimes":
-        return <span className="font-tabular">{formatSubscription(row.subscriptionTimes)}</span>;
+        return typeof row.subscriptionTimes === 'number' ? <span className="font-tabular">{formatSubscription(row.subscriptionTimes)}</span> : row.subscriptionTimes || "—";
       case "listingGainPercent":
-        if (row.listingGainPercent === undefined) return "—";
+        if (typeof row.listingGainPercent !== 'number') return row.listingGainPercent || "—";
         return (
           <span className={cn("font-tabular font-medium", getGainLossClass(row.listingGainPercent))}>
             {formatPercent(row.listingGainPercent)}
           </span>
         );
       default:
-        return row[key] ?? "—";
+        // Use standard renderer for simple types, otherwise assume it's a node if valid
+        return row[key] as React.ReactNode ?? "—";
     }
   };
 
@@ -189,7 +221,7 @@ export function IPOTable({
                   col.hideOnMobile && "hidden md:table-cell"
                 )}
               >
-                {col.sortable && onSort ? (
+                {col.sortable ? (
                   <Button
                     variant="ghost"
                     size="sm"
@@ -207,8 +239,12 @@ export function IPOTable({
           </TableRow>
         </TableHeader>
         <TableBody>
-          {data.map((row) => (
-            <TableRow key={row.slug} className="table-row-hover">
+          {sortedData.map((row) => (
+            <TableRow
+              key={row.slug}
+              className={cn("table-row-hover", onRowClick && "cursor-pointer")}
+              onClick={() => onRowClick?.(row)}
+            >
               {columns.map((col) => (
                 <TableCell
                   key={col.key}

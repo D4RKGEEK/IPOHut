@@ -11,3 +11,4 @@ export { IPOSelector, type SelectedIPO } from "./IPOSelector";
 export { BreadcrumbNav, useBreadcrumbs } from "./BreadcrumbNav";
 export { LazyImage } from "./LazyImage";
 export { SearchBar } from "./SearchBar";
+export { IPOGMPCard } from "./IPOGMPCard";

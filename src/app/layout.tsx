@@ -1,57 +1,65 @@
 import './globals.css';
 import { Providers } from './providers';
 import { Inter } from 'next/font/google';
+import { Metadata } from 'next';
 
 const inter = Inter({ subsets: ['latin'] });
 
-import { defaultAdminSettings } from "@/types/admin";
+import { getAdminSettings } from "@/lib/server-config";
 import Script from "next/script";
 
-export const metadata = {
-    title: {
-        default: defaultAdminSettings.site.branding.siteName,
-        template: `%s${defaultAdminSettings.site.defaultSeo.titleSuffix}`,
-    },
-    description: defaultAdminSettings.site.defaultSeo.defaultDescription,
-    keywords: defaultAdminSettings.site.defaultSeo.defaultKeywords,
-    openGraph: {
+export async function generateMetadata(): Promise<Metadata> {
+    const settings = getAdminSettings();
+    const site = settings.site;
+
+    return {
         title: {
-            default: defaultAdminSettings.site.branding.siteName,
-            template: `%s${defaultAdminSettings.site.defaultSeo.titleSuffix}`,
+            default: site.branding.siteName,
+            template: `%s${site.defaultSeo.titleSuffix}`,
         },
-        description: defaultAdminSettings.site.defaultSeo.defaultDescription,
-        siteName: defaultAdminSettings.site.branding.siteName,
-        images: defaultAdminSettings.site.defaultSeo.ogImage ? [defaultAdminSettings.site.defaultSeo.ogImage] : [],
-        type: "website",
-    },
-    twitter: {
-        card: "summary_large_image",
-        title: {
-            default: defaultAdminSettings.site.branding.siteName,
-            template: `%s${defaultAdminSettings.site.defaultSeo.titleSuffix}`,
+        description: site.defaultSeo.defaultDescription,
+        // keywords: site.defaultSeo.defaultKeywords, // Type might be missing, checking later
+        openGraph: {
+            title: {
+                default: site.branding.siteName,
+                template: `%s${site.defaultSeo.titleSuffix}`,
+            },
+            description: site.defaultSeo.defaultDescription,
+            siteName: site.branding.siteName,
+            images: site.defaultSeo.ogImage ? [site.defaultSeo.ogImage] : [],
+            type: "website",
         },
-        description: defaultAdminSettings.site.defaultSeo.defaultDescription,
-        site: defaultAdminSettings.site.defaultSeo.twitterHandle,
-        creator: defaultAdminSettings.site.defaultSeo.twitterHandle,
-    },
-};
+        twitter: {
+            card: "summary_large_image",
+            title: {
+                default: site.branding.siteName,
+                template: `%s${site.defaultSeo.titleSuffix}`,
+            },
+            description: site.defaultSeo.defaultDescription,
+            site: site.defaultSeo.twitterHandle,
+            creator: site.defaultSeo.twitterHandle,
+        },
+    };
+}
 
 export default function RootLayout({
     children,
 }: {
     children: React.ReactNode;
 }) {
+    const settings = getAdminSettings();
+
     return (
         <html lang="en" suppressHydrationWarning>
             <body className={inter.className}>
-                {defaultAdminSettings.site.scripts.headerScripts && (
+                {settings.site.scripts.headerScripts && (
                     <Script
                         id="header-scripts"
                         strategy="afterInteractive"
-                        dangerouslySetInnerHTML={{ __html: defaultAdminSettings.site.scripts.headerScripts }}
+                        dangerouslySetInnerHTML={{ __html: settings.site.scripts.headerScripts }}
                     />
                 )}
-                <Providers>{children}</Providers>
+                <Providers initialAdminSettings={settings}>{children}</Providers>
             </body>
         </html>
     );

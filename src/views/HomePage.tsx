@@ -11,6 +11,9 @@ import { ArrowRight, TrendingUp, TrendingDown, Calendar, BarChart3, Clock, Zap, 
 import { Skeleton } from "@/components/ui/skeleton";
 import { cn } from "@/lib/utils";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import { IPOGMPCard, IPOTable, IPOTableColumn, IPOTableRow } from "@/components/shared";
+import { formatCurrency, formatPercent } from "@/lib/api";
+import { useRouter } from "next/navigation";
 
 import { IPOStatus, IPOGain, APIResponse, IPONews } from "@/types/ipo";
 
@@ -26,6 +29,7 @@ interface HomePageProps {
 }
 
 export default function HomePage({ initialData }: HomePageProps) {
+  const router = useRouter();
   const { settings } = useAdmin();
   const homeConfig = settings.site.homePageConfig;
 
@@ -61,40 +65,65 @@ export default function HomePage({ initialData }: HomePageProps) {
       {homeConfig.showNewsTicker && <NewsTicker initialData={initialData?.newsData?.data} />}
 
       {/* Hero Section */}
-      <section className="relative overflow-hidden border-b">
-        <div className="container py-6 md:py-10">
-          {/* Announcement Banner */}
-          {homeConfig.announcementEnabled && homeConfig.announcementBanner && (
-            <div className="mb-4 md:mb-6">
-              <div className="inline-flex items-center gap-2 bg-accent/10 border border-accent/20 rounded-md px-3 py-1.5">
-                <Megaphone className="h-3.5 w-3.5 text-accent" />
-                <p className="text-sm text-foreground">{homeConfig.announcementBanner}</p>
-              </div>
-            </div>
-          )}
+      <section className="relative overflow-hidden border-b bg-gradient-to-b from-primary/5 via-background to-background">
+        <div className="container relative py-12 md:py-20 lg:py-24">
+          <div className="flex flex-col items-center text-center max-w-3xl mx-auto space-y-6">
 
-          <div className="max-w-2xl">
-            <h1 className="text-xl md:text-2xl lg:text-3xl font-semibold text-foreground mb-2">
-              {pageSettings.h1}
-            </h1>
-            <p className="text-sm md:text-base text-muted-foreground mb-5">
-              {pageSettings.subheading}
-            </p>
+            {/* Announcement Banner */}
+            {homeConfig.announcementEnabled && homeConfig.announcementBanner && (
+              <div className="mb-2">
+                <div className="inline-flex items-center gap-2 bg-accent/10 border border-accent/20 rounded-full px-4 py-1.5 transition-colors hover:bg-accent/20">
+                  <Megaphone className="h-3.5 w-3.5 text-accent" />
+                  <p className="text-sm font-medium text-foreground">{homeConfig.announcementBanner}</p>
+                </div>
+              </div>
+            )}
+
+            <div className="space-y-4">
+              <div className="inline-flex items-center rounded-full border px-2.5 py-0.5 text-xs font-semibold transition-colors focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 border-transparent bg-primary/10 text-primary hover:bg-primary/20">
+                <Sparkles className="mr-1 h-3 w-3" />
+                Live GMP Updates & Subscription Status
+              </div>
+
+              <h1 className="text-4xl md:text-5xl lg:text-6xl font-extrabold tracking-tight text-foreground">
+                {pageSettings.h1}
+              </h1>
+
+              <p className="text-xl text-muted-foreground max-w-[700px] mx-auto leading-relaxed">
+                {pageSettings.subheading}
+              </p>
+            </div>
 
             {/* Quick Action Buttons */}
-            <div className="flex flex-wrap gap-2">
-              <Link href="/ipo-gmp-today">
-                <Button size="sm" className="gap-1.5 h-9">
-                  <Sparkles className="h-3.5 w-3.5" />
-                  GMP Today
+            <div className="flex flex-col sm:flex-row items-center justify-center gap-4 pt-4 w-full sm:w-auto">
+              <Link href="/ipo-gmp-today" className="w-full sm:w-auto">
+                <Button size="lg" className="h-12 px-8 text-base gap-2 rounded-full shadow-lg shadow-primary/25 w-full sm:w-auto hover:scale-105 transition-transform">
+                  <TrendingUp className="h-5 w-5" />
+                  Check GMP Today
                 </Button>
               </Link>
-              <Link href="/tools">
-                <Button variant="outline" size="sm" className="gap-1.5 h-9">
-                  <Calculator className="h-3.5 w-3.5" />
-                  Calculator
+              <Link href="/ipo-calendar" className="w-full sm:w-auto">
+                <Button variant="outline" size="lg" className="h-12 px-8 text-base gap-2 rounded-full w-full sm:w-auto hover:bg-muted/50">
+                  <Calendar className="h-5 w-5" />
+                  IPO Calendar
                 </Button>
               </Link>
+            </div>
+
+            {/* Trust Indicator / Mini Stats */}
+            <div className="pt-8 flex items-center gap-6 text-sm text-muted-foreground animate-fade-in">
+              <div className="flex items-center gap-1.5">
+                <Zap className="h-4 w-4 text-warning" />
+                <span>Real-time Updates</span>
+              </div>
+              <div className="hidden sm:flex items-center gap-1.5">
+                <BarChart3 className="h-4 w-4 text-success" />
+                <span>Accurate GMP</span>
+              </div>
+              <div className="flex items-center gap-1.5">
+                <Clock className="h-4 w-4 text-primary" />
+                <span>Instant Alerts</span>
+              </div>
             </div>
           </div>
         </div>
@@ -174,33 +203,30 @@ export default function HomePage({ initialData }: HomePageProps) {
             </div>
 
             {loadingOpen ? (
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
-                {[...Array(3)].map((_, i) => (
-                  <Card key={i}>
-                    <CardContent className="p-4 space-y-3">
-                      <Skeleton className="h-5 w-3/4" />
-                      <Skeleton className="h-4 w-1/2" />
-                      <Skeleton className="h-12 w-full rounded-md" />
-                    </CardContent>
-                  </Card>
+              <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-3">
+                {[...Array(5)].map((_, i) => (
+                  <Skeleton key={i} className="h-48 w-full rounded-xl" />
                 ))}
               </div>
             ) : openIPOs?.data?.length ? (
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
-                {openIPOs.data.slice(0, 6).map((ipo, idx) => (
-                  <IPOCard
-                    key={ipo.ipo_id}
-                    name={ipo.name}
-                    slug={ipo.slug}
-                    status={ipo.status}
-                    ipoType={ipo.ipo_type}
-                    issuePrice={ipo.issue_price}
-                    subscriptionTimes={ipo.subscription_times}
-                    closeDate={ipo.close_date}
-                    className="animate-fade-in-up"
-                    style={{ animationDelay: `${idx * 100}ms` }}
-                  />
-                ))}
+              <div className="overflow-x-auto -mx-4 px-4 md:mx-0 md:px-0 py-1">
+                <div className="flex gap-3 md:grid md:grid-cols-2 lg:grid-cols-4 xl:grid-cols-5 min-w-max md:min-w-0">
+                  {openIPOs.data.slice(0, 5).map((ipo, idx) => (
+                    <IPOGMPCard
+                      key={ipo.ipo_id}
+                      name={ipo.name}
+                      slug={ipo.slug}
+                      price={ipo.issue_price}
+                      gmp={typeof ipo.gmp === 'object' ? (ipo.gmp as any)?.gmp_value : (ipo.gmp || 0)}
+                      gmpPercent={ipo.gmp_percent || 0}
+                      estListing={ipo.estimated_listing}
+                      index={idx}
+                      openDate={ipo.open_date}
+                      closeDate={ipo.close_date}
+                      subscription={ipo.subscription_times ? `${ipo.subscription_times}x` : undefined}
+                    />
+                  ))}
+                </div>
               </div>
             ) : (
               <Card className="border-dashed">
@@ -228,34 +254,42 @@ export default function HomePage({ initialData }: HomePageProps) {
               </Link>
             </div>
 
-            <Card>
+            <Card className="overflow-hidden">
               {loadingUpcoming ? (
-                <CardContent className="p-4 space-y-3">
-                  {[...Array(3)].map((_, i) => (
-                    <div key={i} className="flex items-center justify-between py-2">
-                      <Skeleton className="h-4 w-1/2" />
-                      <Skeleton className="h-4 w-20" />
-                    </div>
-                  ))}
-                </CardContent>
-              ) : upcomingIPOs?.data?.length ? (
-                <div className="divide-y">
-                  {upcomingIPOs.data.slice(0, 5).map((ipo) => (
-                    <Link
-                      key={ipo.ipo_id}
-                      href={`/ipo/${ipo.slug}`}
-                      className="flex items-center justify-between p-3 hover:bg-muted/50 transition-colors"
-                    >
-                      <div className="flex items-center gap-2 min-w-0 flex-1">
-                        <span className="text-sm font-medium truncate">{ipo.name.replace(' IPO', '')}</span>
-                        <TypeBadge type={ipo.ipo_type} />
-                      </div>
-                      <span className="text-xs text-muted-foreground ml-2 shrink-0">
-                        {ipo.open_date}
-                      </span>
-                    </Link>
-                  ))}
+                <div className="p-4 space-y-2">
+                  {[...Array(5)].map((_, i) => <Skeleton key={i} className="h-10 w-full" />)}
                 </div>
+              ) : upcomingIPOs?.data?.length ? (
+                <IPOTable
+                  columns={[
+                    { key: "name", label: "IPO Name" },
+                    { key: "ipoType", label: "Type" },
+                    { key: "openDate", label: "Opens" },
+                    { key: "closeDate", label: "Closes" },
+                    { key: "lotSize", label: "Lot Size" },
+                  ]}
+                  data={upcomingIPOs.data.slice(0, 10).map(ipo => {
+                    // Helper function to remove year from date
+                    const formatDateWithoutYear = (dateStr: string) => {
+                      if (!dateStr) return dateStr;
+                      // Remove year patterns like ", 2026" or " 2026"
+                      return dateStr.replace(/,?\s*\d{4}/, '');
+                    };
+
+                    return {
+                      slug: ipo.slug,
+                      name: ipo.name.replace(' IPO', ''),
+                      ipoType: ipo.ipo_type,
+                      openDate: formatDateWithoutYear(ipo.open_date),
+                      closeDate: formatDateWithoutYear(ipo.close_date),
+                      lotSize: ipo.lot_size ? `${ipo.lot_size} Shares` : "—",
+                      rawValue_lotSize: ipo.lot_size || 0,
+                    };
+                  })}
+                  isLoading={false}
+                  onRowClick={(row) => router.push(`/ipo/${row.slug}`)}
+                  emptyMessage="No upcoming IPOs scheduled."
+                />
               ) : (
                 <CardContent className="p-6 text-center text-muted-foreground text-sm">
                   No upcoming IPOs scheduled.
@@ -283,45 +317,35 @@ export default function HomePage({ initialData }: HomePageProps) {
 
             <Card className="overflow-hidden">
               {loadingRecent ? (
-                <CardContent className="p-4 space-y-3">
-                  {[...Array(4)].map((_, i) => (
-                    <div key={i} className="flex items-center justify-between py-2">
-                      <Skeleton className="h-4 w-1/3" />
-                      <Skeleton className="h-4 w-16" />
-                    </div>
-                  ))}
-                </CardContent>
-              ) : recentlyListed?.data?.length ? (
-                <div className="divide-y">
-                  {recentlyListed.data.slice(0, 6).map((ipo) => {
-                    const gainPercent = ipo.gain_loss_percent;
-                    const isPositive = gainPercent !== null && gainPercent !== undefined && gainPercent >= 0;
-                    return (
-                      <Link
-                        key={ipo.ipo_id}
-                        href={`/ipo/${ipo.slug}`}
-                        className="flex items-center justify-between p-3 hover:bg-muted/50 transition-colors"
-                      >
-                        <div className="flex items-center gap-2 min-w-0 flex-1">
-                          <span className="text-sm font-medium truncate">{ipo.name.replace(' IPO', '')}</span>
-                          <span className="text-xs text-muted-foreground hidden sm:inline">₹{ipo.issue_price}</span>
-                        </div>
-                        <div className="shrink-0">
-                          {gainPercent !== null && gainPercent !== undefined ? (
-                            <span className={cn(
-                              "text-xs font-tabular",
-                              isPositive ? "text-success" : "text-destructive"
-                            )}>
-                              {gainPercent >= 0 ? "+" : ""}{gainPercent.toFixed(1)}%
-                            </span>
-                          ) : (
-                            <span className="text-xs text-muted-foreground">-</span>
-                          )}
-                        </div>
-                      </Link>
-                    );
-                  })}
+                <div className="p-4 space-y-2">
+                  {[...Array(5)].map((_, i) => <Skeleton key={i} className="h-10 w-full" />)}
                 </div>
+              ) : recentlyListed?.data?.length ? (
+                <IPOTable
+                  columns={[
+                    { key: "name", label: "IPO Name" },
+                    { key: "listingDate", label: "Listed On", hideOnMobile: true },
+                    { key: "issuePrice", label: "Issue Price", hideOnMobile: true },
+                    { key: "listingPrice", label: "Listing Price" },
+                    { key: "gain", label: "Gain/Loss" },
+                  ]}
+                  data={recentlyListed.data.slice(0, 10).map(ipo => ({
+                    slug: ipo.slug,
+                    name: ipo.name.replace(' IPO', ''),
+                    listingDate: ipo.listing_date,
+                    issuePrice: formatCurrency(ipo.issue_price),
+                    listingPrice: formatCurrency(ipo.current_price || 0),
+                    gain: (
+                      <span className={cn("font-medium", (ipo.gain_loss_percent || 0) >= 0 ? "text-success" : "text-destructive")}>
+                        {(ipo.gain_loss_percent || 0) > 0 ? "+" : ""}{formatPercent(ipo.gain_loss_percent || 0)}
+                      </span>
+                    ),
+                    rawValue_gain: ipo.gain_loss_percent
+                  }))}
+                  isLoading={false}
+                  onRowClick={(row) => router.push(`/ipo/${row.slug}`)}
+                  emptyMessage="No recently listed IPOs."
+                />
               ) : (
                 <CardContent className="p-6 text-center text-muted-foreground text-sm">
                   No recently listed IPOs.

@@ -42,48 +42,25 @@ function deepMerge<T extends Record<string, any>>(target: T, source: Partial<T>)
   return result;
 }
 
-export function AdminProvider({ children }: { children: React.ReactNode }) {
-  // Load saved settings from localStorage
-  const loadSavedSettings = useCallback((): AdminSettings => {
-    if (typeof window === "undefined") return defaultAdminSettings;
-
-    const stored = localStorage.getItem(STORAGE_KEY);
-    if (stored) {
-      try {
-        return deepMerge(defaultAdminSettings, JSON.parse(stored));
-      } catch {
-        return defaultAdminSettings;
-      }
-    }
-    return defaultAdminSettings;
-  }, []);
-
-  // Initialize with defaults to match server-side rendering
-  const [savedSettings, setSavedSettings] = useState<AdminSettings>(defaultAdminSettings);
-  const [settings, setSettings] = useState<AdminSettings>(defaultAdminSettings);
-  const [lastSavedAt, setLastSavedAt] = useState<string | null>(null);
+export function AdminProvider({ children, initialSettings }: { children: React.ReactNode; initialSettings?: AdminSettings }) {
+  // Initialize with initialSettings if available, or default
+  const [savedSettings, setSavedSettings] = useState<AdminSettings>(initialSettings || defaultAdminSettings);
+  const [settings, setSettings] = useState<AdminSettings>(initialSettings || defaultAdminSettings);
+  const [lastSavedAt, setLastSavedAt] = useState<string | null>(initialSettings?.updatedAt || null);
   const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
+  const [isLoading, setIsLoading] = useState<boolean>(!initialSettings);
+  const [isSaving, setIsSaving] = useState<boolean>(false);
 
-  // Hydrate from localStorage on client mount
+  // Create a new effect for auth check only, removing the settings fetch
   useEffect(() => {
-    const storedSettings = localStorage.getItem(STORAGE_KEY);
+    // Check auth
     const storedAuth = localStorage.getItem(AUTH_KEY);
-
-    if (storedSettings) {
-      try {
-        const parsed = JSON.parse(storedSettings);
-        const merged = deepMerge(defaultAdminSettings, parsed);
-        setSettings(merged);
-        setSavedSettings(merged);
-        setLastSavedAt(merged.updatedAt);
-      } catch {
-        // Fallback to default
-      }
-    }
-
     if (storedAuth === "true") {
       setIsAuthenticated(true);
     }
+
+    // We rely purely on initialSettings passed from SSR (RootLayout -> Providers)
+    setIsLoading(false);
   }, []);
 
   // Check if there are unsaved changes
@@ -92,12 +69,29 @@ export function AdminProvider({ children }: { children: React.ReactNode }) {
   }, [settings, savedSettings]);
 
   // Explicit save function
-  const saveSettings = useCallback(() => {
-    const updatedSettings = { ...settings, updatedAt: new Date().toISOString() };
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(updatedSettings));
-    setSettings(updatedSettings);
-    setSavedSettings(updatedSettings);
-    setLastSavedAt(updatedSettings.updatedAt);
+  const saveSettings = useCallback(async () => {
+    setIsSaving(true);
+    try {
+      const updatedSettings = { ...settings, updatedAt: new Date().toISOString() };
+
+      const res = await fetch('/api/admin/settings', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(updatedSettings),
+      });
+
+      if (res.ok) {
+        setSettings(updatedSettings);
+        setSavedSettings(updatedSettings);
+        setLastSavedAt(updatedSettings.updatedAt);
+      } else {
+        console.error("Failed to save settings");
+      }
+    } catch (error) {
+      console.error("Error saving settings:", error);
+    } finally {
+      setIsSaving(false);
+    }
   }, [settings]);
 
   // Discard unsaved changes
@@ -106,12 +100,16 @@ export function AdminProvider({ children }: { children: React.ReactNode }) {
   }, [savedSettings]);
 
   // Reset to defaults
-  const resetToDefaults = useCallback(() => {
+  const resetToDefaults = useCallback(async () => {
+    // Only reset local state, waiting for explicit save to persist default
+    // Or we could auto-save. Let's auto-save to ensure state is clean.
     const resetSettings = { ...defaultAdminSettings, updatedAt: new Date().toISOString() };
     setSettings(resetSettings);
-    setSavedSettings(resetSettings);
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(resetSettings));
-    setLastSavedAt(resetSettings.updatedAt);
+    // Note: We don't auto-save here to let user confirm action via "Save Changes" usually,
+    // but the request implies "Reset to Defaults" action might want to persist. 
+    // For safety, let's keep it as a "draft" state that needs saving.
+    // However, the original code did sync to localStorage immediately. 
+    // Let's stick to "draft" mode for consistency with isDirty pattern.
   }, []);
 
   const updateSettings = useCallback((newSettings: Partial<AdminSettings>) => {
@@ -166,11 +164,8 @@ export function AdminProvider({ children }: { children: React.ReactNode }) {
     try {
       const imported = JSON.parse(json);
       const merged = deepMerge(defaultAdminSettings, imported);
-      merged.updatedAt = new Date().toISOString();
+      // We set this as "draft" settings
       setSettings(merged);
-      setSavedSettings(merged);
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(merged));
-      setLastSavedAt(merged.updatedAt);
       return true;
     } catch {
       return false;

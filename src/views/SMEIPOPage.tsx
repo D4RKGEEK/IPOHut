@@ -1,5 +1,7 @@
 "use client";
 
+import { useRouter } from "next/navigation";
+
 import { useState } from "react";
 import { MainLayout } from "@/components/layout";
 import { useAdmin } from "@/contexts/AdminContext";
@@ -8,6 +10,7 @@ import { IPOTable, IPOTableColumn, IPOTableRow, IPOCard, BreadcrumbNav } from "@
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
 import { useIsMobile } from "@/hooks/use-mobile";
+import { formatCurrency } from "@/lib/api";
 
 const tableColumns: IPOTableColumn[] = [
   { key: "name", label: "IPO Name", sortable: true },
@@ -16,7 +19,6 @@ const tableColumns: IPOTableColumn[] = [
   { key: "closeDate", label: "Close", hideOnMobile: true },
   { key: "listingDate", label: "Listing", hideOnMobile: true },
   { key: "issuePrice", label: "Price", sortable: true },
-  { key: "gmp", label: "GMP", sortable: true },
   { key: "subscriptionTimes", label: "Subs", sortable: true, hideOnMobile: true },
 ];
 
@@ -27,6 +29,7 @@ interface SMEIPOPageProps {
 }
 
 export default function SMEIPOPage({ initialData }: SMEIPOPageProps) {
+  const router = useRouter();
   const { settings } = useAdmin();
   const { data: queryData, isLoading: queryLoading } = useSMEIPOs(100);
 
@@ -53,19 +56,27 @@ export default function SMEIPOPage({ initialData }: SMEIPOPageProps) {
     currentPage * itemsPerPage
   );
 
-  const tableData: IPOTableRow[] = paginatedData.map(ipo => ({
-    slug: ipo.slug,
-    name: ipo.name,
-    status: ipo.status,
-    ipoType: ipo.ipo_type,
-    openDate: ipo.open_date,
-    closeDate: ipo.close_date,
-    listingDate: ipo.listing_date,
-    issuePrice: ipo.issue_price,
-    gmp: ipo.gmp,
-    gmpPercent: ipo.gmp_percent,
-    subscriptionTimes: ipo.subscription_times,
-  }));
+  const tableData: IPOTableRow[] = paginatedData.map(ipo => {
+    // Handle GMP possibly being an object or number
+    const gmpValue = typeof ipo.gmp === 'object' ? (ipo.gmp as any)?.gmp_value : ipo.gmp;
+
+    return {
+      slug: ipo.slug,
+      name: ipo.name,
+      status: ipo.status,
+      ipoType: ipo.ipo_type,
+      openDate: ipo.open_date,
+      closeDate: ipo.close_date,
+      listingDate: ipo.listing_date,
+      issuePrice: formatCurrency(ipo.issue_price),
+      gmp: formatCurrency(gmpValue || 0),
+      subscriptionTimes: ipo.subscription_times ? `${ipo.subscription_times}x` : "-",
+      // Sort keys
+      rawValue_issuePrice: ipo.issue_price,
+      rawValue_gmp: gmpValue || 0,
+      rawValue_subscriptionTimes: ipo.subscription_times || 0
+    };
+  });
 
   const openCount = allData.filter(i => i.status === "open").length;
   const upcomingCount = allData.filter(i => i.status === "upcoming").length;
@@ -142,11 +153,13 @@ export default function SMEIPOPage({ initialData }: SMEIPOPageProps) {
                 )}
               </div>
             ) : (
+              // Table layout for desktop
               <IPOTable
                 columns={tableColumns}
                 data={tableData}
                 isLoading={isLoading}
                 emptyMessage="No IPOs found"
+                onRowClick={(row) => router.push(`/ipo/${row.slug}`)}
               />
             )}
 

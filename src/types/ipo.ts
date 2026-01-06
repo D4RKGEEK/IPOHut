@@ -300,3 +300,32 @@ export interface APIResponse<T> {
   offset?: number;
   error?: string;
 }
+
+export interface IPOGMPListItem {
+  slug: string;
+  name: string;
+  current_gmp: number;
+  gmp_percent: number | null;
+  estimated_listing: number;
+  last_updated: string;
+  rating: {
+    label: string;
+    score: number;
+  };
+  dates: {
+    open: string;
+    close: string;
+    boa: string;
+    listing: string;
+  };
+  ipo_details: {
+    price: string;
+    lot: string;
+    size: string;
+    subscription: string;
+  };
+}
+
+export interface IPOGMPResponse {
+  data: IPOGMPListItem[];
+}

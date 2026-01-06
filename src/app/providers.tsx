@@ -9,8 +9,9 @@ import { AdminProvider } from "@/contexts/AdminContext";
 import { AnalyticsProvider } from "@/components/analytics/AnalyticsProvider";
 import { HelmetProvider } from "react-helmet-async";
 import { useState, Suspense } from "react";
+import { AdminSettings } from "@/types/admin";
 
-export function Providers({ children }: { children: React.ReactNode }) {
+export function Providers({ children, initialAdminSettings }: { children: React.ReactNode; initialAdminSettings?: AdminSettings }) {
     const [queryClient] = useState(() => new QueryClient({
         defaultOptions: {
             queries: {
@@ -26,7 +27,7 @@ export function Providers({ children }: { children: React.ReactNode }) {
         <HelmetProvider>
             <ThemeProvider attribute="class" defaultTheme="light" enableSystem>
                 <QueryClientProvider client={queryClient}>
-                    <AdminProvider>
+                    <AdminProvider initialSettings={initialAdminSettings}>
                         <TooltipProvider>
                             <Suspense fallback={null}>
                                 <AnalyticsProvider>

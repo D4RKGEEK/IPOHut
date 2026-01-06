@@ -5,6 +5,7 @@ import IPODetailPage from "@/views/IPODetailPage";
 import { fetchIPODetail, fetchIPOMetadata } from "@/lib/api";
 import { applyTemplate } from "@/types/admin";
 import { defaultAdminSettings } from "@/types/admin";
+import { getAdminSettings } from "@/lib/server-config";
 
 // 3 Hour Revalidation
 export const revalidate = 10800;
@@ -35,7 +36,6 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
                 description: "The requested IPO details could not be found."
             };
         }
-
 
         const ipo = response.data;
         const basicInfo = ipo.basic_info;
@@ -69,11 +69,9 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
 
         const issuePrice = getIssuePrice();
 
-
-        // We can't easily access the dynamic admin settings here from context/localStorage
-        // So we'll use defaults or a stripped down version, or strictly relies on what's hardcoded for now
-        // Ideally, admin settings should also be fetched from a server endpoint or file
-        const pageSettings = defaultAdminSettings.pages.ipoDetail;
+        // Fetch dynamic admin settings
+        const settings = await getAdminSettings();
+        const pageSettings = settings.pages.ipoDetail;
 
         const templateVars = {
             ipo_name: basicInfo["IPO Name"] || slug,

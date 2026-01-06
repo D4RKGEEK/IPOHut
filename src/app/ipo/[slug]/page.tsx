@@ -36,12 +36,39 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
             };
         }
 
+
         const ipo = response.data;
         const basicInfo = ipo.basic_info;
         const gmpData = ipo.gmp_data;
         const timeline = ipo.ipo_timeline;
         const subscription = ipo.subscription_status;
-        const issuePrice = parseFloat(basicInfo["Issue Price"]?.replace(/[^\d.]/g, "") || "0");
+
+        // Parse issue price with fallback to price band
+        const getIssuePrice = (): number => {
+            const issuePriceStr = basicInfo["Issue Price"];
+            if (issuePriceStr) {
+                const price = parseFloat(issuePriceStr.replace(/[^\d.]/g, ""));
+                if (price > 0) return price;
+            }
+
+            // Fallback to extracting upper price from Price Band
+            const priceBand = basicInfo["Price Band"];
+            if (priceBand) {
+                const matches = priceBand.match(/(\d+)\s*to\s*(\d+)/i);
+                if (matches && matches[2]) {
+                    return parseFloat(matches[2]);
+                }
+                const numbers = priceBand.match(/\d+/g);
+                if (numbers && numbers.length > 0) {
+                    return parseFloat(numbers[numbers.length - 1]);
+                }
+            }
+
+            return 0;
+        };
+
+        const issuePrice = getIssuePrice();
+
 
         // We can't easily access the dynamic admin settings here from context/localStorage
         // So we'll use defaults or a stripped down version, or strictly relies on what's hardcoded for now

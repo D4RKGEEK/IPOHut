@@ -173,8 +173,32 @@ export default function IPODetailPage({ initialData }: IPODetailPageProps) {
   const leadManagers = registrar?.lead_managers;
   const marketData = ipo.market_data;
 
-  // Parse issue price from string
-  const issuePrice = parseFloat(basicInfo["Issue Price"]?.replace(/[^\d.]/g, "") || "0");
+  // Parse issue price from string, fallback to price band upper limit
+  const getIssuePrice = (): number => {
+    const issuePriceStr = basicInfo["Issue Price"];
+    if (issuePriceStr) {
+      const price = parseFloat(issuePriceStr.replace(/[^\d.]/g, ""));
+      if (price > 0) return price;
+    }
+
+    // Fallback to extracting upper price from Price Band (e.g., "₹100 to ₹105")
+    const priceBand = basicInfo["Price Band"];
+    if (priceBand) {
+      const matches = priceBand.match(/(\d+)\s*to\s*(\d+)/i);
+      if (matches && matches[2]) {
+        return parseFloat(matches[2]);
+      }
+      // Try to extract any number from price band as last resort
+      const numbers = priceBand.match(/\d+/g);
+      if (numbers && numbers.length > 0) {
+        return parseFloat(numbers[numbers.length - 1]);
+      }
+    }
+
+    return 0;
+  };
+
+  const issuePrice = getIssuePrice();
   const lotSize = parseInt(basicInfo["Lot Size"]?.replace(/[^\d]/g, "") || "0");
 
   // Template variables for SEO

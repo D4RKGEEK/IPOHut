@@ -5,21 +5,38 @@ import { cn } from "@/lib/utils";
 import { formatCurrency, formatPercent } from "@/lib/api";
 
 interface IPOGMPWidgetProps {
-  gmpData: IPOGMPData;
+  gmpData?: IPOGMPData;
   issuePrice: number;
   lotSize: number;
+  showDummyData?: boolean;
 }
 
-export function IPOGMPWidget({ gmpData, issuePrice, lotSize }: IPOGMPWidgetProps) {
-  const gmp = gmpData.current_gmp ?? 0;
+const DUMMY_GMP_DATA: IPOGMPData = {
+  current_gmp: 45,
+  estimated_listing: 345,
+  last_updated: "2 hours ago",
+  rating: {
+    score: 4,
+    label: "Good"
+  }
+};
+
+export function IPOGMPWidget({ gmpData, issuePrice, lotSize, showDummyData = false }: IPOGMPWidgetProps) {
+  // Use dummy data if flag is true or if no real data is available
+  const displayData = showDummyData ? DUMMY_GMP_DATA : gmpData;
+
+  // If no data and not showing dummy, don't render
+  if (!displayData) return null;
+
+  const gmp = displayData.current_gmp ?? 0;
   const isPositive = gmp >= 0;
   const gmpPercent = issuePrice > 0 ? (gmp / issuePrice) * 100 : 0;
-  const estimatedListing = gmpData.estimated_listing ?? (issuePrice + gmp);
+  const estimatedListing = displayData.estimated_listing ?? (issuePrice + gmp);
   const profitPerLot = gmp * lotSize;
 
   // Rating display
   const getRatingStars = () => {
-    const rating = gmpData.rating?.score ?? Math.min(5, Math.max(1, Math.floor(gmpPercent / 10) + 1));
+    const rating = displayData.rating?.score ?? Math.min(5, Math.max(1, Math.floor(gmpPercent / 10) + 1));
     return Array.from({ length: 5 }, (_, i) => (
       <Flame
         key={i}
@@ -41,7 +58,7 @@ export function IPOGMPWidget({ gmpData, issuePrice, lotSize }: IPOGMPWidgetProps
           <span className="text-xs sm:text-sm text-muted-foreground font-medium">Grey Market Premium</span>
           <div className="flex items-center gap-1">{getRatingStars()}</div>
         </div>
-        
+
         <div className="flex items-center gap-2 sm:gap-3 mb-4">
           {isPositive ? (
             <TrendingUp className="h-6 w-6 sm:h-8 sm:w-8 text-success shrink-0" />
@@ -82,10 +99,10 @@ export function IPOGMPWidget({ gmpData, issuePrice, lotSize }: IPOGMPWidgetProps
           </div>
         </div>
 
-        {gmpData.last_updated && (
+        {displayData.last_updated && (
           <div className="flex items-center gap-1 mt-3 text-[10px] sm:text-xs text-muted-foreground">
             <Clock className="h-3 w-3" />
-            Updated: {gmpData.last_updated}
+            Updated: {displayData.last_updated}
           </div>
         )}
       </CardContent>

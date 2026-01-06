@@ -86,9 +86,10 @@ export function WidgetRenderer({ widgetId, data }: WidgetRendererProps) {
 
     case 'gmp_widget':
       if (gmpData?.current_gmp !== undefined && issuePrice > 0) {
-        return <IPOGMPWidget gmpData={gmpData} issuePrice={issuePrice} lotSize={lotSize} />;
+        return <IPOGMPWidget gmpData={gmpData} issuePrice={issuePrice} lotSize={lotSize} showDummyData={false} />;
       }
-      return null;
+      // Show with dummy data if no real data
+      return <IPOGMPWidget gmpData={undefined} issuePrice={issuePrice || 300} lotSize={lotSize || 50} showDummyData={false} />;
 
     case 'market_chart':
       if (marketData && status === "listed") {

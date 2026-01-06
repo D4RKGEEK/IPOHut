@@ -12,5 +12,6 @@ export { AboutCompany } from "./AboutCompany";
 export { PDFDownloadButton } from "./PDFDownloadButton";
 export { MarketChart } from "./MarketChart";
 export { MarketCandlesChart } from "./MarketCandlesChart";
+export { AIInsightsWidget } from "./AIInsightsWidget";
 export { IPOFAQSection } from "./IPOFAQSection";
 export { WidgetRenderer, WidgetList } from "./WidgetRenderer";

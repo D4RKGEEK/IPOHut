@@ -245,6 +245,15 @@ export interface IPOAnchorInvestor {
   shares_allocated?: string;
 }
 
+export interface AIData {
+  seo_about: string;
+  pros: string[];
+  cons: string[];
+  key_highlights: string[];
+  financial_summary: string;
+  sector: string;
+}
+
 export interface IPODetail {
   logo_about?: {
     logo?: string;
@@ -280,6 +289,7 @@ export interface IPODetail {
   slug: string;
   ipo_type: "mainboard" | "sme";
   gain_loss_percent?: number;
+  ai_data?: AIData;
 }
 
 export interface APIResponse<T> {

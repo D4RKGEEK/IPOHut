@@ -79,7 +79,8 @@ export type WidgetType =
   | 'faq_section'
   | 'vital_stats'
   | 'gmp_widget'
-  | 'market_chart';
+  | 'market_chart'
+  | 'ai_insights';
 
 export interface WidgetConfig {
   id: WidgetType;
@@ -131,6 +132,7 @@ export const WIDGET_METADATA: Record<WidgetType, { label: string; description: s
   vital_stats: { label: 'Vital Stats', description: 'Quick stats grid', icon: 'LayoutGrid' },
   gmp_widget: { label: 'GMP Widget', description: 'Grey market premium display', icon: 'Sparkles' },
   market_chart: { label: 'Market Chart', description: 'Price chart for listed IPOs', icon: 'LineChart' },
+  ai_insights: { label: 'AI Insights', description: 'AI-generated analysis', icon: 'BrainCircuit' },
 };
 
 export interface PageVisibility {
@@ -353,9 +355,10 @@ export const defaultAdminSettings: AdminSettings = {
           enabled: true,
           widgets: [
             { id: 'timeline', enabled: true, order: 0 },
-            { id: 'subscription_table', enabled: true, order: 1 },
-            { id: 'key_metrics', enabled: true, order: 2 },
-            { id: 'broker_sentiment', enabled: true, order: 3 },
+            { id: 'ai_insights', enabled: true, order: 1 },
+            { id: 'subscription_table', enabled: true, order: 2 },
+            { id: 'key_metrics', enabled: true, order: 3 },
+            { id: 'broker_sentiment', enabled: true, order: 4 },
           ],
         },
         {

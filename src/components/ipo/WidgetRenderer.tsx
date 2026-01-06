@@ -15,6 +15,7 @@ import {
   AboutCompany,
   MarketCandlesChart,
   IPOFAQSection,
+  AIInsightsWidget,
 } from "@/components/ipo";
 import { Phone, Mail, Globe, ExternalLink } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -44,6 +45,7 @@ interface WidgetRendererProps {
     slug: string;
     listingInfo?: any;
     gainLossPercent?: number;
+    aiData?: any;
   };
 }
 
@@ -69,6 +71,7 @@ export function WidgetRenderer({ widgetId, data }: WidgetRendererProps) {
     lotSize,
     status,
     slug,
+    aiData,
   } = data;
 
   switch (widgetId) {
@@ -92,6 +95,9 @@ export function WidgetRenderer({ widgetId, data }: WidgetRendererProps) {
         return <MarketCandlesChart marketData={marketData} issuePrice={issuePrice} ipoSlug={slug} />;
       }
       return null;
+
+    case 'ai_insights':
+      return <AIInsightsWidget data={aiData} showDummyData={true} />;
 
     case 'timeline':
       return (
@@ -206,7 +212,7 @@ export function WidgetRenderer({ widgetId, data }: WidgetRendererProps) {
 
     case 'about_company':
       if (aboutCompany) {
-        return <AboutCompany about={aboutCompany} />;
+        return <AboutCompany about={aboutCompany} aiAbout={aiData?.seo_about} />;
       }
       return null;
 

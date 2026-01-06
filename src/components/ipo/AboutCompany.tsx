@@ -6,10 +6,14 @@ interface AboutCompanyProps {
     about_company?: string;
     lists?: string[];
   };
+  aiAbout?: string; // AI-generated description takes priority
 }
 
-export function AboutCompany({ about }: AboutCompanyProps) {
-  if (!about?.about_company && (!about?.lists || about.lists.length === 0)) return null;
+export function AboutCompany({ about, aiAbout }: AboutCompanyProps) {
+  // Prioritize AI-generated description, fallback to regular about_company
+  const description = aiAbout || about?.about_company;
+
+  if (!description && (!about?.lists || about.lists.length === 0)) return null;
 
   return (
     <Card className="border">
@@ -20,19 +24,19 @@ export function AboutCompany({ about }: AboutCompanyProps) {
         </CardTitle>
       </CardHeader>
       <CardContent className="space-y-4">
-        {about.about_company && (
+        {description && (
           <p className="text-xs sm:text-sm text-muted-foreground leading-relaxed">
-            {about.about_company}
+            {description}
           </p>
         )}
-        
+
         {about.lists && about.lists.length > 0 && (
           <div className="space-y-2 pt-2 border-t border-border/50">
             <div className="text-xs font-medium text-foreground mb-2">Key Highlights</div>
             <ul className="space-y-2">
               {about.lists.map((item, idx) => (
-                <li 
-                  key={idx} 
+                <li
+                  key={idx}
                   className="text-xs sm:text-sm text-muted-foreground flex gap-2"
                 >
                   <span className="text-primary mt-1">•</span>

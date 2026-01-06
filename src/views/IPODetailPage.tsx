@@ -65,9 +65,10 @@ export default function IPODetailPage({ initialData }: IPODetailPageProps) {
         {
           id: 'overview', label: 'Overview', enabled: true, widgets: [
             { id: 'timeline' as const, enabled: true, order: 0 },
-            { id: 'subscription_table' as const, enabled: true, order: 1 },
-            { id: 'key_metrics' as const, enabled: true, order: 2 },
-            { id: 'broker_sentiment' as const, enabled: true, order: 3 },
+            { id: 'ai_insights' as const, enabled: true, order: 1 },
+            { id: 'subscription_table' as const, enabled: true, order: 2 },
+            { id: 'key_metrics' as const, enabled: true, order: 3 },
+            { id: 'broker_sentiment' as const, enabled: true, order: 4 },
           ]
         },
         {
@@ -251,7 +252,8 @@ export default function IPODetailPage({ initialData }: IPODetailPageProps) {
     status,
     slug: slug || "",
     listingInfo: ipo.listing_info,
-    gainLossPercent: ipo.gain_loss_percent
+    gainLossPercent: ipo.gain_loss_percent,
+    aiData: ipo.ai_data
   };
 
   // JSON-LD structured data

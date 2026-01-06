@@ -14,6 +14,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { ChevronDown } from "lucide-react";
 import { analytics } from "@/hooks/useAnalytics";
+import { SearchBar } from "@/components/shared/SearchBar";
 
 // Icon mapping
 const iconMap: Record<string, React.ComponentType<{ className?: string }>> = {
@@ -127,6 +128,7 @@ export function Header() {
 
         {/* Actions */}
         <div className="flex items-center gap-1">
+          <SearchBar />
           <ThemeToggle />
           <Button
             variant="ghost"

@@ -33,7 +33,7 @@ const DUMMY_DATA: AIData = {
     sector: "IT"
 };
 
-export function AIInsightsWidget({ data, showDummyData = true }: AIInsightsWidgetProps) {
+export function AIInsightsWidget({ data, showDummyData = false }: AIInsightsWidgetProps) {
     const displayData = showDummyData ? DUMMY_DATA : data;
 
     if (!displayData) return null;

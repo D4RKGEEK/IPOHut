@@ -21,7 +21,7 @@ export interface IPOStatus {
   open_date: string;
   close_date: string;
   listing_date: string;
-  issue_price: number;
+  issue_price: number | string; // Can be number or string with "Price Band" text
   current_price?: number;
   gain_loss_percent?: number;
   subscription_times?: number;

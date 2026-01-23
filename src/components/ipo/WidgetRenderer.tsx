@@ -98,7 +98,7 @@ export function WidgetRenderer({ widgetId, data }: WidgetRendererProps) {
       return null;
 
     case 'ai_insights':
-      return <AIInsightsWidget data={aiData} showDummyData={true} />;
+      return <AIInsightsWidget data={aiData} showDummyData={false} />;
 
     case 'timeline':
       return (

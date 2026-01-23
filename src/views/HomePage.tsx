@@ -279,7 +279,7 @@ export default function HomePage({ initialData }: HomePageProps) {
                     return {
                       slug: ipo.slug,
                       name: ipo.name.replace(' IPO', ''),
-                      ipoType: ipo.ipo_type,
+                      ipoType: ipo.ipo_type?.toLowerCase() as "mainboard" | "sme" | undefined,
                       openDate: formatDateWithoutYear(ipo.open_date),
                       closeDate: formatDateWithoutYear(ipo.close_date),
                       lotSize: ipo.lot_size ? `${ipo.lot_size} Shares` : "—",

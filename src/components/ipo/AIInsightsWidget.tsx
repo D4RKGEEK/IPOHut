@@ -1,9 +1,10 @@
 "use client";
 
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { useState } from "react";
+import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { AIData } from "@/types/ipo";
-import { Sparkles, TrendingUp, Building2 } from "lucide-react";
+import { Sparkles, TrendingUp, Building2, Lightbulb, AlertTriangle, Star } from "lucide-react";
 
 interface AIInsightsWidgetProps {
     data?: AIData;
@@ -33,70 +34,119 @@ const DUMMY_DATA: AIData = {
     sector: "IT"
 };
 
+type TabType = 'highlights' | 'analysis' | 'outlook';
+
 export function AIInsightsWidget({ data, showDummyData = false }: AIInsightsWidgetProps) {
     const displayData = showDummyData ? DUMMY_DATA : data;
+    const [activeTab, setActiveTab] = useState<TabType>('highlights');
 
     if (!displayData) return null;
 
     return (
         <Card className="border shadow-sm overflow-hidden">
-            <CardHeader className="pb-4 border-b bg-gradient-to-r from-blue-50/50 to-indigo-50/50 dark:from-blue-950/20 dark:to-indigo-950/20">
+            {/* Compact Header */}
+            <CardHeader className="pb-3 pt-3.5 px-4 border-b bg-gradient-to-r from-blue-50/40 to-indigo-50/40 dark:from-blue-950/10 dark:to-indigo-950/10">
                 <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-2.5">
-                        <div className="p-2 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-lg">
-                            <Sparkles className="h-4 w-4 text-white" />
+                    <div className="flex items-center gap-2">
+                        <div className="p-1.5 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-md">
+                            <Sparkles className="h-3.5 w-3.5 text-white" />
                         </div>
                         <div>
-                            <CardTitle className="text-base font-semibold">AI Analysis</CardTitle>
-                            <p className="text-xs text-muted-foreground mt-0.5">Powered by advanced analytics</p>
+                            <h3 className="text-sm font-semibold">AI Analysis</h3>
+                            <p className="text-[10px] text-muted-foreground">Advanced analytics</p>
                         </div>
                     </div>
-                    <div className="flex items-center gap-2">
+                    <div className="flex items-center gap-1.5">
                         {displayData.sector && (
-                            <Badge variant="outline" className="font-normal text-xs">
-                                <Building2 className="h-3 w-3 mr-1" />
+                            <Badge variant="outline" className="font-normal text-[10px] h-5 px-1.5">
+                                <Building2 className="h-2.5 w-2.5 mr-1" />
                                 {displayData.sector}
                             </Badge>
                         )}
-                        <Badge variant="secondary" className="text-[10px] h-5 px-2 font-normal bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-300">
+                        <Badge variant="secondary" className="text-[9px] h-5 px-1.5 font-normal bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-300">
                             Beta
                         </Badge>
                     </div>
                 </div>
             </CardHeader>
 
-            <CardContent className="p-0">
-                {/* Two Column Layout for Highlights and Pros/Cons */}
-                <div className="grid grid-cols-1 lg:grid-cols-2 divide-y lg:divide-y-0 lg:divide-x">
+            {/* Compact Tab Navigation */}
+            <div className="border-b bg-muted/30">
+                <div className="flex">
+                    <button
+                        onClick={() => setActiveTab('highlights')}
+                        className={`flex-1 px-3 py-2 text-xs font-medium transition-colors relative ${activeTab === 'highlights'
+                                ? 'text-blue-600 dark:text-blue-400 bg-background'
+                                : 'text-muted-foreground hover:text-foreground hover:bg-muted/50'
+                            }`}
+                    >
+                        <div className="flex items-center justify-center gap-1.5">
+                            <Star className="h-3 w-3" />
+                            <span>Highlights</span>
+                        </div>
+                        {activeTab === 'highlights' && (
+                            <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-blue-600 dark:bg-blue-400" />
+                        )}
+                    </button>
+                    <button
+                        onClick={() => setActiveTab('analysis')}
+                        className={`flex-1 px-3 py-2 text-xs font-medium transition-colors relative ${activeTab === 'analysis'
+                                ? 'text-blue-600 dark:text-blue-400 bg-background'
+                                : 'text-muted-foreground hover:text-foreground hover:bg-muted/50'
+                            }`}
+                    >
+                        <div className="flex items-center justify-center gap-1.5">
+                            <Lightbulb className="h-3 w-3" />
+                            <span>Analysis</span>
+                        </div>
+                        {activeTab === 'analysis' && (
+                            <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-blue-600 dark:bg-blue-400" />
+                        )}
+                    </button>
+                    <button
+                        onClick={() => setActiveTab('outlook')}
+                        className={`flex-1 px-3 py-2 text-xs font-medium transition-colors relative ${activeTab === 'outlook'
+                                ? 'text-blue-600 dark:text-blue-400 bg-background'
+                                : 'text-muted-foreground hover:text-foreground hover:bg-muted/50'
+                            }`}
+                    >
+                        <div className="flex items-center justify-center gap-1.5">
+                            <TrendingUp className="h-3 w-3" />
+                            <span>Outlook</span>
+                        </div>
+                        {activeTab === 'outlook' && (
+                            <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-blue-600 dark:bg-blue-400" />
+                        )}
+                    </button>
+                </div>
+            </div>
 
-                    {/* Key Highlights */}
-                    <div className="p-5 space-y-4">
-                        <h4 className="text-xs font-semibold uppercase tracking-wider text-muted-foreground flex items-center gap-1.5">
-                            <span className="h-1 w-1 rounded-full bg-amber-500"></span>
-                            Key Highlights
-                        </h4>
-                        <ul className="space-y-2.5">
-                            {displayData.key_highlights.map((item, i) => (
-                                <li key={i} className="flex items-start gap-2.5 text-sm group">
-                                    <span className="mt-1.5 h-1.5 w-1.5 rounded-full bg-amber-400 shrink-0" />
-                                    <span className="text-slate-700 dark:text-slate-300 leading-relaxed">{item}</span>
-                                </li>
-                            ))}
-                        </ul>
+            <CardContent className="p-4">
+                {/* Highlights Tab */}
+                {activeTab === 'highlights' && (
+                    <div className="space-y-2">
+                        {displayData.key_highlights.map((item, i) => (
+                            <div key={i} className="flex items-start gap-2 text-xs group">
+                                <span className="mt-1 h-1 w-1 rounded-full bg-amber-400 shrink-0" />
+                                <span className="text-slate-700 dark:text-slate-300 leading-relaxed">{item}</span>
+                            </div>
+                        ))}
                     </div>
+                )}
 
-                    {/* Pros & Cons */}
-                    <div className="p-5 space-y-5">
+                {/* Analysis Tab - Pros & Cons in compact grid */}
+                {activeTab === 'analysis' && (
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                         {/* Strengths */}
-                        <div>
-                            <h4 className="text-xs font-semibold uppercase tracking-wider text-emerald-600 dark:text-emerald-400 mb-3 flex items-center gap-1.5">
+                        <div className="space-y-2">
+                            <h4 className="text-[10px] font-semibold uppercase tracking-wider text-emerald-600 dark:text-emerald-400 flex items-center gap-1">
                                 <span className="h-1 w-1 rounded-full bg-emerald-500"></span>
                                 Strengths
                             </h4>
-                            <ul className="space-y-2">
+                            <ul className="space-y-1.5">
                                 {displayData.pros.map((item, i) => (
-                                    <li key={i} className="text-sm text-slate-700 dark:text-slate-300 flex items-start gap-2 leading-relaxed">
-                                        <span className="text-emerald-500 font-medium shrink-0 mt-0.5">✓</span>
+                                    <li key={i} className="text-xs text-slate-700 dark:text-slate-300 flex items-start gap-1.5 leading-relaxed">
+                                        <span className="text-emerald-500 text-sm shrink-0">✓</span>
                                         {item}
                                     </li>
                                 ))}
@@ -104,32 +154,33 @@ export function AIInsightsWidget({ data, showDummyData = false }: AIInsightsWidg
                         </div>
 
                         {/* Risks */}
-                        <div>
-                            <h4 className="text-xs font-semibold uppercase tracking-wider text-rose-600 dark:text-rose-400 mb-3 flex items-center gap-1.5">
+                        <div className="space-y-2">
+                            <h4 className="text-[10px] font-semibold uppercase tracking-wider text-rose-600 dark:text-rose-400 flex items-center gap-1">
                                 <span className="h-1 w-1 rounded-full bg-rose-500"></span>
                                 Risks
                             </h4>
-                            <ul className="space-y-2">
+                            <ul className="space-y-1.5">
                                 {displayData.cons.map((item, i) => (
-                                    <li key={i} className="text-sm text-slate-700 dark:text-slate-300 flex items-start gap-2 leading-relaxed">
-                                        <span className="text-rose-500 font-medium shrink-0 mt-0.5">⚠</span>
+                                    <li key={i} className="text-xs text-slate-700 dark:text-slate-300 flex items-start gap-1.5 leading-relaxed">
+                                        <span className="text-rose-500 text-sm shrink-0">⚠</span>
                                         {item}
                                     </li>
                                 ))}
                             </ul>
                         </div>
                     </div>
+                )}
 
-                </div>
-
-                {/* Financial Outlook */}
-                {displayData.financial_summary && (
-                    <div className="p-5 border-t bg-slate-50/50 dark:bg-slate-900/30">
-                        <h4 className="text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-3 flex items-center gap-1.5">
-                            <TrendingUp className="h-3.5 w-3.5 text-blue-500" />
-                            Financial Outlook
-                        </h4>
-                        <p className="text-sm leading-relaxed text-slate-700 dark:text-slate-300">
+                {/* Outlook Tab */}
+                {activeTab === 'outlook' && displayData.financial_summary && (
+                    <div className="space-y-2">
+                        <div className="flex items-center gap-1.5 mb-2">
+                            <TrendingUp className="h-3 w-3 text-blue-500" />
+                            <h4 className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">
+                                Financial Outlook
+                            </h4>
+                        </div>
+                        <p className="text-xs leading-relaxed text-slate-700 dark:text-slate-300">
                             {displayData.financial_summary}
                         </p>
                     </div>

@@ -60,6 +60,11 @@ export default function MainboardIPOPage({ initialData }: MainboardIPOPageProps)
     // Handle GMP possibly being an object or number
     const gmpValue = typeof ipo.gmp === 'object' ? (ipo.gmp as any)?.gmp_value : ipo.gmp;
 
+    // Parse issue_price to extract numeric value (handles "Price Band\n₹67 to ₹70" format)
+    const issuePriceValue = typeof ipo.issue_price === 'string'
+      ? parseFloat(ipo.issue_price.replace(/[^\d.]/g, "") || "0")
+      : ipo.issue_price;
+
     return {
       slug: ipo.slug,
       name: ipo.name,
@@ -68,11 +73,11 @@ export default function MainboardIPOPage({ initialData }: MainboardIPOPageProps)
       openDate: ipo.open_date,
       closeDate: ipo.close_date,
       listingDate: ipo.listing_date,
-      issuePrice: formatCurrency(ipo.issue_price),
+      issuePrice: formatCurrency(issuePriceValue),
       gmp: formatCurrency(gmpValue || 0),
       subscriptionTimes: ipo.subscription_times ? `${ipo.subscription_times}x` : "-",
       // Sort keys
-      rawValue_issuePrice: ipo.issue_price,
+      rawValue_issuePrice: issuePriceValue,
       rawValue_gmp: gmpValue || 0,
       rawValue_subscriptionTimes: ipo.subscription_times || 0
     };
@@ -136,21 +141,28 @@ export default function MainboardIPOPage({ initialData }: MainboardIPOPageProps)
                     No IPOs found.
                   </div>
                 ) : (
-                  paginatedData.map(ipo => (
-                    <IPOCard
-                      key={ipo.ipo_id}
-                      name={ipo.name}
-                      slug={ipo.slug}
-                      status={ipo.status}
-                      ipoType={ipo.ipo_type}
-                      issuePrice={ipo.issue_price}
-                      gmp={ipo.gmp}
-                      gmpPercent={ipo.gmp_percent}
-                      subscriptionTimes={ipo.subscription_times}
-                      closeDate={ipo.close_date}
-                      listingDate={ipo.listing_date}
-                    />
-                  ))
+                  paginatedData.map(ipo => {
+                    // Parse issue_price to extract numeric value
+                    const issuePriceValue = typeof ipo.issue_price === 'string'
+                      ? parseFloat(ipo.issue_price.replace(/[^\d.]/g, "") || "0")
+                      : ipo.issue_price;
+
+                    return (
+                      <IPOCard
+                        key={ipo.ipo_id}
+                        name={ipo.name}
+                        slug={ipo.slug}
+                        status={ipo.status}
+                        ipoType={ipo.ipo_type}
+                        issuePrice={issuePriceValue}
+                        gmp={ipo.gmp}
+                        gmpPercent={ipo.gmp_percent}
+                        subscriptionTimes={ipo.subscription_times}
+                        closeDate={ipo.close_date}
+                        listingDate={ipo.listing_date}
+                      />
+                    );
+                  })
                 )}
               </div>
             ) : (

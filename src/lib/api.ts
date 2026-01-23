@@ -1,6 +1,8 @@
 import { APIResponse, IPOGain, IPOStatus, IPONews, IPOCalendar, IPODetail } from "@/types/ipo";
 
 const BASE_URL = "https://ipo-api-production.up.railway.app";
+//const BASE_URL = "http://localhost:12345/";
+
 
 async function fetchAPI<T>(
   endpoint: string,

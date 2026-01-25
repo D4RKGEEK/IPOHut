@@ -138,7 +138,6 @@ export default function IPOAllotmentCheckerPage({ initialData }: IPOAllotmentChe
       return {
         name: "Cameo Corporate Services",
         url: "https://www.cameoindia.com/ipo/allotment_status.asp",
-        panUrl: "https://www.cameoindia.com/ipo/allotment_status.asp"
       };
     }
     return {
@@ -148,7 +147,16 @@ export default function IPOAllotmentCheckerPage({ initialData }: IPOAllotmentChe
     };
   };
 
-  const registrarPortal = getRegistrarPortal();
+  const initialRegistrarPortal = getRegistrarPortal();
+
+  // Safeguard against bad URLs (Chittorgarh or empty)
+  const registrarPortal = (!initialRegistrarPortal.url || initialRegistrarPortal.url.includes("chittorgarh.com"))
+    ? {
+      name: registrarName,
+      url: "https://www.bseindia.com/investors/appli_check.aspx",
+      panUrl: "https://www.bseindia.com/investors/appli_check.aspx"
+    }
+    : initialRegistrarPortal;
 
   const pageTitle = `${ipoName} Allotment Status - Check ${companyName} IPO Allotment`;
   const pageDescription = `Check ${ipoName} allotment status online. Step-by-step guide to check ${companyName} IPO allotment using PAN, Application Number, or Demat Account. Allotment date: ${allotmentDate}.`;
@@ -237,9 +245,9 @@ export default function IPOAllotmentCheckerPage({ initialData }: IPOAllotmentChe
     "@context": "https://schema.org",
     "@type": "BreadcrumbList",
     "itemListElement": [
-      { "@type": "ListItem", "position": 1, "name": "Home", "item": "https://ipodekho.com" },
-      { "@type": "ListItem", "position": 2, "name": ipoName, "item": `https://ipodekho.com/ipo/${slug}` },
-      { "@type": "ListItem", "position": 3, "name": "Allotment Checker", "item": `https://ipodekho.com/ipo/${slug}/allotment` }
+      { "@type": "ListItem", "position": 1, "name": "Home", "item": "https://ipohut.com" },
+      { "@type": "ListItem", "position": 2, "name": ipoName, "item": `https://ipohut.com/ipo/${slug}` },
+      { "@type": "ListItem", "position": 3, "name": "Allotment Checker", "item": `https://ipohut.com/ipo/${slug}/allotment` }
     ]
   };
 
@@ -249,7 +257,7 @@ export default function IPOAllotmentCheckerPage({ initialData }: IPOAllotmentChe
         <title>{pageTitle}</title>
         <meta name="description" content={pageDescription} />
         <meta name="keywords" content={`${companyName} IPO allotment, ${ipoName} allotment status, ${companyName} IPO allotment check, ${ipoName} allotment checker, check ${companyName} IPO allotment online`} />
-        <link rel="canonical" href={`https://ipodekho.com/ipo/${slug}/allotment`} />
+        <link rel="canonical" href={`https://ipohut.com/ipo/${slug}/allotment`} />
         <script type="application/ld+json">{JSON.stringify(faqStructuredData)}</script>
         <script type="application/ld+json">{JSON.stringify(howToStructuredData)}</script>
         <script type="application/ld+json">{JSON.stringify(breadcrumbStructuredData)}</script>

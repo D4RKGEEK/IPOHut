@@ -8,7 +8,7 @@ import { StatusBadge, TypeBadge, BreadcrumbNav } from "@/components/shared";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
-import { ExternalLink, Search, CheckCircle } from "lucide-react";
+import { ExternalLink, Search, CheckCircle, ArrowRight } from "lucide-react";
 import Link from "next/link";
 
 import { IPOStatus, APIResponse } from "@/types/ipo";
@@ -104,14 +104,10 @@ export default function AllotmentStatusPage({ initialData }: AllotmentStatusPage
                   </div>
 
                   <Button variant="outline" size="sm" className="w-full h-8 text-xs" asChild>
-                    <a
-                      href="https://www.linkintime.co.in/MIPO/Ipoallotment.html"
-                      target="_blank"
-                      rel="noopener noreferrer"
-                    >
+                    <Link href={`/ipo/${ipo.slug}/allotment`}>
                       Check Allotment
-                      <ExternalLink className="ml-1.5 h-3 w-3" />
-                    </a>
+                      <ArrowRight className="ml-1.5 h-3 w-3" />
+                    </Link>
                   </Button>
                 </CardContent>
               </Card>

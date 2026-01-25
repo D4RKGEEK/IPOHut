@@ -54,7 +54,12 @@ export function Header() {
     <header className="sticky top-0 z-50 bg-background/95 backdrop-blur-sm border-b">
       <div className="container flex h-14 items-center justify-between">
         {/* Logo */}
-        <Link href="/" className="flex items-center gap-2 text-foreground" onClick={handleLogoClick}>
+        <Link
+          href="/"
+          className="flex items-center gap-2 text-foreground"
+          onClick={handleLogoClick}
+          aria-label={`Go to ${settings.site.branding.siteName} home`}
+        >
           {navigation.showLogo && (
             settings.site.branding.logoUrl ? (
               <Image

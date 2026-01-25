@@ -22,7 +22,7 @@ export function Footer() {
         <div className="grid grid-cols-1 md:grid-cols-12 gap-10">
           {/* Brand - Takes more space */}
           <div className="md:col-span-4">
-            <Link href="/" className="flex items-center gap-3 font-display font-bold text-foreground mb-4 group">
+            <Link href="/" className="flex items-center gap-3 font-display font-bold text-foreground mb-4 group" aria-label={`Go to ${settings.site.branding.siteName} home`}>
               {settings.site.branding.logoUrl ? (
                 <img
                   src={settings.site.branding.logoUrl}
@@ -48,7 +48,8 @@ export function Footer() {
                     href={socialLinks.twitter}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="p-2.5 hover:bg-primary/10 rounded-xl transition-all hover:scale-110"
+                    className="p-3 hover:bg-primary/10 rounded-xl transition-all hover:scale-110"
+                    aria-label={`${settings.site.branding.siteName} on Twitter`}
                   >
                     <Twitter className="h-5 w-5 text-muted-foreground hover:text-primary transition-colors" />
                   </a>
@@ -58,7 +59,8 @@ export function Footer() {
                     href={socialLinks.facebook}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="p-2.5 hover:bg-primary/10 rounded-xl transition-all hover:scale-110"
+                    className="p-3 hover:bg-primary/10 rounded-xl transition-all hover:scale-110"
+                    aria-label={`${settings.site.branding.siteName} on Facebook`}
                   >
                     <Facebook className="h-5 w-5 text-muted-foreground hover:text-primary transition-colors" />
                   </a>
@@ -68,7 +70,8 @@ export function Footer() {
                     href={socialLinks.linkedin}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="p-2.5 hover:bg-primary/10 rounded-xl transition-all hover:scale-110"
+                    className="p-3 hover:bg-primary/10 rounded-xl transition-all hover:scale-110"
+                    aria-label={`${settings.site.branding.siteName} on LinkedIn`}
                   >
                     <Linkedin className="h-5 w-5 text-muted-foreground hover:text-primary transition-colors" />
                   </a>
@@ -78,7 +81,8 @@ export function Footer() {
                     href={socialLinks.youtube}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="p-2.5 hover:bg-primary/10 rounded-xl transition-all hover:scale-110"
+                    className="p-3 hover:bg-primary/10 rounded-xl transition-all hover:scale-110"
+                    aria-label={`${settings.site.branding.siteName} on YouTube`}
                   >
                     <Youtube className="h-5 w-5 text-muted-foreground hover:text-primary transition-colors" />
                   </a>
@@ -88,7 +92,8 @@ export function Footer() {
                     href={socialLinks.telegram}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="p-2.5 hover:bg-primary/10 rounded-xl transition-all hover:scale-110"
+                    className="p-3 hover:bg-primary/10 rounded-xl transition-all hover:scale-110"
+                    aria-label={`${settings.site.branding.siteName} on Telegram`}
                   >
                     <Send className="h-5 w-5 text-muted-foreground hover:text-primary transition-colors" />
                   </a>
@@ -100,7 +105,7 @@ export function Footer() {
           {/* Dynamic Sections from Admin */}
           {visibleSections.map((section) => (
             <div key={section.id} className="md:col-span-2">
-              <h4 className="font-display font-semibold text-sm mb-4 text-foreground">{section.title}</h4>
+              <h3 className="font-display font-semibold text-sm mb-4 text-foreground">{section.title}</h3>
               <ul className="space-y-3">
                 {section.links.map((link) => (
                   <li key={link.id}>
@@ -119,7 +124,7 @@ export function Footer() {
 
           {/* Disclaimer */}
           <div className={`md:col-span-${4 - Math.min(visibleSections.length, 2)}`}>
-            <h4 className="font-display font-semibold text-sm mb-4 text-foreground">Disclaimer</h4>
+            <h3 className="font-display font-semibold text-sm mb-4 text-foreground">Disclaimer</h3>
             <p className="text-xs text-muted-foreground leading-relaxed mb-4">
               {footer.disclaimer}
             </p>

@@ -390,7 +390,7 @@ export default function IPODetailPage({ initialData }: IPODetailPageProps) {
             </div>
 
             <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 shrink-0 ml-0 md:ml-auto md:self-center">
-              {detailConfig.showAllotmentButton && (
+              {detailConfig.showAllotmentButton && (status === "listed" || status === "recently_listed") && (
                 <Link
                   href={`/ipo/${slug}/allotment`}
                   className="w-full sm:w-auto"

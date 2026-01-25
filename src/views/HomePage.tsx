@@ -65,7 +65,7 @@ export default function HomePage({ initialData }: HomePageProps) {
         <div className="container relative z-10">
           <div className="flex flex-col items-center text-center max-w-4xl mx-auto space-y-8">
 
-            <div className="space-y-6 animate-in fade-in slide-in-from-top-4 duration-700">
+            <div className="space-y-6 animate-in fade-in slide-in-from-top-4 duration-300">
               {/* Announcement Banner */}
               {homeConfig.announcementEnabled && homeConfig.announcementBanner && (
                 <div className="inline-flex items-center gap-2 bg-muted/50 backdrop-blur-sm border border-border/50 rounded-full px-4 py-1.5 mb-2 group cursor-default">
@@ -91,7 +91,7 @@ export default function HomePage({ initialData }: HomePageProps) {
             </div>
 
             {/* CTA Buttons */}
-            <div className="flex flex-col sm:flex-row items-center justify-center gap-4 w-full sm:w-auto animate-in fade-in slide-in-from-bottom-4 duration-700 delay-200">
+            <div className="flex flex-col sm:flex-row items-center justify-center gap-4 w-full sm:w-auto animate-in fade-in slide-in-from-bottom-4 duration-300 delay-100">
               <Link href="/ipo-gmp-today" className="w-full sm:w-auto">
                 <Button size="lg" className="h-14 px-10 text-base gap-2 rounded-2xl shadow-xl shadow-primary/20 w-full sm:w-auto hover:scale-[1.02] active:scale-[0.98] transition-all">
                   <TrendingUp className="h-5 w-5" />
@@ -107,7 +107,7 @@ export default function HomePage({ initialData }: HomePageProps) {
             </div>
 
             {/* Quick Stats Grid */}
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-4 w-full pt-12 animate-in fade-in slide-in-from-bottom-8 duration-1000 delay-300">
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-4 w-full pt-12 animate-in fade-in slide-in-from-bottom-8 duration-500 delay-200">
               {[
                 { label: "GMP Today", sub: "Live premiums", icon: TrendingUp, color: "text-emerald-500", bg: "bg-emerald-500/10", href: "/ipo-gmp-today" },
                 { label: "Calendar", sub: "All IPO dates", icon: Calendar, color: "text-blue-500", bg: "bg-blue-500/10", href: "/ipo-calendar" },

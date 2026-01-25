@@ -2,10 +2,10 @@ import CompareIPOPage from "@/views/tools/CompareIPOPage";
 import { fetchCalendar } from "@/lib/api";
 
 // 3 Hour Revalidation
-export const revalidate = 10800;
+export const revalidate = 25200;
 
 export default async function CompareIPO() {
-    const data = await fetchCalendar({ limit: 100 });
+    const data = await fetchCalendar({ limit: 1000 });
 
     const ipoList = data.data?.map((ipo) => ({
         slug: ipo.slug,

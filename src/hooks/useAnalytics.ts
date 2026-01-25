@@ -9,7 +9,6 @@ declare global {
   }
 }
 
-const GA_MEASUREMENT_ID = "G-4NKZT0DTZX";
 
 // Track page views
 export function usePageTracking() {

@@ -89,16 +89,16 @@ export default function IPOAllotmentCheckerPage({ initialData }: IPOAllotmentChe
 
   const ipoName = basicInfo["IPO Name"] || slug;
   const companyName = ipoName.replace(" IPO", "").replace(" Ltd.", "").replace(" Limited", "");
-  const allotmentDate = timeline["Tentative Allotment"] || "To be announced";
+  const allotmentDate = timeline["Allotment"] || "To be announced";
   const registrarName = registrar?.name || "MUFG Intime India Pvt. Ltd.";
   const registrarWebsite = registrar?.website || "https://ipostatus.mfractiontimelabs.com/";
 
   // Determine status
   const now = new Date();
-  const listingDate = parseIPODate(timeline["Tentative Listing Date"]);
-  const closeDate = parseIPODate(timeline["IPO Close Date"]);
-  const openDate = parseIPODate(timeline["IPO Open Date"]);
-  const allotmentDateParsed = parseIPODate(timeline["Tentative Allotment"]);
+  const listingDate = parseIPODate(timeline["Listing"]);
+  const closeDate = parseIPODate(timeline["IPO Close"]);
+  const openDate = parseIPODate(timeline["IPO Open"]);
+  const allotmentDateParsed = parseIPODate(timeline["Allotment"]);
 
   let status = "upcoming";
   if (listingDate && now > listingDate) status = "listed";
@@ -173,11 +173,11 @@ export default function IPOAllotmentCheckerPage({ initialData }: IPOAllotmentChe
     },
     {
       question: `How long does it take to credit shares after ${companyName} IPO allotment?`,
-      answer: `After successful allotment, shares are credited to your demat account on ${timeline["Credit of Shares to Demat"] || "the credit date"}. The shares will be visible in your demat account by end of that day.`
+      answer: `After successful allotment, shares are credited to your demat account on ${timeline["Credit of Shares"] || "the credit date"}. The shares will be visible in your demat account by end of that day.`
     },
     {
       question: `What is the refund date for ${companyName} IPO?`,
-      answer: `The refund initiation date for ${ipoName} is ${timeline["Initiation of Refunds"] || "to be announced"}. Refunds are processed for applicants who did not receive allotment.`
+      answer: `The refund initiation date for ${ipoName} is ${timeline["Refund"] || "to be announced"}. Refunds are processed for applicants who did not receive allotment.`
     },
     {
       question: `Who is the registrar for ${companyName} IPO?`,
@@ -509,12 +509,12 @@ export default function IPOAllotmentCheckerPage({ initialData }: IPOAllotmentChe
               <CardContent className="p-4 sm:p-6">
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
                   {[
-                    { label: "IPO Open Date", value: timeline["IPO Open Date"] || "TBA" },
-                    { label: "IPO Close Date", value: timeline["IPO Close Date"] || "TBA" },
-                    { label: "Allotment Date", value: timeline["Tentative Allotment"] || "TBA", highlight: true },
-                    { label: "Refund Initiation", value: timeline["Initiation of Refunds"] || "TBA" },
-                    { label: "Credit to Demat", value: timeline["Credit of Shares to Demat"] || "TBA" },
-                    { label: "Listing Date", value: timeline["Tentative Listing Date"] || "TBA" },
+                    { label: "IPO Open Date", value: timeline["IPO Open"] || "TBA" },
+                    { label: "IPO Close Date", value: timeline["IPO Close"] || "TBA" },
+                    { label: "Allotment Date", value: timeline["Allotment"] || "TBA", highlight: true },
+                    { label: "Refund Initiation", value: timeline["Refund"] || "TBA" },
+                    { label: "Credit to Demat", value: timeline["Credit of Shares"] || "TBA" },
+                    { label: "Listing Date", value: timeline["Listing"] || "TBA" },
                   ].map((item) => (
                     <div
                       key={item.label}

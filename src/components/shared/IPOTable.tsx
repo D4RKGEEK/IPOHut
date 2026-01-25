@@ -102,7 +102,7 @@ export function IPOTable({
 
     switch (key) {
       case "name":
-        const showAllotmentLink = row.status && typeof row.status === 'string' && ["closed", "recently_listed", "listed"].includes(row.status.toLowerCase());
+        const showAllotmentLink = row.status && typeof row.status === 'string' && ["recently_listed", "listed"].includes(row.status.toLowerCase());
         return (
           <div className="flex items-center gap-2">
             <Link
@@ -117,8 +117,9 @@ export function IPOTable({
                 <TooltipTrigger asChild>
                   <Link
                     href={`/ipo/${row.slug}/allotment`}
-                    className="text-primary hover:text-primary/80 transition-colors"
+                    className="text-primary hover:text-primary/80 transition-colors p-2 -m-2"
                     onClick={(e) => e.stopPropagation()}
+                    aria-label={`Check allotment status for ${row.name}`}
                   >
                     <FileCheck className="h-3.5 w-3.5" />
                   </Link>

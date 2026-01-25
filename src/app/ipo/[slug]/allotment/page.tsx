@@ -3,7 +3,7 @@ import { fetchIPOMetadata, fetchIPODetail } from "@/lib/api";
 import { notFound } from "next/navigation";
 
 // 3 Hour Revalidation
-export const revalidate = 10800;
+export const revalidate = 25200;
 
 export async function generateStaticParams() {
     try {

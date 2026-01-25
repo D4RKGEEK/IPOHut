@@ -18,7 +18,7 @@
     --popover-foreground: 220 20% 10%;
 
     /* Primary - Vibrant emerald green */
-    --primary: 160 84% 39%;
+    --primary: 160 84% 35%;
     --primary-foreground: 0 0% 100%;
 
     /* Secondary - Cool slate */
@@ -27,7 +27,7 @@
 
     /* Muted - Subtle grays */
     --muted: 220 14% 96%;
-    --muted-foreground: 220 10% 46%;
+    --muted-foreground: 220 10% 40%;
 
     /* Accent - Warm highlight */
     --accent: 38 100% 50%;

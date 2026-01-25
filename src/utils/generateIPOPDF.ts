@@ -1,8 +1,8 @@
-import jsPDF from "jspdf";
 import { IPODetail } from "@/types/ipo";
 import { formatCurrency, formatPercent } from "@/lib/api";
 
 export async function generateIPOPDF(ipo: IPODetail, status: string): Promise<void> {
+  const jsPDF = (await import("jspdf")).default;
   const pdf = new jsPDF("p", "mm", "a4");
   const pageWidth = pdf.internal.pageSize.getWidth();
   const margin = 15;

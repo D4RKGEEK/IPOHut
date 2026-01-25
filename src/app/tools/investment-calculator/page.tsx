@@ -2,10 +2,10 @@ import InvestmentCalculatorPage from "@/views/tools/InvestmentCalculatorPage";
 import { fetchCalendar } from "@/lib/api";
 
 // 3 Hour Revalidation
-export const revalidate = 10800;
+export const revalidate = 25200;
 
 export default async function InvestmentCalculator() {
-    const data = await fetchCalendar({ limit: 100 });
+    const data = await fetchCalendar({ limit: 1000 });
 
     // Transform to SelectedIPO format for IPOSelector
     const ipoList = data.data?.map((ipo) => ({

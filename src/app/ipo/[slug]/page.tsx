@@ -8,7 +8,7 @@ import { defaultAdminSettings } from "@/types/admin";
 import { getAdminSettings } from "@/lib/server-config";
 
 // 3 Hour Revalidation
-export const revalidate = 10800;
+export const revalidate = 25200;
 
 export async function generateStaticParams() {
     try {

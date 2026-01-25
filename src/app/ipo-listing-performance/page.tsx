@@ -4,7 +4,7 @@ import { getAdminSettings } from "@/lib/server-config";
 import { Metadata } from "next";
 
 // 3 Hour Revalidation
-export const revalidate = 10800;
+export const revalidate = 25200;
 
 export async function generateMetadata(): Promise<Metadata> {
     const settings = getAdminSettings();

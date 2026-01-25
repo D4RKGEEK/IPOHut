@@ -73,7 +73,14 @@ export default function MainboardIPOPage({ initialData }: MainboardIPOPageProps)
       openDate: ipo.open_date,
       closeDate: ipo.close_date,
       listingDate: ipo.listing_date,
-      issuePrice: formatCurrency(issuePriceValue),
+      issuePrice: (() => {
+        const clean = (s: string) => s.replace(/per (equity )?share/gi, "").trim();
+        const pFinal = (ipo as any).issue_price_final;
+        const pBand = (ipo as any).issue_price_band;
+        if (pFinal) return clean(typeof pFinal === 'number' ? formatCurrency(pFinal) : String(pFinal));
+        if (pBand && pBand !== "0") return clean(pBand);
+        return formatCurrency(issuePriceValue);
+      })(),
       gmp: formatCurrency(gmpValue || 0),
       subscriptionTimes: ipo.subscription_times ? `${ipo.subscription_times}x` : "-",
       // Sort keys
@@ -152,10 +159,18 @@ export default function MainboardIPOPage({ initialData }: MainboardIPOPageProps)
                         key={ipo.ipo_id}
                         name={ipo.name}
                         slug={ipo.slug}
-                        status={ipo.status}
+                        status={ipo.status as any}
                         ipoType={ipo.ipo_type}
                         issuePrice={issuePriceValue}
-                        gmp={ipo.gmp}
+                        issuePriceDisplay={(() => {
+                          const clean = (s: string) => s.replace(/per (equity )?share/gi, "").trim();
+                          const pFinal = (ipo as any).issue_price_final;
+                          const pBand = (ipo as any).issue_price_band;
+                          if (pFinal) return clean(typeof pFinal === 'number' ? formatCurrency(pFinal) : String(pFinal));
+                          if (pBand && pBand !== "0") return clean(pBand);
+                          return undefined;
+                        })()}
+                        gmp={ipo.gmp as any}
                         gmpPercent={ipo.gmp_percent}
                         subscriptionTimes={ipo.subscription_times}
                         closeDate={ipo.close_date}

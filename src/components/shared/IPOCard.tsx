@@ -12,6 +12,7 @@ interface IPOCardProps {
   status: string;
   ipoType: "mainboard" | "sme";
   issuePrice?: number;
+  issuePriceDisplay?: string;
   gmp?: number;
   gmpPercent?: number;
   subscriptionTimes?: number;
@@ -27,6 +28,7 @@ export function IPOCard({
   status,
   ipoType,
   issuePrice,
+  issuePriceDisplay,
   gmp,
   gmpPercent,
   subscriptionTimes,
@@ -55,9 +57,9 @@ export function IPOCard({
               </h3>
               <div className="flex items-center gap-1.5 mt-1">
                 <TypeBadge type={ipoType} />
-                {issuePrice && (
+                {(issuePriceDisplay || issuePrice) && (
                   <span className="text-xs font-tabular text-muted-foreground">
-                    {formatCurrency(issuePrice)}
+                    {issuePriceDisplay || (issuePrice ? formatCurrency(issuePrice) : "")}
                   </span>
                 )}
               </div>

@@ -31,6 +31,8 @@ export interface IPOStatus {
   gmp_percent?: number;
   estimated_listing?: number;
   lot_size?: number;
+  issue_price_band?: string;
+  issue_price_final?: string;
 }
 
 export interface IPONews {
@@ -57,6 +59,7 @@ export interface IPOCalendar {
   allotment_date?: string;
   issue_price: number;
   price_band?: string;
+  issue_price_final?: string;
   lot_size: number;
   issue_size: number;
   fresh_issue?: number;

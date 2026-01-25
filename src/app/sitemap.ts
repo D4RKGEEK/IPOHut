@@ -1,7 +1,7 @@
 import { MetadataRoute } from 'next';
 import { fetchIPOMetadata } from '@/lib/api';
 
-const BASE_URL = 'https://ipohut.in';
+const BASE_URL = 'https://ipohut.com';
 
 const STATIC_ROUTES = [
     { url: "", priority: 1.0, changeFrequency: "daily" as const },

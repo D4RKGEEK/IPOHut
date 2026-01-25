@@ -14,6 +14,6 @@ export default function robots(): MetadataRoute.Robots {
                 ],
             },
         ],
-        sitemap: 'https://ipohut.in/sitemap.xml',
+        sitemap: 'https://ipohut.com/sitemap.xml',
     };
 }

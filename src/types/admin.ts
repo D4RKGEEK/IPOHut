@@ -431,7 +431,7 @@ export const defaultAdminSettings: AdminSettings = {
       tools: true,
     },
     sitemapConfig: {
-      baseUrl: "https://ipohut.in",
+      baseUrl: "https://ipohut.com",
     },
   },
   pages: {

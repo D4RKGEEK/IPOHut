@@ -164,13 +164,13 @@ export default function HomePage({ initialData }: HomePageProps) {
                       name={ipo.name}
                       slug={ipo.slug}
                       price={ipo.issue_price}
-                      gmp={typeof ipo.gmp === 'object' ? (ipo.gmp as any)?.gmp_value : (ipo.gmp || 0)}
-                      gmpPercent={ipo.gmp_percent || 0}
+                      gmp={typeof ipo.gmp === 'object' ? (ipo.gmp as any)?.gmp_value : ipo.gmp}
+                      gmpPercent={ipo.gmp_percent}
                       estListing={ipo.estimated_listing}
                       index={idx}
                       openDate={ipo.open_date}
                       closeDate={ipo.close_date}
-                      subscription={ipo.subscription_times ? `${ipo.subscription_times}x` : undefined}
+                      subscription={ipo.subscription_times}
                     />
                   ))}
                 </div>
@@ -321,7 +321,7 @@ export default function HomePage({ initialData }: HomePageProps) {
                         >
                           <span className="text-sm font-medium">{ipo.name.replace(' IPO', '')}</span>
                           <span className="px-2 py-1 bg-emerald-500/20 text-emerald-700 dark:text-emerald-400 rounded-lg text-xs font-bold font-tabular">
-                            +{ipo.listing_gain_percent?.toFixed(1)}%
+                            {ipo.listing_gain_percent ? `+${ipo.listing_gain_percent.toFixed(1)}%` : '—'}
                           </span>
                         </Link>
                       ))}
@@ -355,7 +355,7 @@ export default function HomePage({ initialData }: HomePageProps) {
                         >
                           <span className="text-sm font-medium">{ipo.name.replace(' IPO', '')}</span>
                           <span className="px-2 py-1 bg-rose-500/20 text-rose-700 dark:text-rose-400 rounded-lg text-xs font-bold font-tabular">
-                            {ipo.listing_gain_percent?.toFixed(1)}%
+                            {ipo.listing_gain_percent ? `${ipo.listing_gain_percent.toFixed(1)}%` : '—'}
                           </span>
                         </Link>
                       ))}

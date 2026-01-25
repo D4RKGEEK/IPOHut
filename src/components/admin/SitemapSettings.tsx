@@ -12,7 +12,7 @@ export function SitemapSettings() {
   const [copied, setCopied] = useState(false);
 
   const sitemapConfig = settings.site.sitemapConfig || {
-    baseUrl: "https://ipohut.in",
+    baseUrl: "https://ipohut.com",
   };
 
   const sitemapUrl = `${sitemapConfig.baseUrl}/sitemap.xml`;

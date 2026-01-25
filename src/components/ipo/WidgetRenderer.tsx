@@ -1,3 +1,4 @@
+import dynamic from "next/dynamic";
 import { WidgetType, WidgetConfig } from "@/types/admin";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { IPOTimeline, GMPCalculator } from "@/components/shared";
@@ -11,12 +12,28 @@ import {
   LeadManagersList,
   KeyMetrics,
   SubscriptionTable,
-  CompanyFinancials,
   AboutCompany,
-  MarketCandlesChart,
-  IPOFAQSection,
-  AIInsightsWidget,
 } from "@/components/ipo";
+
+const MarketCandlesChart = dynamic(() => import("./MarketCandlesChart").then(mod => mod.MarketCandlesChart), {
+  ssr: false,
+  loading: () => <div className="h-64 w-full bg-muted animate-pulse rounded-xl" />
+});
+
+const CompanyFinancials = dynamic(() => import("./CompanyFinancials").then(mod => mod.CompanyFinancials), {
+  ssr: false,
+  loading: () => <div className="h-48 w-full bg-muted animate-pulse rounded-xl" />
+});
+
+const AIInsightsWidget = dynamic(() => import("./AIInsightsWidget").then(mod => mod.AIInsightsWidget), {
+  ssr: false,
+  loading: () => <div className="h-32 w-full bg-muted animate-pulse rounded-xl" />
+});
+
+const IPOFAQSection = dynamic(() => import("./IPOFAQSection").then(mod => mod.IPOFAQSection), {
+  ssr: false,
+  loading: () => <div className="h-48 w-full bg-muted animate-pulse rounded-xl" />
+});
 import { Phone, Mail, Globe, ExternalLink } from "lucide-react";
 import { Button } from "@/components/ui/button";
 

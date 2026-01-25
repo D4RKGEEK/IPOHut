@@ -49,7 +49,7 @@ export function ShareButtons({ title, url, description }: ShareButtonsProps) {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <Button variant="outline" size="sm" className="gap-1.5">
+        <Button variant="outline" size="sm" className="gap-1.5" aria-label="Share this IPO">
           <Share2 className="h-4 w-4" />
           <span className="hidden sm:inline">Share</span>
         </Button>

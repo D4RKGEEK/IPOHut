@@ -15,6 +15,7 @@ import {
 import { ChevronDown } from "lucide-react";
 import { analytics } from "@/hooks/useAnalytics";
 import { SearchBar } from "@/components/shared/SearchBar";
+import Image from "next/image";
 
 // Icon mapping
 const iconMap: Record<string, React.ComponentType<{ className?: string }>> = {
@@ -56,10 +57,13 @@ export function Header() {
         <Link href="/" className="flex items-center gap-2 text-foreground" onClick={handleLogoClick}>
           {navigation.showLogo && (
             settings.site.branding.logoUrl ? (
-              <img
+              <Image
                 src={settings.site.branding.logoUrl}
                 alt={settings.site.branding.siteName}
-                className="h-7 w-auto"
+                width={28}
+                height={28}
+                className="h-7 w-auto object-contain"
+                priority
               />
             ) : (
               <div className="flex h-8 w-8 items-center justify-center rounded-md bg-primary text-primary-foreground">
@@ -135,6 +139,7 @@ export function Header() {
             size="icon"
             className="lg:hidden h-9 w-9"
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+            aria-label={mobileMenuOpen ? "Close menu" : "Open menu"}
           >
             {mobileMenuOpen ? <X className="h-4 w-4" /> : <Menu className="h-4 w-4" />}
           </Button>

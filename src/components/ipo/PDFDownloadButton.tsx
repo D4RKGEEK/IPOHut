@@ -35,6 +35,7 @@ export function PDFDownloadButton({ ipo, status }: PDFDownloadButtonProps) {
       onClick={handleDownload}
       disabled={isGenerating}
       className="gap-2"
+      aria-label={`Download PDF report for ${ipo.basic_info?.["IPO Name"] || "IPO"}`}
     >
       {isGenerating ? (
         <>

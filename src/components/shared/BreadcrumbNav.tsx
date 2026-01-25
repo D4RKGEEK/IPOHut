@@ -75,7 +75,7 @@ export function BreadcrumbNav({ items, className }: BreadcrumbNavProps) {
         <BreadcrumbList>
           <BreadcrumbItem>
             <BreadcrumbLink asChild>
-              <Link href="/" className="flex items-center gap-1">
+              <Link href="/" className="flex items-center gap-1" aria-label="Home">
                 <Home className="h-3.5 w-3.5" />
                 <span className="sr-only">Home</span>
               </Link>

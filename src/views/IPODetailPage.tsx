@@ -16,6 +16,7 @@ import { analytics, useScrollTracking, useTimeOnPage } from "@/hooks/useAnalytic
 import { PDFDownloadButton, WidgetRenderer } from "@/components/ipo";
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
 import { useMemo } from "react";
+import Image from "next/image";
 
 import { IPODetail } from "@/types/ipo";
 
@@ -65,7 +66,6 @@ export default function IPODetailPage({ initialData }: IPODetailPageProps) {
             { id: 'ai_insights' as const, enabled: true, order: 1 },
             { id: 'subscription_table' as const, enabled: true, order: 2 },
             { id: 'key_metrics' as const, enabled: true, order: 3 },
-            { id: 'broker_sentiment' as const, enabled: true, order: 4 },
           ]
         },
         {
@@ -102,13 +102,11 @@ export default function IPODetailPage({ initialData }: IPODetailPageProps) {
         {
           id: 'tools', label: 'Tools', enabled: true, widgets: [
             { id: 'gmp_calculator' as const, enabled: true, order: 0 },
-            { id: 'broker_sentiment' as const, enabled: true, order: 1 },
           ]
         },
       ],
       sidebarWidgets: [
         { id: 'key_metrics' as const, enabled: true, order: 0 },
-        { id: 'broker_sentiment' as const, enabled: true, order: 1 },
       ]
     };
   }, [rawDetailConfig]);
@@ -335,7 +333,6 @@ export default function IPODetailPage({ initialData }: IPODetailPageProps) {
     ? detailConfig.sidebarWidgets
     : [
       { id: 'key_metrics' as const, enabled: true, order: 0 },
-      { id: 'broker_sentiment' as const, enabled: true, order: 1 },
     ];
 
   const sortedSidebarWidgets = [...sidebarWidgets]
@@ -358,12 +355,14 @@ export default function IPODetailPage({ initialData }: IPODetailPageProps) {
             <div className="flex-1 min-w-0 space-y-4">
               <div className="flex items-start gap-4">
                 {detailConfig.showLogo && ipo.logo_about?.logo && (
-                  <div className="h-16 w-16 md:h-20 md:w-20 rounded-xl border bg-white p-2 shrink-0 shadow-sm flex items-center justify-center">
-                    <img
+                  <div className="h-16 w-16 md:h-20 md:w-20 rounded-xl border bg-white p-2 shrink-0 shadow-sm flex items-center justify-center overflow-hidden">
+                    <Image
                       src={ipo.logo_about.logo}
-                      alt={basicInfo["IPO Name"]}
+                      alt={`${basicInfo["IPO Name"]} Logo`}
+                      width={80}
+                      height={80}
                       className="max-h-full max-w-full object-contain"
-                      loading="lazy"
+                      priority
                     />
                   </div>
                 )}
@@ -392,7 +391,11 @@ export default function IPODetailPage({ initialData }: IPODetailPageProps) {
 
             <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 shrink-0 ml-0 md:ml-auto md:self-center">
               {detailConfig.showAllotmentButton && (
-                <Link href={`/ipo/${slug}/allotment`} className="w-full sm:w-auto">
+                <Link
+                  href={`/ipo/${slug}/allotment`}
+                  className="w-full sm:w-auto"
+                  aria-label={`Check allotment status for ${basicInfo["IPO Name"]}`}
+                >
                   <Button variant="default" className="w-full gap-2 shadow-sm hover:shadow-md transition-all">
                     <FileCheck className="h-4 w-4" />
                     Check Allotment

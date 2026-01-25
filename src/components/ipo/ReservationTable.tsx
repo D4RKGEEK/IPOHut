@@ -26,8 +26,8 @@ export function ReservationTable({ reservationTable }: ReservationTableProps) {
           <TableHeader>
             <TableRow>
               {headers.map((header, idx) => (
-                <TableHead 
-                  key={idx} 
+                <TableHead
+                  key={idx}
                   className={idx === 0 ? "min-w-[120px]" : "text-right min-w-[80px]"}
                 >
                   {String(header)}
@@ -39,8 +39,8 @@ export function ReservationTable({ reservationTable }: ReservationTableProps) {
             {rows.map((row, rowIdx) => (
               <TableRow key={rowIdx}>
                 {(row as Array<string | number>).map((cell, cellIdx) => (
-                  <TableCell 
-                    key={cellIdx} 
+                  <TableCell
+                    key={cellIdx}
                     className={cellIdx === 0 ? "font-medium text-xs sm:text-sm" : "text-right font-tabular text-xs sm:text-sm"}
                   >
                     {String(cell)}

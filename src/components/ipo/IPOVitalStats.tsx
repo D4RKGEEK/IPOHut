@@ -1,6 +1,7 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { IPOBasicInfo, IPOTimeline as IPOTimelineType, IPOSubscriptionStatus, IPOListingInfo } from "@/types/ipo";
 import { TrendingUp, TrendingDown, Calendar, IndianRupee, Package } from "lucide-react";
+import { cn } from "@/lib/utils";
 
 interface IPOVitalStatsProps {
   basicInfo: IPOBasicInfo;
@@ -24,146 +25,75 @@ export function IPOVitalStats({ basicInfo, timeline, subscription, listingInfo, 
   const lotSize = basicInfo["Lot Size"];
   const issueSize = basicInfo["Total Issue Size"];
   const priceBand = basicInfo["Price Band"];
-  const faceValue = basicInfo["Face Value"];
-  const freshIssue = basicInfo["Fresh Issue"];
-  const ofs = basicInfo["Offer for Sale"];
   const listingDate = timeline["Listing"] || timeline["Tentative Listing Date"];
 
-  // Check if each section has data
-  const hasPricingData = !!(issuePrice || priceBand || faceValue || lotSize);
-  const hasIssueData = !!(issueSize || freshIssue || ofs || listingDate);
-  const hasPerformanceData = !!(totalSubscription || (gainLossPercent !== undefined && gainLossPercent !== null));
+  const items = [
+    {
+      label: "Price Band",
+      value: priceBand || issuePrice,
+      icon: IndianRupee,
+      show: !!(priceBand || issuePrice)
+    },
+    {
+      label: "Lot Size",
+      value: lotSize,
+      icon: Package,
+      show: !!lotSize
+    },
+    {
+      label: "Total Issue",
+      value: issueSize,
+      icon: Package,
+      show: !!issueSize
+    },
+    {
+      label: "Subscription",
+      value: totalSubscription ? `${totalSubscription}x` : null,
+      icon: TrendingUp,
+      show: !!totalSubscription,
+      valueClass: parseFloat(String(totalSubscription)) >= 1 ? "text-emerald-600 dark:text-emerald-400" : ""
+    },
+    {
+      label: "Listing Date",
+      value: listingDate,
+      icon: Calendar,
+      show: !!listingDate
+    },
+    {
+      label: "Listing Gain",
+      value: gainLossPercent !== undefined ? `${gainLossPercent}%` : null,
+      icon: gainLossPercent && gainLossPercent >= 0 ? TrendingUp : TrendingDown,
+      show: gainLossPercent !== undefined,
+      valueClass: gainLossPercent && gainLossPercent >= 0 ? "text-emerald-600 dark:text-emerald-400" : "text-rose-600 dark:text-rose-400"
+    }
+  ].filter(item => item.show);
 
-  // If no data at all, don't render the widget
-  if (!hasPricingData && !hasIssueData && !hasPerformanceData) {
-    return null;
-  }
-
-  // Count how many sections have data to adjust grid columns
-  const sectionsWithData = [hasPricingData, hasIssueData, hasPerformanceData].filter(Boolean).length;
+  if (items.length === 0) return null;
 
   return (
-    <Card className="border shadow-sm overflow-hidden">
-      <CardHeader className="pb-3 border-b bg-gradient-to-r from-slate-50/50 to-gray-50/50 dark:from-slate-900/20 dark:to-gray-900/20">
+    <Card className="border shadow-sm">
+      <CardHeader className="pb-3 border-b bg-muted/40">
         <CardTitle className="text-base font-semibold flex items-center gap-2">
           <Package className="h-4 w-4 text-primary" />
-          Key Statistics
+          Quick Stats
         </CardTitle>
       </CardHeader>
-
       <CardContent className="p-0">
-        <div className={`grid grid-cols-1 ${sectionsWithData === 2 ? 'md:grid-cols-2' : sectionsWithData === 3 ? 'md:grid-cols-3' : ''} divide-y md:divide-y-0 md:divide-x`}>
-
-          {/* Pricing Section */}
-          {hasPricingData && (
-            <div className="p-4 space-y-3">
-              <h4 className="text-xs font-semibold uppercase tracking-wider text-muted-foreground flex items-center gap-1.5 mb-3">
-                <IndianRupee className="h-3 w-3" />
-                Pricing
-              </h4>
-              <div className="space-y-2.5">
-                {issuePrice && (
-                  <div className="flex justify-between items-center">
-                    <span className="text-xs text-muted-foreground">Issue Price</span>
-                    <span className="text-sm font-semibold">{issuePrice}</span>
-                  </div>
-                )}
-                {priceBand && (
-                  <div className="flex justify-between items-center">
-                    <span className="text-xs text-muted-foreground">Price Band</span>
-                    <span className="text-sm font-semibold">{priceBand}</span>
-                  </div>
-                )}
-                {faceValue && (
-                  <div className="flex justify-between items-center">
-                    <span className="text-xs text-muted-foreground">Face Value</span>
-                    <span className="text-sm font-semibold">{faceValue}</span>
-                  </div>
-                )}
-                {lotSize && (
-                  <div className="flex justify-between items-center">
-                    <span className="text-xs text-muted-foreground">Lot Size</span>
-                    <span className="text-sm font-semibold">{lotSize}</span>
-                  </div>
-                )}
+        <div className="grid grid-cols-2 md:grid-cols-3 divide-x divide-y md:divide-y-0 border-b md:border-b-0">
+          {items.map((item, i) => (
+            <div key={i} className={cn(
+              "p-4 flex flex-col justify-center",
+              i >= 2 ? "border-t md:border-t-0" : "" // Handle border logic for grid
+            )}>
+              <div className="flex items-center gap-2 text-muted-foreground mb-1.5">
+                <item.icon className="h-3.5 w-3.5" />
+                <span className="text-xs font-medium uppercase tracking-wide">{item.label}</span>
+              </div>
+              <div className={cn("text-sm font-semibold", item.valueClass)}>
+                {item.value || "—"}
               </div>
             </div>
-          )}
-
-          {/* Issue Details Section */}
-          {hasIssueData && (
-            <div className="p-4 space-y-3">
-              <h4 className="text-xs font-semibold uppercase tracking-wider text-muted-foreground flex items-center gap-1.5 mb-3">
-                <Package className="h-3 w-3" />
-                Issue Details
-              </h4>
-              <div className="space-y-2.5">
-                {issueSize && (
-                  <div className="flex justify-between items-center">
-                    <span className="text-xs text-muted-foreground">Total Size</span>
-                    <span className="text-sm font-semibold">{issueSize}</span>
-                  </div>
-                )}
-                {freshIssue && (
-                  <div className="flex justify-between items-center">
-                    <span className="text-xs text-muted-foreground">Fresh Issue</span>
-                    <span className="text-sm font-semibold">{freshIssue}</span>
-                  </div>
-                )}
-                {ofs && (
-                  <div className="flex justify-between items-center">
-                    <span className="text-xs text-muted-foreground">OFS</span>
-                    <span className="text-sm font-semibold">{ofs}</span>
-                  </div>
-                )}
-                {listingDate && (
-                  <div className="flex justify-between items-center">
-                    <span className="text-xs text-muted-foreground flex items-center gap-1">
-                      <Calendar className="h-3 w-3" />
-                      Listing Date
-                    </span>
-                    <span className="text-sm font-semibold">{listingDate}</span>
-                  </div>
-                )}
-              </div>
-            </div>
-          )}
-
-          {/* Performance Section */}
-          {hasPerformanceData && (
-            <div className="p-4 space-y-3">
-              <h4 className="text-xs font-semibold uppercase tracking-wider text-muted-foreground flex items-center gap-1.5 mb-3">
-                <TrendingUp className="h-3 w-3" />
-                Performance
-              </h4>
-              <div className="space-y-2.5">
-                {totalSubscription && (
-                  <div className="flex justify-between items-center">
-                    <span className="text-xs text-muted-foreground">Subscription</span>
-                    <span className={`text-sm font-semibold ${parseFloat(String(totalSubscription)) >= 1 ? "text-emerald-600 dark:text-emerald-400" : "text-rose-600 dark:text-rose-400"
-                      }`}>
-                      {totalSubscription}x
-                    </span>
-                  </div>
-                )}
-                {gainLossPercent !== undefined && gainLossPercent !== null && (
-                  <div className="flex justify-between items-center">
-                    <span className="text-xs text-muted-foreground">Listing Gain</span>
-                    <span className={`text-sm font-semibold flex items-center gap-1 ${gainLossPercent >= 0 ? "text-emerald-600 dark:text-emerald-400" : "text-rose-600 dark:text-rose-400"
-                      }`}>
-                      {gainLossPercent >= 0 ? (
-                        <TrendingUp className="h-3.5 w-3.5" />
-                      ) : (
-                        <TrendingDown className="h-3.5 w-3.5" />
-                      )}
-                      {gainLossPercent}%
-                    </span>
-                  </div>
-                )}
-              </div>
-            </div>
-          )}
-
+          ))}
         </div>
       </CardContent>
     </Card>

@@ -4,7 +4,6 @@ import { useParams } from "next/navigation";
 import Link from "next/link";
 import { MainLayout } from "@/components/layout";
 import { useAdmin } from "@/contexts/AdminContext";
-import { useIPODetail } from "@/hooks/useIPO";
 import { applyTemplate } from "@/types/admin";
 import { StatusBadge, TypeBadge, IPOTimeline, ShareButtons, BreadcrumbNav } from "@/components/shared";
 import { parseIPODate } from "@/lib/api";
@@ -28,11 +27,9 @@ export default function IPODetailPage({ initialData }: IPODetailPageProps) {
   const params = useParams();
   const slug = params?.slug as string;
   const { settings } = useAdmin();
-  const { data: queryData, isLoading, error } = useIPODetail(slug || "", {
-    enabled: !initialData, // Only fetch if no initial data
-  });
-
-  const data = initialData ? { data: initialData } : queryData;
+  const data = initialData ? { data: initialData } : undefined;
+  const isLoading = false;
+  const error = null;
 
   // Track scroll and time on page
   useScrollTracking(`ipo-detail-${slug}`);
@@ -348,7 +345,7 @@ export default function IPODetailPage({ initialData }: IPODetailPageProps) {
   return (
     <>
       <MainLayout>
-        <div className="container px-2 sm:px-4 md:px-6 py-4 md:py-8 space-y-3 sm:space-y-4 md:space-y-6">
+        <div className="container max-w-7xl px-4 sm:px-6 py-6 md:py-10 space-y-8">
           <BreadcrumbNav
             items={[
               { label: ipo.ipo_type === "sme" ? "SME IPO" : "Mainboard IPO", href: ipo.ipo_type === "sme" ? "/sme-ipo" : "/mainboard-ipo" },
@@ -356,80 +353,96 @@ export default function IPODetailPage({ initialData }: IPODetailPageProps) {
             ]}
           />
 
-          {/* Header */}
-          <header className="flex flex-col sm:flex-row sm:items-start gap-3 sm:gap-4">
-            {detailConfig.showLogo && ipo.logo_about?.logo && (
-              <img
-                src={ipo.logo_about.logo}
-                alt={basicInfo["IPO Name"]}
-                className="h-10 w-10 sm:h-16 sm:w-16 rounded-md border object-contain bg-white p-1 shrink-0"
-                loading="lazy"
-              />
-            )}
-            <div className="flex-1 min-w-0">
-              <div className="flex flex-wrap items-center gap-1.5 sm:gap-2 mb-1 sm:mb-2">
-                <h1 className="text-lg sm:text-2xl md:text-3xl font-bold">{basicInfo["IPO Name"]}</h1>
-                {detailConfig.showBadges && (
-                  <>
-                    <TypeBadge type={ipo.ipo_type} />
+          {/* Clean Modern Header */}
+          <header className="flex flex-col md:flex-row md:items-start gap-6 border-b pb-8">
+            <div className="flex-1 min-w-0 space-y-4">
+              <div className="flex items-start gap-4">
+                {detailConfig.showLogo && ipo.logo_about?.logo && (
+                  <div className="h-16 w-16 md:h-20 md:w-20 rounded-xl border bg-white p-2 shrink-0 shadow-sm flex items-center justify-center">
+                    <img
+                      src={ipo.logo_about.logo}
+                      alt={basicInfo["IPO Name"]}
+                      className="max-h-full max-w-full object-contain"
+                      loading="lazy"
+                    />
+                  </div>
+                )}
+                <div className="space-y-2">
+                  <div className="flex flex-wrap items-center gap-2">
                     <StatusBadge status={status} />
-                  </>
+                    <TypeBadge type={ipo.ipo_type} />
+                  </div>
+                  <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold tracking-tight text-foreground">
+                    {basicInfo["IPO Name"]}
+                  </h1>
+                </div>
+              </div>
+
+              <div className="flex flex-wrap gap-x-6 gap-y-2 text-sm text-muted-foreground ml-0 md:ml-24">
+                <div className="flex items-center gap-1.5">
+                  <span className="font-medium text-foreground">Listing At:</span> {basicInfo["Listing At"]}
+                </div>
+                {basicInfo["Issue Type"] && (
+                  <div className="flex items-center gap-1.5">
+                    <span className="font-medium text-foreground">Type:</span> {basicInfo["Issue Type"]}
+                  </div>
                 )}
               </div>
-              <p className="text-muted-foreground text-xs sm:text-sm">
-                {basicInfo["Listing At"]} • {basicInfo["Issue Type"] || "Book Built"}
-              </p>
             </div>
-            <div className="flex items-center gap-2 shrink-0 flex-wrap sm:flex-nowrap">
+
+            <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 shrink-0 ml-0 md:ml-auto md:self-center">
               {detailConfig.showAllotmentButton && (
-                <Link href={`/ipo/${slug}/allotment`}>
-                  <Button variant="default" size="sm" className="gap-1.5">
+                <Link href={`/ipo/${slug}/allotment`} className="w-full sm:w-auto">
+                  <Button variant="default" className="w-full gap-2 shadow-sm hover:shadow-md transition-all">
                     <FileCheck className="h-4 w-4" />
-                    <span className="hidden sm:inline">Check Allotment</span>
-                    <span className="sm:hidden">Allotment</span>
+                    Check Allotment
                   </Button>
                 </Link>
               )}
-              {detailConfig.showShareButton && (
-                <ShareButtons
-                  title={basicInfo["IPO Name"]}
-                  description={`${basicInfo["IPO Name"]} - Issue Price: ${basicInfo["Issue Price"]}, Listing: ${timeline["Listing"]}`}
-                />
-              )}
-              {detailConfig.showPDFDownload && (
-                <PDFDownloadButton ipo={ipo} status={status} />
-              )}
+              <div className="flex gap-2 w-full sm:w-auto">
+                {detailConfig.showPDFDownload && (
+                  <PDFDownloadButton ipo={ipo} status={status} />
+                )}
+                {detailConfig.showShareButton && (
+                  <ShareButtons
+                    title={basicInfo["IPO Name"]}
+                    description={`${basicInfo["IPO Name"]} - Issue Price: ${basicInfo["Issue Price"]}, Listing: ${timeline["Listing"]}`}
+                  />
+                )}
+              </div>
             </div>
           </header>
 
-          {/* Above Fold Widgets - Full Width */}
-          <div className="space-y-6">
-            {sortedAboveFoldWidgets.map(widget => (
-              <WidgetRenderer key={widget.id} widgetId={widget.id} data={widgetData} />
-            ))}
-          </div>
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
+            {/* Main Content Area */}
+            <div className="lg:col-span-8 space-y-8">
 
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 pt-2">
-            <div className="lg:col-span-2 space-y-6">
-              {/* Tabs */}
+              {/* Above Fold Widgets */}
+              <div className="space-y-8">
+                {sortedAboveFoldWidgets.map(widget => (
+                  <WidgetRenderer key={widget.id} widgetId={widget.id} data={widgetData} />
+                ))}
+              </div>
 
-              {/* Tabs */}
+              {/* Minimal Tabs */}
               {enabledTabs.length > 0 && (
                 <Tabs defaultValue={enabledTabs[0]?.id} className="w-full" onValueChange={handleTabChange}>
-                  <ScrollArea className="w-full whitespace-nowrap">
-                    <TabsList className="flex h-auto items-center gap-1 bg-muted/50 p-1 rounded-lg w-full">
-                      {enabledTabs.map(tab => (
-                        <TabsTrigger
-                          key={tab.id}
-                          value={tab.id}
-                          className="flex-1 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground rounded-md px-3 py-1.5 text-xs sm:text-sm whitespace-nowrap"
-                        >
-                          {tab.label}
-                        </TabsTrigger>
-                      ))}
-                    </TabsList>
-                    <ScrollBar orientation="horizontal" className="invisible" />
-                  </ScrollArea>
+                  <div className="sticky top-16 z-30 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 py-2 -mx-4 px-4 md:mx-0 md:px-0">
+                    <ScrollArea className="w-full whitespace-nowrap pb-2">
+                      <TabsList className="h-auto bg-transparent p-0 gap-6 border-b w-full justify-start rounded-none">
+                        {enabledTabs.map(tab => (
+                          <TabsTrigger
+                            key={tab.id}
+                            value={tab.id}
+                            className="data-[state=active]:bg-transparent data-[state=active]:text-primary data-[state=active]:shadow-none data-[state=active]:border-b-2 data-[state=active]:border-primary rounded-none border-b-2 border-transparent px-0 py-3 text-sm font-medium text-muted-foreground hover:text-foreground transition-all"
+                          >
+                            {tab.label}
+                          </TabsTrigger>
+                        ))}
+                      </TabsList>
+                      <ScrollBar orientation="horizontal" className="invisible" />
+                    </ScrollArea>
+                  </div>
 
                   {enabledTabs.map(tab => {
                     const sortedWidgets = [...tab.widgets]
@@ -437,17 +450,15 @@ export default function IPODetailPage({ initialData }: IPODetailPageProps) {
                       .sort((a, b) => a.order - b.order);
 
                     return (
-                      <TabsContent key={tab.id} value={tab.id} className="mt-3 sm:mt-4 space-y-3 sm:space-y-4">
+                      <TabsContent key={tab.id} value={tab.id} className="mt-6 space-y-8 animate-in fade-in-50 slide-in-from-bottom-2 duration-300">
                         {sortedWidgets.length > 0 ? (
                           sortedWidgets.map(widget => (
                             <WidgetRenderer key={widget.id} widgetId={widget.id} data={widgetData} />
                           ))
                         ) : (
-                          <Card className="border">
-                            <CardContent className="py-12 text-center text-muted-foreground">
-                              No content available for this tab
-                            </CardContent>
-                          </Card>
+                          <div className="py-12 text-center text-muted-foreground bg-muted/10 rounded-lg border border-dashed">
+                            No content available for this section
+                          </div>
                         )}
                       </TabsContent>
                     );
@@ -457,10 +468,12 @@ export default function IPODetailPage({ initialData }: IPODetailPageProps) {
             </div>
 
             {/* Sidebar */}
-            <div className="hidden lg:block space-y-6">
-              {sortedSidebarWidgets.map(widget => (
-                <WidgetRenderer key={widget.id} widgetId={widget.id} data={widgetData} />
-              ))}
+            <div className="hidden lg:block lg:col-span-4 space-y-6">
+              <div className="sticky top-24 space-y-6">
+                {sortedSidebarWidgets.map(widget => (
+                  <WidgetRenderer key={widget.id} widgetId={widget.id} data={widgetData} />
+                ))}
+              </div>
             </div>
           </div>
         </div>

@@ -5,7 +5,6 @@ import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { MainLayout } from "@/components/layout";
 import { useAdmin } from "@/contexts/AdminContext";
-import { useSMEIPOs } from "@/hooks/useIPO";
 import { IPOTable, IPOTableColumn, IPOTableRow, IPOCard, BreadcrumbNav } from "@/components/shared";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
@@ -31,10 +30,8 @@ interface SMEIPOPageProps {
 export default function SMEIPOPage({ initialData }: SMEIPOPageProps) {
   const router = useRouter();
   const { settings } = useAdmin();
-  const { data: queryData, isLoading: queryLoading } = useSMEIPOs(100);
-
-  const data = initialData || queryData;
-  const isLoading = !initialData && queryLoading;
+  const data = initialData;
+  const isLoading = false;
   const isMobile = useIsMobile();
   const [statusFilter, setStatusFilter] = useState<string>("all");
 

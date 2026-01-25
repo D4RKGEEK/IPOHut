@@ -1,9 +1,8 @@
 "use client";
 
 import { MainLayout } from "@/components/layout";
-import { NewsTicker, IPOCard, TypeBadge } from "@/components/shared";
+import { NewsTicker } from "@/components/shared";
 import { useAdmin } from "@/contexts/AdminContext";
-import { useOpenIPOs, useUpcomingIPOs, useRecentlyListedIPOs, useTopGainers, useTopLosers } from "@/hooks/useIPO";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -33,26 +32,17 @@ export default function HomePage({ initialData }: HomePageProps) {
   const { settings } = useAdmin();
   const homeConfig = settings.site.homePageConfig;
 
-  const { data: qOpen, isLoading: lOpen } = useOpenIPOs(6, { enabled: !initialData?.openIPOs });
-  const { data: qUpcoming, isLoading: lUpcoming } = useUpcomingIPOs(5, { enabled: !initialData?.upcomingIPOs });
-  const { data: qRecent, isLoading: lRecent } = useRecentlyListedIPOs(8, { enabled: !initialData?.recentlyListed });
+  const openIPOs = initialData?.openIPOs;
+  const upcomingIPOs = initialData?.upcomingIPOs;
+  const recentlyListed = initialData?.recentlyListed;
+  const gainersData = initialData?.gainersData;
+  const losersData = initialData?.losersData;
 
-  // Note: custom hooks like useTopGainers/Losers wrap useQuery but don't expose options in current implementation
-  // We need to update useIPO.ts to allow passing options to these specific hooks too
-  const { data: qGainers, isLoading: lGainers } = useTopGainers(5, { enabled: !initialData?.gainersData });
-  const { data: qLosers, isLoading: lLosers } = useTopLosers(5, { enabled: !initialData?.losersData });
-
-  const openIPOs = initialData?.openIPOs || qOpen;
-  const upcomingIPOs = initialData?.upcomingIPOs || qUpcoming;
-  const recentlyListed = initialData?.recentlyListed || qRecent;
-  const gainersData = initialData?.gainersData || qGainers;
-  const losersData = initialData?.losersData || qLosers;
-
-  const loadingOpen = !initialData?.openIPOs && lOpen;
-  const loadingUpcoming = !initialData?.upcomingIPOs && lUpcoming;
-  const loadingRecent = !initialData?.recentlyListed && lRecent;
-  const loadingGainers = !initialData?.gainersData && lGainers;
-  const loadingLosers = !initialData?.losersData && lLosers;
+  const loadingOpen = false;
+  const loadingUpcoming = false;
+  const loadingRecent = false;
+  const loadingGainers = false;
+  const loadingLosers = false;
 
   const pageSettings = settings.pages.home;
 
@@ -64,153 +54,110 @@ export default function HomePage({ initialData }: HomePageProps) {
       {/* News Ticker */}
       {homeConfig.showNewsTicker && <NewsTicker initialData={initialData?.newsData?.data} />}
 
-      {/* Hero Section */}
-      <section className="relative overflow-hidden border-b bg-gradient-to-b from-primary/5 via-background to-background">
-        <div className="container relative py-12 md:py-20 lg:py-24">
-          <div className="flex flex-col items-center text-center max-w-3xl mx-auto space-y-6">
+      {/* Modern Hero Section */}
+      <section className="relative overflow-hidden pt-12 pb-20 md:pt-20 md:pb-32">
+        {/* Decorative background elements */}
+        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full max-w-7xl h-full -z-10">
+          <div className="absolute top-[-10%] left-[-10%] w-[40%] h-[60%] bg-primary/5 rounded-full blur-[120px]" />
+          <div className="absolute bottom-[10%] right-[-5%] w-[35%] h-[50%] bg-accent/5 rounded-full blur-[100px]" />
+        </div>
 
-            {/* Announcement Banner */}
-            {homeConfig.announcementEnabled && homeConfig.announcementBanner && (
-              <div className="mb-2">
-                <div className="inline-flex items-center gap-2 bg-accent/10 border border-accent/20 rounded-full px-4 py-1.5 transition-colors hover:bg-accent/20">
-                  <Megaphone className="h-3.5 w-3.5 text-accent" />
-                  <p className="text-sm font-medium text-foreground">{homeConfig.announcementBanner}</p>
+        <div className="container relative z-10">
+          <div className="flex flex-col items-center text-center max-w-4xl mx-auto space-y-8">
+
+            <div className="space-y-6 animate-in fade-in slide-in-from-top-4 duration-700">
+              {/* Announcement Banner */}
+              {homeConfig.announcementEnabled && homeConfig.announcementBanner && (
+                <div className="inline-flex items-center gap-2 bg-muted/50 backdrop-blur-sm border border-border/50 rounded-full px-4 py-1.5 mb-2 group cursor-default">
+                  <Megaphone className="h-3.5 w-3.5 text-primary animate-bounce" />
+                  <span className="text-xs md:text-sm font-medium">{homeConfig.announcementBanner}</span>
                 </div>
+              )}
+
+              <div className="flex flex-col space-y-4">
+                <div className="inline-flex items-center self-center rounded-full border border-primary/20 bg-primary/5 px-3 py-1 text-[10px] md:text-xs font-semibold text-primary backdrop-blur-sm">
+                  <Sparkles className="mr-1.5 h-3 w-3" />
+                  Live GMP Updates & Subscription Status
+                </div>
+
+                <h1 className="text-4xl md:text-6xl lg:text-7xl font-extrabold tracking-tight text-foreground bg-clip-text">
+                  {pageSettings.h1}
+                </h1>
+
+                <p className="text-lg md:text-xl text-muted-foreground max-w-[750px] mx-auto leading-relaxed">
+                  {pageSettings.subheading}
+                </p>
               </div>
-            )}
-
-            <div className="space-y-4">
-              <div className="inline-flex items-center rounded-full border px-2.5 py-0.5 text-xs font-semibold transition-colors focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 border-transparent bg-primary/10 text-primary hover:bg-primary/20">
-                <Sparkles className="mr-1 h-3 w-3" />
-                Live GMP Updates & Subscription Status
-              </div>
-
-              <h1 className="text-4xl md:text-5xl lg:text-6xl font-extrabold tracking-tight text-foreground">
-                {pageSettings.h1}
-              </h1>
-
-              <p className="text-xl text-muted-foreground max-w-[700px] mx-auto leading-relaxed">
-                {pageSettings.subheading}
-              </p>
             </div>
 
-            {/* Quick Action Buttons */}
-            <div className="flex flex-col sm:flex-row items-center justify-center gap-4 pt-4 w-full sm:w-auto">
+            {/* CTA Buttons */}
+            <div className="flex flex-col sm:flex-row items-center justify-center gap-4 w-full sm:w-auto animate-in fade-in slide-in-from-bottom-4 duration-700 delay-200">
               <Link href="/ipo-gmp-today" className="w-full sm:w-auto">
-                <Button size="lg" className="h-12 px-8 text-base gap-2 rounded-full shadow-lg shadow-primary/25 w-full sm:w-auto hover:scale-105 transition-transform">
+                <Button size="lg" className="h-14 px-10 text-base gap-2 rounded-2xl shadow-xl shadow-primary/20 w-full sm:w-auto hover:scale-[1.02] active:scale-[0.98] transition-all">
                   <TrendingUp className="h-5 w-5" />
                   Check GMP Today
                 </Button>
               </Link>
               <Link href="/ipo-calendar" className="w-full sm:w-auto">
-                <Button variant="outline" size="lg" className="h-12 px-8 text-base gap-2 rounded-full w-full sm:w-auto hover:bg-muted/50">
+                <Button variant="outline" size="lg" className="h-14 px-10 text-base gap-2 rounded-2xl w-full sm:w-auto hover:bg-muted/80 backdrop-blur-sm border-2">
                   <Calendar className="h-5 w-5" />
                   IPO Calendar
                 </Button>
               </Link>
             </div>
 
-            {/* Trust Indicator / Mini Stats */}
-            <div className="pt-8 flex items-center gap-6 text-sm text-muted-foreground animate-fade-in">
-              <div className="flex items-center gap-1.5">
-                <Zap className="h-4 w-4 text-warning" />
-                <span>Real-time Updates</span>
-              </div>
-              <div className="hidden sm:flex items-center gap-1.5">
-                <BarChart3 className="h-4 w-4 text-success" />
-                <span>Accurate GMP</span>
-              </div>
-              <div className="flex items-center gap-1.5">
-                <Clock className="h-4 w-4 text-primary" />
-                <span>Instant Alerts</span>
-              </div>
+            {/* Quick Stats Grid */}
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-4 w-full pt-12 animate-in fade-in slide-in-from-bottom-8 duration-1000 delay-300">
+              {[
+                { label: "GMP Today", sub: "Live premiums", icon: TrendingUp, color: "text-emerald-500", bg: "bg-emerald-500/10", href: "/ipo-gmp-today" },
+                { label: "Calendar", sub: "All IPO dates", icon: Calendar, color: "text-blue-500", bg: "bg-blue-500/10", href: "/ipo-calendar" },
+                { label: "Mainboard", sub: "Big listings", icon: BarChart3, color: "text-purple-500", bg: "bg-purple-500/10", href: "/mainboard-ipo" },
+                { label: "SME IPO", sub: "NSE & BSE", icon: Zap, color: "text-amber-500", bg: "bg-amber-500/10", href: "/sme-ipo" }
+              ].map((item, i) => (
+                <Link key={i} href={item.href} className="group">
+                  <Card className="border-none shadow-none bg-muted/40 backdrop-blur-sm hover:bg-muted/60 transition-all rounded-3xl p-4 text-left h-full group-hover:-translate-y-1">
+                    <div className={cn("p-2.5 rounded-2xl w-fit mb-3", item.bg)}>
+                      <item.icon className={cn("h-5 w-5", item.color)} />
+                    </div>
+                    <div className="font-bold text-sm md:text-base mb-0.5">{item.label}</div>
+                    <div className="text-[10px] md:text-xs text-muted-foreground">{item.sub}</div>
+                  </Card>
+                </Link>
+              ))}
             </div>
           </div>
         </div>
       </section>
 
-      <div className="container py-4 md:py-8 space-y-6 md:space-y-8">
-        {/* Quick Stats Cards */}
-        <section className="grid grid-cols-2 lg:grid-cols-4 gap-2 md:gap-3">
-          <Link href="/ipo-gmp-today" className="group">
-            <Card className="card-hover h-full">
-              <CardContent className="p-3 md:p-4 flex items-center gap-2.5 md:gap-3">
-                <div className="p-2 bg-success/10 rounded-md">
-                  <TrendingUp className="h-4 w-4 text-success" />
-                </div>
-                <div className="min-w-0">
-                  <div className="text-sm font-medium text-foreground truncate">GMP Today</div>
-                  <div className="text-xs text-muted-foreground">Live premiums</div>
-                </div>
-              </CardContent>
-            </Card>
-          </Link>
-          <Link href="/ipo-calendar" className="group">
-            <Card className="card-hover h-full">
-              <CardContent className="p-3 md:p-4 flex items-center gap-2.5 md:gap-3">
-                <div className="p-2 bg-primary/10 rounded-md">
-                  <Calendar className="h-4 w-4 text-primary" />
-                </div>
-                <div className="min-w-0">
-                  <div className="text-sm font-medium text-foreground truncate">Calendar</div>
-                  <div className="text-xs text-muted-foreground">All dates</div>
-                </div>
-              </CardContent>
-            </Card>
-          </Link>
-          <Link href="/mainboard-ipo" className="group">
-            <Card className="card-hover h-full">
-              <CardContent className="p-3 md:p-4 flex items-center gap-2.5 md:gap-3">
-                <div className="p-2 bg-chart-3/10 rounded-md">
-                  <BarChart3 className="h-4 w-4 text-chart-3" />
-                </div>
-                <div className="min-w-0">
-                  <div className="text-sm font-medium text-foreground truncate">Mainboard</div>
-                  <div className="text-xs text-muted-foreground">All listings</div>
-                </div>
-              </CardContent>
-            </Card>
-          </Link>
-          <Link href="/sme-ipo" className="group">
-            <Card className="card-hover h-full">
-              <CardContent className="p-3 md:p-4 flex items-center gap-2.5 md:gap-3">
-                <div className="p-2 bg-warning/10 rounded-md">
-                  <Zap className="h-4 w-4 text-warning" />
-                </div>
-                <div className="min-w-0">
-                  <div className="text-sm font-medium text-foreground truncate">SME IPO</div>
-                  <div className="text-xs text-muted-foreground">NSE & BSE</div>
-                </div>
-              </CardContent>
-            </Card>
-          </Link>
-        </section>
-
+      <div className="container pb-20 space-y-16">
         {/* Open IPOs Section */}
         {homeConfig.showOpenIPOs && (
-          <section>
-            <div className="flex items-center justify-between mb-4">
-              <div className="flex items-center gap-2">
-                <div className="h-2 w-2 rounded-full bg-success animate-pulse" />
-                <h2 className="text-base md:text-lg font-medium">Open for Subscription</h2>
+          <section className="space-y-6">
+            <div className="flex items-end justify-between px-2">
+              <div className="space-y-1">
+                <div className="flex items-center gap-2">
+                  <div className="h-2 w-2 rounded-full bg-emerald-500 animate-pulse" />
+                  <h2 className="text-xl md:text-2xl font-bold">Open for Subscription</h2>
+                </div>
+                <p className="text-xs md:text-sm text-muted-foreground">Don't miss out on these live IPO opportunities</p>
               </div>
               <Link href="/mainboard-ipo">
-                <Button variant="ghost" size="sm" className="text-primary gap-1 text-sm h-8">
+                <Button variant="link" className="text-primary gap-1 p-0 h-auto font-semibold">
                   View all
-                  <ArrowRight className="h-3.5 w-3.5" />
+                  <ArrowRight className="h-4 w-4" />
                 </Button>
               </Link>
             </div>
 
             {loadingOpen ? (
-              <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-3">
+              <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-4">
                 {[...Array(5)].map((_, i) => (
-                  <Skeleton key={i} className="h-48 w-full rounded-xl" />
+                  <Skeleton key={i} className="h-64 w-full rounded-3xl" />
                 ))}
               </div>
             ) : openIPOs?.data?.length ? (
-              <div className="overflow-x-auto -mx-4 px-4 md:mx-0 md:px-0 py-1">
-                <div className="flex gap-3 md:grid md:grid-cols-2 lg:grid-cols-4 xl:grid-cols-5 min-w-max md:min-w-0">
+              <div className="overflow-x-auto -mx-4 px-4 md:mx-0 md:px-0 py-2">
+                <div className="flex gap-4 md:grid md:grid-cols-2 lg:grid-cols-4 xl:grid-cols-5 min-w-max md:min-w-0">
                   {openIPOs.data.slice(0, 5).map((ipo, idx) => (
                     <IPOGMPCard
                       key={ipo.ipo_id}
@@ -229,216 +176,217 @@ export default function HomePage({ initialData }: HomePageProps) {
                 </div>
               </div>
             ) : (
-              <Card className="border-dashed">
-                <CardContent className="p-8 text-center text-muted-foreground">
-                  <p className="text-sm">No IPOs are currently open for subscription</p>
-                </CardContent>
-              </Card>
+              <div className="p-12 text-center rounded-3xl border-2 border-dashed bg-muted/20">
+                <div className="flex flex-col items-center gap-3">
+                  <div className="p-3 bg-muted rounded-2xl">
+                    <Clock className="h-6 w-6 text-muted-foreground" />
+                  </div>
+                  <p className="text-sm font-medium text-muted-foreground">No IPOs are currently open for subscription</p>
+                  <Link href="/ipo-calendar">
+                    <Button variant="outline" size="sm" className="rounded-xl">Check Calendar</Button>
+                  </Link>
+                </div>
+              </div>
             )}
           </section>
         )}
 
-        {/* Upcoming IPOs */}
-        {homeConfig.showUpcomingIPOs && (
-          <section>
-            <div className="flex items-center justify-between mb-4">
-              <div className="flex items-center gap-2">
-                <Clock className="h-4 w-4 text-primary" />
-                <h2 className="text-base md:text-lg font-medium">Upcoming IPOs</h2>
+        {/* Info Grid: Upcoming & Recent */}
+        <div className="grid lg:grid-cols-2 gap-8 md:gap-12">
+          {/* Upcoming IPOs */}
+          {homeConfig.showUpcomingIPOs && (
+            <div className="space-y-4">
+              <div className="flex items-center justify-between px-2">
+                <h2 className="text-lg md:text-xl font-bold flex items-center gap-2">
+                  <Calendar className="h-5 w-5 text-primary" />
+                  Upcoming IPOs
+                </h2>
+                <Link href="/ipo-calendar" className="text-xs font-semibold text-primary hover:underline">
+                  View Full Calendar
+                </Link>
               </div>
-              <Link href="/ipo-calendar">
-                <Button variant="ghost" size="sm" className="text-primary gap-1 text-sm h-8">
-                  Calendar
-                  <ArrowRight className="h-3.5 w-3.5" />
-                </Button>
-              </Link>
+
+              <div className="bg-card rounded-3xl border border-border/50 shadow-sm overflow-hidden">
+                {loadingUpcoming ? (
+                  <div className="p-6 space-y-4">
+                    {[...Array(5)].map((_, i) => <Skeleton key={i} className="h-12 w-full rounded-xl" />)}
+                  </div>
+                ) : upcomingIPOs?.data?.length ? (
+                  <IPOTable
+                    columns={[
+                      { key: "name", label: "IPO Name" },
+                      { key: "ipoType", label: "Type" },
+                      { key: "openDate", label: "Opens" },
+                    ]}
+                    data={upcomingIPOs.data.slice(0, 6).map(ipo => {
+                      const formatDateWithoutYear = (dateStr: string) => {
+                        if (!dateStr) return dateStr;
+                        return dateStr.replace(/,?\s*\d{4}/, '');
+                      };
+
+                      return {
+                        slug: ipo.slug,
+                        name: ipo.name.replace(' IPO', ''),
+                        ipoType: ipo.ipo_type?.toLowerCase() as "mainboard" | "sme" | undefined,
+                        openDate: formatDateWithoutYear(ipo.open_date),
+                      };
+                    })}
+                    isLoading={false}
+                    onRowClick={(row) => router.push(`/ipo/${row.slug}`)}
+                    className="text-sm"
+                  />
+                ) : (
+                  <div className="p-12 text-center text-sm text-muted-foreground italic">No upcoming IPOs scheduled.</div>
+                )}
+              </div>
             </div>
+          )}
 
-            <Card className="overflow-hidden">
-              {loadingUpcoming ? (
-                <div className="p-4 space-y-2">
-                  {[...Array(5)].map((_, i) => <Skeleton key={i} className="h-10 w-full" />)}
-                </div>
-              ) : upcomingIPOs?.data?.length ? (
-                <IPOTable
-                  columns={[
-                    { key: "name", label: "IPO Name" },
-                    { key: "ipoType", label: "Type" },
-                    { key: "openDate", label: "Opens" },
-                    { key: "closeDate", label: "Closes" },
-                    { key: "lotSize", label: "Lot Size" },
-                  ]}
-                  data={upcomingIPOs.data.slice(0, 10).map(ipo => {
-                    // Helper function to remove year from date
-                    const formatDateWithoutYear = (dateStr: string) => {
-                      if (!dateStr) return dateStr;
-                      // Remove year patterns like ", 2026" or " 2026"
-                      return dateStr.replace(/,?\s*\d{4}/, '');
-                    };
+          {/* Recently Listed */}
+          {homeConfig.showRecentlyListed && (
+            <div className="space-y-4">
+              <div className="flex items-center justify-between px-2">
+                <h2 className="text-lg md:text-xl font-bold flex items-center gap-2">
+                  <BarChart3 className="h-5 w-5 text-primary" />
+                  Recently Listed
+                </h2>
+                <Link href="/ipo-listing-performance" className="text-xs font-semibold text-primary hover:underline">
+                  Full Performance
+                </Link>
+              </div>
 
-                    return {
+              <div className="bg-card rounded-3xl border border-border/50 shadow-sm overflow-hidden">
+                {loadingRecent ? (
+                  <div className="p-6 space-y-4">
+                    {[...Array(5)].map((_, i) => <Skeleton key={i} className="h-12 w-full rounded-xl" />)}
+                  </div>
+                ) : recentlyListed?.data?.length ? (
+                  <IPOTable
+                    columns={[
+                      { key: "name", label: "IPO Name" },
+                      { key: "listingPrice", label: "Listing" },
+                      { key: "gain", label: "Gain" },
+                    ]}
+                    data={recentlyListed.data.slice(0, 6).map(ipo => ({
                       slug: ipo.slug,
                       name: ipo.name.replace(' IPO', ''),
-                      ipoType: ipo.ipo_type?.toLowerCase() as "mainboard" | "sme" | undefined,
-                      openDate: formatDateWithoutYear(ipo.open_date),
-                      closeDate: formatDateWithoutYear(ipo.close_date),
-                      lotSize: ipo.lot_size ? `${ipo.lot_size} Shares` : "—",
-                      rawValue_lotSize: ipo.lot_size || 0,
-                    };
-                  })}
-                  isLoading={false}
-                  onRowClick={(row) => router.push(`/ipo/${row.slug}`)}
-                  emptyMessage="No upcoming IPOs scheduled."
-                />
-              ) : (
-                <CardContent className="p-6 text-center text-muted-foreground text-sm">
-                  No upcoming IPOs scheduled.
-                </CardContent>
-              )}
-            </Card>
-          </section>
-        )}
-
-        {/* Recently Listed */}
-        {homeConfig.showRecentlyListed && (
-          <section>
-            <div className="flex items-center justify-between mb-4">
-              <div className="flex items-center gap-2">
-                <BarChart3 className="h-4 w-4 text-chart-3" />
-                <h2 className="text-base md:text-lg font-medium">Recently Listed</h2>
+                      listingPrice: formatCurrency(ipo.current_price || 0),
+                      gain: (
+                        <span className={cn("font-bold", (ipo.gain_loss_percent || 0) >= 0 ? "text-emerald-500" : "text-rose-500")}>
+                          {(ipo.gain_loss_percent || 0) > 0 ? "+" : ""}{formatPercent(ipo.gain_loss_percent || 0)}
+                        </span>
+                      ),
+                      rawValue_gain: ipo.gain_loss_percent
+                    }))}
+                    isLoading={false}
+                    onRowClick={(row) => router.push(`/ipo/${row.slug}`)}
+                    className="text-sm"
+                  />
+                ) : (
+                  <div className="p-12 text-center text-sm text-muted-foreground italic">No recently listed IPOs.</div>
+                )}
               </div>
-              <Link href="/ipo-listing-performance">
-                <Button variant="ghost" size="sm" className="text-primary gap-1 text-sm h-8">
-                  All
-                  <ArrowRight className="h-3.5 w-3.5" />
-                </Button>
-              </Link>
             </div>
+          )}
+        </div>
 
-            <Card className="overflow-hidden">
-              {loadingRecent ? (
-                <div className="p-4 space-y-2">
-                  {[...Array(5)].map((_, i) => <Skeleton key={i} className="h-10 w-full" />)}
-                </div>
-              ) : recentlyListed?.data?.length ? (
-                <IPOTable
-                  columns={[
-                    { key: "name", label: "IPO Name" },
-                    { key: "listingDate", label: "Listed On", hideOnMobile: true },
-                    { key: "issuePrice", label: "Issue Price", hideOnMobile: true },
-                    { key: "listingPrice", label: "Listing Price" },
-                    { key: "gain", label: "Gain/Loss" },
-                  ]}
-                  data={recentlyListed.data.slice(0, 10).map(ipo => ({
-                    slug: ipo.slug,
-                    name: ipo.name.replace(' IPO', ''),
-                    listingDate: ipo.listing_date,
-                    issuePrice: formatCurrency(ipo.issue_price),
-                    listingPrice: formatCurrency(ipo.current_price || 0),
-                    gain: (
-                      <span className={cn("font-medium", (ipo.gain_loss_percent || 0) >= 0 ? "text-success" : "text-destructive")}>
-                        {(ipo.gain_loss_percent || 0) > 0 ? "+" : ""}{formatPercent(ipo.gain_loss_percent || 0)}
-                      </span>
-                    ),
-                    rawValue_gain: ipo.gain_loss_percent
-                  }))}
-                  isLoading={false}
-                  onRowClick={(row) => router.push(`/ipo/${row.slug}`)}
-                  emptyMessage="No recently listed IPOs."
-                />
-              ) : (
-                <CardContent className="p-6 text-center text-muted-foreground text-sm">
-                  No recently listed IPOs.
-                </CardContent>
-              )}
-            </Card>
-          </section>
-        )}
-
-        {/* Gainers & Losers */}
+        {/* Performance Highlights: Gainers & Losers */}
         {homeConfig.showGainersLosers && (
-          <section className="grid md:grid-cols-2 gap-6">
-            {/* Top Gainers */}
-            <Card>
-              <CardHeader className="pb-2 px-4 pt-4">
-                <div className="flex items-center justify-between">
-                  <CardTitle className="flex items-center gap-2 text-sm font-medium">
-                    <TrendingUp className="h-4 w-4 text-success" />
-                    Top Gainers
+          <section className="space-y-6">
+            <h2 className="text-xl md:text-2xl font-bold flex items-center gap-2 px-2">
+              <Zap className="h-5 w-5 text-amber-500" />
+              Listing Highlights
+            </h2>
+            <div className="grid md:grid-cols-2 gap-6">
+              {/* Top Gainers */}
+              <Card className="rounded-3xl border-none bg-emerald-500/5 shadow-none overflow-hidden">
+                <CardHeader className="pb-4 border-b border-emerald-500/10">
+                  <CardTitle className="flex items-center gap-2 text-base font-bold text-emerald-700 dark:text-emerald-400 uppercase tracking-tight">
+                    <TrendingUp className="h-5 w-5" />
+                    Bumper Listings
                   </CardTitle>
-                </div>
-              </CardHeader>
-              <CardContent className="p-0">
-                {loadingGainers ? (
-                  <div className="p-4 space-y-2">
-                    {[...Array(4)].map((_, i) => (
-                      <Skeleton key={i} className="h-8 w-full" />
-                    ))}
-                  </div>
-                ) : gainersData?.data?.length ? (
-                  <div className="divide-y">
-                    {gainersData.data.slice(0, 5).map((ipo) => (
-                      <Link
-                        key={ipo.ipo_id}
-                        href={`/ipo/${ipo.slug}`}
-                        className="flex items-center justify-between p-3 hover:bg-muted/50 transition-colors"
-                      >
-                        <span className="text-sm truncate flex-1 min-w-0">
-                          {ipo.name.replace(' IPO', '')}
-                        </span>
-                        <span className="text-xs font-tabular text-success ml-2">
-                          +{ipo.listing_gain_percent?.toFixed(1)}%
-                        </span>
-                      </Link>
-                    ))}
-                  </div>
-                ) : (
-                  <p className="text-xs text-muted-foreground text-center p-4">No data</p>
-                )}
-              </CardContent>
-            </Card>
+                </CardHeader>
+                <CardContent className="p-0">
+                  {loadingGainers ? (
+                    <div className="p-6 space-y-4">
+                      {[...Array(4)].map((_, i) => <Skeleton key={i} className="h-10 w-full rounded-xl" />)}
+                    </div>
+                  ) : gainersData?.data?.length ? (
+                    <div className="divide-y divide-emerald-500/10">
+                      {gainersData.data.slice(0, 5).map((ipo) => (
+                        <Link
+                          key={ipo.ipo_id}
+                          href={`/ipo/${ipo.slug}`}
+                          className="flex items-center justify-between p-4 hover:bg-emerald-500/10 transition-colors"
+                        >
+                          <span className="text-sm font-medium">{ipo.name.replace(' IPO', '')}</span>
+                          <span className="px-2 py-1 bg-emerald-500/20 text-emerald-700 dark:text-emerald-400 rounded-lg text-xs font-bold font-tabular">
+                            +{ipo.listing_gain_percent?.toFixed(1)}%
+                          </span>
+                        </Link>
+                      ))}
+                    </div>
+                  ) : (
+                    <div className="p-12 text-center text-xs text-muted-foreground italic">No data available</div>
+                  )}
+                </CardContent>
+              </Card>
 
-            {/* Top Losers */}
-            <Card>
-              <CardHeader className="pb-2 px-4 pt-4">
-                <div className="flex items-center justify-between">
-                  <CardTitle className="flex items-center gap-2 text-sm font-medium">
-                    <TrendingDown className="h-4 w-4 text-destructive" />
-                    Top Losers
+              {/* Top Losers */}
+              <Card className="rounded-3xl border-none bg-rose-500/5 shadow-none overflow-hidden">
+                <CardHeader className="pb-4 border-b border-rose-500/10">
+                  <CardTitle className="flex items-center gap-2 text-base font-bold text-rose-700 dark:text-rose-400 uppercase tracking-tight">
+                    <TrendingDown className="h-5 w-5" />
+                    Poor Listings
                   </CardTitle>
-                </div>
-              </CardHeader>
-              <CardContent className="p-0">
-                {loadingLosers ? (
-                  <div className="p-4 space-y-2">
-                    {[...Array(4)].map((_, i) => (
-                      <Skeleton key={i} className="h-8 w-full" />
-                    ))}
-                  </div>
-                ) : losersData?.data?.length ? (
-                  <div className="divide-y">
-                    {losersData.data.slice(0, 5).map((ipo) => (
-                      <Link
-                        key={ipo.ipo_id}
-                        href={`/ipo/${ipo.slug}`}
-                        className="flex items-center justify-between p-3 hover:bg-muted/50 transition-colors"
-                      >
-                        <span className="text-sm truncate flex-1 min-w-0">
-                          {ipo.name.replace(' IPO', '')}
-                        </span>
-                        <span className="text-xs font-tabular text-destructive ml-2">
-                          {ipo.listing_gain_percent?.toFixed(1)}%
-                        </span>
-                      </Link>
-                    ))}
-                  </div>
-                ) : (
-                  <p className="text-xs text-muted-foreground text-center p-4">No data</p>
-                )}
-              </CardContent>
-            </Card>
+                </CardHeader>
+                <CardContent className="p-0">
+                  {loadingLosers ? (
+                    <div className="p-6 space-y-4">
+                      {[...Array(4)].map((_, i) => <Skeleton key={i} className="h-10 w-full rounded-xl" />)}
+                    </div>
+                  ) : losersData?.data?.length ? (
+                    <div className="divide-y divide-rose-500/10">
+                      {losersData.data.slice(0, 5).map((ipo) => (
+                        <Link
+                          key={ipo.ipo_id}
+                          href={`/ipo/${ipo.slug}`}
+                          className="flex items-center justify-between p-4 hover:bg-rose-500/10 transition-colors"
+                        >
+                          <span className="text-sm font-medium">{ipo.name.replace(' IPO', '')}</span>
+                          <span className="px-2 py-1 bg-rose-500/20 text-rose-700 dark:text-rose-400 rounded-lg text-xs font-bold font-tabular">
+                            {ipo.listing_gain_percent?.toFixed(1)}%
+                          </span>
+                        </Link>
+                      ))}
+                    </div>
+                  ) : (
+                    <div className="p-12 text-center text-xs text-muted-foreground italic">No data available</div>
+                  )}
+                </CardContent>
+              </Card>
+            </div>
           </section>
         )}
+
+        {/* Newsletter / Tools Callout */}
+        <section className="bg-primary rounded-[40px] p-8 md:p-14 text-primary-foreground relative overflow-hidden">
+          <div className="absolute top-0 right-0 w-64 h-64 bg-white/10 rounded-full blur-3xl -mr-32 -mt-32" />
+          <div className="absolute bottom-0 left-0 w-64 h-64 bg-black/10 rounded-full blur-3xl -ml-32 -mb-32" />
+
+          <div className="relative z-10 flex flex-col md:flex-row items-center justify-between gap-8">
+            <div className="max-w-xl text-center md:text-left space-y-4">
+              <h2 className="text-3xl md:text-4xl font-extrabold leading-tight">Master your IPO investments with our free tools.</h2>
+              <p className="text-primary-foreground/80 md:text-lg">Calculate returns, compare companies, and track allotment sessions with ease.</p>
+            </div>
+            <Link href="/tools">
+              <Button size="lg" variant="secondary" className="h-14 px-10 rounded-2xl font-bold gap-2 text-primary shadow-xl hover:scale-105 active:scale-95 transition-all">
+                <Calculator className="h-5 w-5" />
+                Explore Tools
+              </Button>
+            </Link>
+          </div>
+        </section>
       </div>
     </MainLayout>
   );

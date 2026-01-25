@@ -3,7 +3,6 @@
 import { useState, useMemo, lazy, Suspense } from "react";
 import { MainLayout } from "@/components/layout";
 import { BreadcrumbNav } from "@/components/shared/BreadcrumbNav";
-import { useIPOGains, useIPOCalendar } from "@/hooks/useIPO";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
@@ -20,6 +19,7 @@ const LazyBarChart = lazy(() => import("recharts").then(m => ({ default: m.BarCh
 const LazyBar = lazy(() => import("recharts").then(m => ({ default: m.Bar })));
 
 import { AreaChart, Area, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart as RechartsPie, Pie, Cell, Legend } from "recharts";
+import { IPOGain, IPOCalendar, APIResponse } from "@/types/ipo";
 
 // Sector definitions
 const SECTORS = [
@@ -63,15 +63,20 @@ function detectSector(name: string): string {
   return "services";
 }
 
-export default function IPOStatisticsPage() {
+export default function IPOStatisticsPage({ initialData }: {
+  initialData?: {
+    gainsData?: APIResponse<IPOGain[]>;
+    calendarData?: APIResponse<IPOCalendar[]>;
+  }
+}) {
   const [selectedYear, setSelectedYear] = useState<string>("2024");
   const [selectedSector, setSelectedSector] = useState<string>("all");
 
   useScrollTracking("ipo_statistics");
   useTimeOnPage("ipo_statistics");
 
-  const { data: gainsData, isLoading: loadingGains } = useIPOGains({ limit: 500 });
-  const { data: calendarData, isLoading: loadingCalendar } = useIPOCalendar({ limit: 500 });
+  const gainsData = initialData?.gainsData;
+  const calendarData = initialData?.calendarData;
 
   const allIPOs = gainsData?.data || [];
   const calendarIPOs = calendarData?.data || [];
@@ -189,7 +194,7 @@ export default function IPOStatisticsPage() {
   const years = Object.keys(yearStats).sort((a, b) => parseInt(b) - parseInt(a));
   const currentYearStats = yearStats[parseInt(selectedYear)];
 
-  const isLoading = loadingGains || loadingCalendar;
+  const isLoading = false;
 
   const handleYearChange = (year: string) => {
     setSelectedYear(year);
@@ -349,7 +354,7 @@ export default function IPOStatisticsPage() {
                   <ResponsiveContainer width="100%" height={250}>
                     <BarChart data={yearChartData}>
                       <CartesianGrid strokeDasharray="3 3" className="stroke-border" />
-                      <XAxis dataKey="year" className="text-xs" />
+                      <XAxis dataKey="year" className="text-xs" minTickGap={20} />
                       <YAxis className="text-xs" />
                       <Tooltip
                         contentStyle={{
@@ -377,7 +382,7 @@ export default function IPOStatisticsPage() {
                   <ResponsiveContainer width="100%" height={200}>
                     <AreaChart data={yearChartData}>
                       <CartesianGrid strokeDasharray="3 3" className="stroke-border" />
-                      <XAxis dataKey="year" className="text-xs" />
+                      <XAxis dataKey="year" className="text-xs" minTickGap={20} />
                       <YAxis className="text-xs" domain={[0, 100]} />
                       <Tooltip
                         contentStyle={{
@@ -552,7 +557,7 @@ export default function IPOStatisticsPage() {
                   <ResponsiveContainer width="100%" height={200}>
                     <BarChart data={yearChartData}>
                       <CartesianGrid strokeDasharray="3 3" className="stroke-border" />
-                      <XAxis dataKey="year" className="text-xs" />
+                      <XAxis dataKey="year" className="text-xs" minTickGap={20} />
                       <YAxis className="text-xs" />
                       <Tooltip
                         contentStyle={{

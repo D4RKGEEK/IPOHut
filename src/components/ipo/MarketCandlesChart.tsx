@@ -1,6 +1,6 @@
 import { useState, useMemo } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { AreaChart, Area, XAxis, YAxis, Tooltip, ResponsiveContainer, ReferenceLine } from "recharts";
+import { AreaChart, Area, XAxis, YAxis, Tooltip, ResponsiveContainer, ReferenceLine, CartesianGrid } from "recharts";
 import { IPOMarketData } from "@/types/ipo";
 import { TrendingUp, TrendingDown } from "lucide-react";
 import { cn } from "@/lib/utils";
@@ -61,7 +61,7 @@ export function MarketCandlesChart({ marketData, issuePrice, ipoSlug }: MarketCa
     }
 
     // Sort by time (oldest first)
-    return [...candles].sort((a, b) => 
+    return [...candles].sort((a, b) =>
       new Date(a.time).getTime() - new Date(b.time).getTime()
     );
   }, [marketData]);
@@ -69,7 +69,7 @@ export function MarketCandlesChart({ marketData, issuePrice, ipoSlug }: MarketCa
   // Filter candles based on selected range
   const filteredCandles = useMemo(() => {
     if (allCandles.length === 0) return [];
-    
+
     const now = new Date();
     let cutoffDate: Date;
 
@@ -100,8 +100,8 @@ export function MarketCandlesChart({ marketData, issuePrice, ipoSlug }: MarketCa
   // Transform to chart data
   const chartData = useMemo(() => {
     return filteredCandles.map((candle) => ({
-      time: new Date(candle.time).toLocaleDateString('en-IN', { 
-        day: 'numeric', 
+      time: new Date(candle.time).toLocaleDateString('en-IN', {
+        day: 'numeric',
         month: 'short',
         ...(selectedRange === "1D" ? { hour: '2-digit', minute: '2-digit' } : {})
       }),
@@ -128,91 +128,106 @@ export function MarketCandlesChart({ marketData, issuePrice, ipoSlug }: MarketCa
   const maxPrice = Math.max(...allHighs) * 1.01;
 
   return (
-    <Card className="border">
-      <CardHeader className="pb-2 px-3 sm:px-6">
+    <Card className="border shadow-none">
+      <CardHeader className="pb-4 border-b bg-muted/20">
         <div className="flex items-center justify-between flex-wrap gap-2">
-          <CardTitle className="text-sm sm:text-base">Price History</CardTitle>
-          <div className={cn(
-            "flex items-center gap-1 text-xs sm:text-sm font-medium",
-            isPositive ? "text-success" : "text-destructive"
-          )}>
-            {isPositive ? <TrendingUp className="h-3.5 w-3.5" /> : <TrendingDown className="h-3.5 w-3.5" />}
-            <span className="font-tabular">
-              ₹{latestPrice.toFixed(2)} ({isPositive ? '+' : ''}{priceChangePercent.toFixed(1)}%)
-            </span>
+          <CardTitle className="text-base">Price History</CardTitle>
+          <div className="flex items-center gap-2">
+            <div className={cn(
+              "flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold",
+              isPositive ? "bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400" : "bg-rose-100 text-rose-700 dark:bg-rose-900/30 dark:text-rose-400"
+            )}>
+              {isPositive ? <TrendingUp className="h-3.5 w-3.5" /> : <TrendingDown className="h-3.5 w-3.5" />}
+              <span className="font-tabular">
+                ₹{latestPrice.toFixed(2)}
+              </span>
+              <span className="font-tabular text-[10px] opacity-80">
+                ({isPositive ? '+' : ''}{priceChangePercent.toFixed(1)}%)
+              </span>
+            </div>
           </div>
         </div>
-        
-        {/* Time Range Selector */}
-        <div className="flex items-center gap-1 mt-2">
-          {timeRanges.map((range) => (
-            <button
-              key={range.value}
-              onClick={() => handleRangeChange(range.value)}
-              className={cn(
-                "px-2 py-1 text-[10px] sm:text-xs font-medium rounded-md transition-colors",
-                selectedRange === range.value
-                  ? "bg-primary text-primary-foreground"
-                  : "bg-muted text-muted-foreground hover:bg-muted/80"
-              )}
-            >
-              {range.label}
-            </button>
-          ))}
-        </div>
       </CardHeader>
-      
-      <CardContent className="px-2 sm:px-6">
-        <div className="h-48 sm:h-64">
+
+      <CardContent className="p-0">
+        {/* Time Range Selector */}
+        <div className="flex items-center justify-end px-4 py-3 border-b border-border/50">
+          <div className="flex p-1 bg-muted rounded-lg">
+            {timeRanges.map((range) => (
+              <button
+                key={range.value}
+                onClick={() => handleRangeChange(range.value)}
+                className={cn(
+                  "px-3 py-1 text-[10px] font-medium rounded-md transition-all",
+                  selectedRange === range.value
+                    ? "bg-background shadow-sm text-foreground"
+                    : "text-muted-foreground hover:text-foreground"
+                )}
+              >
+                {range.label}
+              </button>
+            ))}
+          </div>
+        </div>
+
+        <div className="h-64 sm:h-72 w-full mt-4">
           <ResponsiveContainer width="100%" height="100%">
-            <AreaChart data={chartData} margin={{ top: 5, right: 10, left: 0, bottom: 5 }}>
+            <AreaChart data={chartData} margin={{ top: 10, right: 10, left: 0, bottom: 5 }}>
               <defs>
                 <linearGradient id="colorGain" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="5%" stopColor="hsl(var(--success))" stopOpacity={0.3}/>
-                  <stop offset="95%" stopColor="hsl(var(--success))" stopOpacity={0.05}/>
+                  <stop offset="5%" stopColor="hsl(var(--success))" stopOpacity={0.2} />
+                  <stop offset="95%" stopColor="hsl(var(--success))" stopOpacity={0.0} />
                 </linearGradient>
                 <linearGradient id="colorLoss" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="5%" stopColor="hsl(var(--destructive))" stopOpacity={0.3}/>
-                  <stop offset="95%" stopColor="hsl(var(--destructive))" stopOpacity={0.05}/>
+                  <stop offset="5%" stopColor="hsl(var(--destructive))" stopOpacity={0.2} />
+                  <stop offset="95%" stopColor="hsl(var(--destructive))" stopOpacity={0.0} />
                 </linearGradient>
               </defs>
-              <XAxis 
-                dataKey="time" 
-                tick={{ fontSize: 9 }}
+              <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="hsl(var(--border) / 0.4)" />
+              <XAxis
+                dataKey="time"
+                tick={{ fontSize: 10, fill: 'hsl(var(--muted-foreground))' }}
                 tickLine={false}
                 axisLine={false}
+                tickMargin={12}
                 interval="preserveStartEnd"
+                minTickGap={30}
+                padding={{ left: 10, right: 10 }}
               />
-              <YAxis 
+              <YAxis
                 domain={[minPrice, maxPrice]}
-                tick={{ fontSize: 9 }}
+                tick={{ fontSize: 10, fill: 'hsl(var(--muted-foreground))' }}
                 tickLine={false}
                 axisLine={false}
                 tickFormatter={(value) => `₹${value.toFixed(0)}`}
-                width={45}
+                width={40}
+                orientation="left"
+                tickCount={6}
               />
               <Tooltip
                 contentStyle={{
-                  backgroundColor: 'hsl(var(--card))',
+                  backgroundColor: 'hsl(var(--popover))',
                   border: '1px solid hsl(var(--border))',
                   borderRadius: '8px',
-                  fontSize: '11px',
+                  fontSize: '12px',
+                  boxShadow: '0 4px 12px rgba(0,0,0,0.1)'
                 }}
                 formatter={(value: number, name: string) => {
-                  if (name === 'close') return [`₹${value.toFixed(2)}`, 'Close'];
+                  if (name === 'close') return [`₹${value.toFixed(2)}`, 'Price'];
                   return [value, name];
                 }}
                 labelFormatter={(label) => label}
+                cursor={{ stroke: 'hsl(var(--muted-foreground))', strokeWidth: 1, strokeDasharray: '3 3' }}
               />
               {issuePrice && (
-                <ReferenceLine 
-                  y={issuePrice} 
-                  stroke="hsl(var(--muted-foreground))" 
+                <ReferenceLine
+                  y={issuePrice}
+                  stroke="hsl(var(--muted-foreground))"
                   strokeDasharray="3 3"
-                  label={{ 
-                    value: `Issue: ₹${issuePrice}`, 
-                    position: 'insideTopRight',
-                    fontSize: 9,
+                  label={{
+                    value: `Issue: ₹${issuePrice}`,
+                    position: 'insideTopLeft',
+                    fontSize: 10,
                     fill: 'hsl(var(--muted-foreground))'
                   }}
                 />
@@ -223,33 +238,31 @@ export function MarketCandlesChart({ marketData, issuePrice, ipoSlug }: MarketCa
                 stroke={isPositive ? 'hsl(var(--success))' : 'hsl(var(--destructive))'}
                 strokeWidth={2}
                 fill={isPositive ? 'url(#colorGain)' : 'url(#colorLoss)'}
-                activeDot={{ r: 4, strokeWidth: 2 }}
+                activeDot={{ r: 4, strokeWidth: 2, fill: 'hsl(var(--background))', stroke: isPositive ? 'hsl(var(--success))' : 'hsl(var(--destructive))' }}
               />
             </AreaChart>
           </ResponsiveContainer>
         </div>
 
-        {/* Price Summary */}
-        <div className="grid grid-cols-4 gap-1 sm:gap-2 mt-3 pt-3 border-t border-border">
-          <div className="text-center">
-            <div className="text-[10px] sm:text-xs text-muted-foreground">Issue</div>
-            <div className="text-xs sm:text-sm font-tabular font-medium">₹{issuePrice?.toFixed(0) || '—'}</div>
-          </div>
-          <div className="text-center">
-            <div className="text-[10px] sm:text-xs text-muted-foreground">High</div>
-            <div className="text-xs sm:text-sm font-tabular font-medium text-success">
-              ₹{Math.max(...allHighs).toFixed(2)}
-            </div>
-          </div>
-          <div className="text-center">
-            <div className="text-[10px] sm:text-xs text-muted-foreground">Low</div>
-            <div className="text-xs sm:text-sm font-tabular font-medium text-destructive">
+        {/* Price Summary Grid */}
+        <div className="grid grid-cols-3 divide-x border-t mt-4">
+          <div className="p-3 text-center">
+            <div className="text-[10px] text-muted-foreground uppercase tracking-wider mb-1">Low</div>
+            <div className="text-sm font-semibold font-tabular text-destructive">
               ₹{Math.min(...allLows).toFixed(2)}
             </div>
           </div>
-          <div className="text-center">
-            <div className="text-[10px] sm:text-xs text-muted-foreground">Current</div>
-            <div className="text-xs sm:text-sm font-tabular font-medium">₹{latestPrice.toFixed(2)}</div>
+          <div className="p-3 text-center">
+            <div className="text-[10px] text-muted-foreground uppercase tracking-wider mb-1">High</div>
+            <div className="text-sm font-semibold font-tabular text-success">
+              ₹{Math.max(...allHighs).toFixed(2)}
+            </div>
+          </div>
+          <div className="p-3 text-center">
+            <div className="text-[10px] text-muted-foreground uppercase tracking-wider mb-1">Issue</div>
+            <div className="text-sm font-semibold font-tabular">
+              ₹{issuePrice?.toFixed(0) || '—'}
+            </div>
           </div>
         </div>
       </CardContent>

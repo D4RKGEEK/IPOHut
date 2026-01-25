@@ -47,6 +47,7 @@ interface IPOTableProps {
   sortKey?: string;
   sortOrder?: "asc" | "desc";
   onRowClick?: (row: any) => void;
+  className?: string;
 }
 
 export function IPOTable({
@@ -58,6 +59,7 @@ export function IPOTable({
   sortKey: initialSortKey, // Renamed to avoid conflict with local state
   sortOrder: initialSortOrder, // Renamed to avoid conflict with local state
   onRowClick,
+  className,
 }: IPOTableProps) {
   const [sortKey, setSortKey] = useState<string | null>(initialSortKey || null);
   const [sortDirection, setSortDirection] = useState<"asc" | "desc">(initialSortOrder || "desc");
@@ -209,7 +211,7 @@ export function IPOTable({
   }
 
   return (
-    <div className="border rounded-md overflow-hidden">
+    <div className={cn("border rounded-md overflow-hidden", className)}>
       <Table>
         <TableHeader>
           <TableRow className="bg-muted/50">

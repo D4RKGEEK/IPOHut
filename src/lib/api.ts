@@ -167,8 +167,16 @@ export function getGainLossClass(value: number | undefined): string {
 export function parseIPODate(dateStr: string | undefined): Date | null {
   if (!dateStr) return null;
 
+  // Clean the date string: remove trailing "(T)", " T", " (Tentative)", etc.
+  // Also remove common text suffixes that might confuse the Date parser
+  const cleanedDate = dateStr
+    .replace(/\s+\(T\)$/i, "")
+    .replace(/\s+T$/i, "")
+    .replace(/\s+\(Tentative\)$/i, "")
+    .trim();
+
   // Handle formats like "Mon, Jan 13, 2025"
-  const parsed = new Date(dateStr);
+  const parsed = new Date(cleanedDate);
   if (!isNaN(parsed.getTime())) return parsed;
 
   return null;

@@ -3,7 +3,6 @@
 import { useState } from "react";
 import { MainLayout } from "@/components/layout";
 import { useAdmin } from "@/contexts/AdminContext";
-import { useIPOCalendar } from "@/hooks/useIPO";
 import { BreadcrumbNav } from "@/components/shared";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -43,42 +42,8 @@ export default function IPOCalendarPage({ initialData }: IPOCalendarPageProps) {
   const [currentMonth, setCurrentMonth] = useState(now.getMonth());
   const [currentYear, setCurrentYear] = useState(now.getFullYear());
 
-  // Check if current view is within the "server fetched" range (approx last 12 months)
-  // Server fetches [Now, Now-1 year]
-  const isCovered = () => {
-    if (!initialData) return false;
-    const targetDate = new Date(currentYear, currentMonth, 1);
-    const serverNow = new Date(); // Approximation
-    const oneYearAgo = new Date(serverNow.getFullYear() - 1, serverNow.getMonth(), 1);
-
-    // Reset times
-    targetDate.setHours(0, 0, 0, 0);
-    serverNow.setHours(0, 0, 0, 0);
-    oneYearAgo.setHours(0, 0, 0, 0);
-
-    // We cover if target is <= now (future covered by query?) AND target >= oneYearAgo
-    // Wait, typical use case: User looks at current month or past.
-    // Server fetch logic: `for (let i = 0; i < 12; i++)` -> Now back to Now-11.
-    // So future months (Next month) are NOT covered.
-
-    // Simplify: If target is in the past 12 months window.
-    // Check if target matches any month in the server response range? 
-    // Easier: Just check date bounds.
-    return targetDate <= serverNow && targetDate >= oneYearAgo;
-  };
-
-  const shouldUseInitial = isCovered();
-
-  const { data: queryData, isLoading: queryLoading } = useIPOCalendar({
-    month: currentMonth + 1,
-    year: currentYear,
-    limit: 100,
-  }, {
-    enabled: !shouldUseInitial
-  });
-
-  const data = shouldUseInitial ? initialData : queryData;
-  const isLoading = !shouldUseInitial && queryLoading;
+  const data = initialData;
+  const isLoading = false;
 
   const pageSettings = settings.pages.calendar;
   const ipos = data?.data || [];

@@ -2,7 +2,6 @@
 
 import { MainLayout } from "@/components/layout";
 import { useAdmin } from "@/contexts/AdminContext";
-import { useTopGainers, useTopLosers } from "@/hooks/useIPO";
 import { IPOTable, IPOTableColumn, IPOTableRow, BreadcrumbNav } from "@/components/shared";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -34,14 +33,11 @@ interface PerformanceTrackerPageProps {
 export default function PerformanceTrackerPage({ initialData }: PerformanceTrackerPageProps) {
   const { settings } = useAdmin();
   const isMobile = useIsMobile();
-  const { data: qGainers, isLoading: lGainers } = useTopGainers(50);
-  const { data: qLosers, isLoading: lLosers } = useTopLosers(50);
+  const gainersData = initialData?.gainers;
+  const losersData = initialData?.losers;
 
-  const gainersData = initialData?.gainers || qGainers;
-  const losersData = initialData?.losers || qLosers;
-
-  const loadingGainers = !initialData?.gainers && lGainers;
-  const loadingLosers = !initialData?.losers && lLosers;
+  const loadingGainers = false;
+  const loadingLosers = false;
 
   const pageSettings = settings.pages.performance;
 

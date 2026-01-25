@@ -4,7 +4,6 @@ import { MainLayout } from "@/components/layout";
 
 import { useState } from "react";
 import { useAdmin } from "@/contexts/AdminContext";
-import { useClosedIPOs } from "@/hooks/useIPO";
 import { StatusBadge, TypeBadge, BreadcrumbNav } from "@/components/shared";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -20,10 +19,8 @@ interface AllotmentStatusPageProps {
 
 export default function AllotmentStatusPage({ initialData }: AllotmentStatusPageProps) {
   const { settings } = useAdmin();
-  const { data: queryData, isLoading: queryLoading } = useClosedIPOs(50);
-
-  const data = initialData || queryData;
-  const isLoading = !initialData && queryLoading;
+  const data = initialData;
+  const isLoading = false;
 
   const pageSettings = settings.pages.allotmentStatus;
   const closedIPOs = data?.data || [];

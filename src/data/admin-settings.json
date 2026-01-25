@@ -219,11 +219,6 @@
               "id": "key_metrics",
               "enabled": true,
               "order": 3
-            },
-            {
-              "id": "broker_sentiment",
-              "enabled": true,
-              "order": 4
             }
           ]
         },
@@ -326,11 +321,6 @@
               "id": "gmp_calculator",
               "enabled": true,
               "order": 0
-            },
-            {
-              "id": "broker_sentiment",
-              "enabled": true,
-              "order": 1
             }
           ]
         }
@@ -340,11 +330,6 @@
           "id": "key_metrics",
           "enabled": true,
           "order": 0
-        },
-        {
-          "id": "broker_sentiment",
-          "enabled": true,
-          "order": 1
         }
       ]
     },
@@ -412,6 +397,12 @@
       "description": "Track IPO listing performance with all-time top gainers and worst performers. Historical data for informed investment decisions.",
       "h1": "IPO Listing Performance",
       "subheading": "Top gainers and losers from recent listings"
+    },
+    "statistics": {
+      "title": "IPO Statistics | Year-wise Data & Sector Analysis",
+      "description": "Comprehensive statistics of Indian IPO market. Track year-wise trends, sector-wise performance, and success rates.",
+      "h1": "IPO Statistics",
+      "subheading": "Historical trends and sector performance"
     }
   },
   "updatedAt": "2026-01-06T19:11:02.133Z"

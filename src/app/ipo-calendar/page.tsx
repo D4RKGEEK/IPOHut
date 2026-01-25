@@ -1,5 +1,5 @@
 import IPOCalendarPage from "@/views/IPOCalendarPage";
-import { fetchCalendar } from "@/lib/api";
+import { fetchCalendar, fetchStatus } from "@/lib/api";
 import { getAdminSettings } from "@/lib/server-config";
 import { Metadata } from "next";
 
@@ -13,32 +13,45 @@ export async function generateMetadata(): Promise<Metadata> {
 }
 
 export default async function IPOCalendar() {
-    const now = new Date();
-    // Fetch current month and past 11 months (total 1 year)
-    const requests = [];
-    for (let i = 0; i < 12; i++) {
-        const d = new Date(now.getFullYear(), now.getMonth() - i, 1);
-        requests.push(fetchCalendar({
-            month: d.getMonth() + 1,
-            year: d.getFullYear(),
-            limit: 100
-        }));
-    }
+    // Since the month/year filtering in the calendar API is currently unreliable,
+    // we fetch IPOs by status to ensure we have all currently relevant data.
+    // We fetch open, upcoming, and recently listed IPOs.
+    // To ensure the calendar stays purely static (no CSR calls), we fetch a large 
+    // dataset on the server to cover most navigation needs.
+    const statuses = ["open", "upcoming", "recently_listed", "listed"];
+    const requests = statuses.map(status => fetchStatus({
+        status: status as any,
+        limit: status === "listed" ? 300 : 50
+    }));
 
-    const responses = await Promise.all(requests);
+    // Also fetch a large calendar chunk
+    requests.push(fetchCalendar({ limit: 300 }));
+
+    const responses = await Promise.allSettled(requests);
 
     // Combine all data
-    const allIPOs = responses.flatMap(r => r.data || []);
+    const allIPOs: any[] = [];
+    const seenSlugs = new Set();
+
+    responses.forEach(result => {
+        if (result.status === "fulfilled" && result.value.data) {
+            const data = Array.isArray(result.value.data) ? result.value.data : [];
+            data.forEach((ipo: any) => {
+                if (!seenSlugs.has(ipo.slug)) {
+                    allIPOs.push(ipo);
+                    seenSlugs.add(ipo.slug);
+                }
+            });
+        }
+    });
 
     // Create a combined response object
-    // Note: status/message from first response, data is combined
     const combinedData = {
-        success: responses[0]?.success ?? true,
-        status: responses[0]?.status || "success",
+        success: true,
+        status: "success",
         data: allIPOs,
-        message: responses[0]?.message || "",
+        message: "",
         meta: {
-            ...responses[0]?.meta,
             total: allIPOs.length
         }
     };

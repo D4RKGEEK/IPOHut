@@ -66,7 +66,6 @@ export type WidgetType =
   | 'timeline'
   | 'subscription_table'
   | 'key_metrics'
-  | 'broker_sentiment'
   | 'basic_info'
   | 'lot_size_table'
   | 'reservation_table'
@@ -118,7 +117,6 @@ export const WIDGET_METADATA: Record<WidgetType, { label: string; description: s
   timeline: { label: 'IPO Timeline', description: 'Visual timeline of IPO events', icon: 'Calendar' },
   subscription_table: { label: 'Subscription Table', description: 'Category-wise subscription data', icon: 'Table' },
   key_metrics: { label: 'Key Metrics', description: 'RoNW, P/BV, ROE metrics', icon: 'BarChart3' },
-  broker_sentiment: { label: 'Broker Sentiment', description: 'Broker recommendations chart', icon: 'ThumbsUp' },
   basic_info: { label: 'Basic Information', description: 'IPO details like price, lot size', icon: 'Info' },
   lot_size_table: { label: 'Lot Size Table', description: 'Application category lot sizes', icon: 'Table' },
   reservation_table: { label: 'Reservation Table', description: 'Category-wise reservation', icon: 'Users' },
@@ -143,6 +141,7 @@ export interface PageVisibility {
   allotmentStatus: boolean;
   calendar: boolean;
   performance: boolean;
+  statistics: boolean;
   tools: boolean;
 }
 
@@ -226,6 +225,7 @@ export interface PageSettings {
   allotmentStatus: PageSeoSettings;
   calendar: PageSeoSettings;
   performance: PageSeoSettings;
+  statistics: PageSeoSettings;
 }
 
 export interface AdminSettings {
@@ -358,7 +358,6 @@ export const defaultAdminSettings: AdminSettings = {
             { id: 'ai_insights', enabled: true, order: 1 },
             { id: 'subscription_table', enabled: true, order: 2 },
             { id: 'key_metrics', enabled: true, order: 3 },
-            { id: 'broker_sentiment', enabled: true, order: 4 },
           ],
         },
         {
@@ -413,13 +412,11 @@ export const defaultAdminSettings: AdminSettings = {
           enabled: true,
           widgets: [
             { id: 'gmp_calculator', enabled: true, order: 0 },
-            { id: 'broker_sentiment', enabled: true, order: 1 },
           ],
         },
       ],
       sidebarWidgets: [
         { id: 'key_metrics', enabled: true, order: 0 },
-        { id: 'broker_sentiment', enabled: true, order: 1 },
       ],
     },
     pageVisibility: {
@@ -430,6 +427,7 @@ export const defaultAdminSettings: AdminSettings = {
       allotmentStatus: true,
       calendar: true,
       performance: true,
+      statistics: true,
       tools: true,
     },
     sitemapConfig: {
@@ -486,6 +484,12 @@ export const defaultAdminSettings: AdminSettings = {
       description: "Track IPO listing performance with all-time top gainers and worst performers. Historical data for informed investment decisions.",
       h1: "IPO Listing Performance",
       subheading: "Top gainers and losers from recent listings",
+    },
+    statistics: {
+      title: "IPO Statistics | Year-wise Data & Sector Analysis",
+      description: "Comprehensive statistics of Indian IPO market. Track year-wise trends, sector-wise performance, and success rates.",
+      h1: "IPO Statistics",
+      subheading: "Historical trends and sector performance",
     },
   },
   updatedAt: new Date().toISOString(),

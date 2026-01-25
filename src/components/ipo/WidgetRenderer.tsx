@@ -1,6 +1,6 @@
 import { WidgetType, WidgetConfig } from "@/types/admin";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { IPOTimeline, GMPCalculator, BrokerSentiment } from "@/components/shared";
+import { IPOTimeline, GMPCalculator } from "@/components/shared";
 import {
   IPOVitalStats,
   IPOGMPWidget,
@@ -124,19 +124,6 @@ export function WidgetRenderer({ widgetId, data }: WidgetRendererProps) {
       }
       return null;
 
-    case 'broker_sentiment':
-      if (recommendations?.brokers) {
-        return (
-          <BrokerSentiment
-            subscribe={recommendations.brokers.subscribe || 0}
-            mayApply={recommendations.brokers.may_apply || 0}
-            neutral={recommendations.brokers.neutral || 0}
-            avoid={recommendations.brokers.avoid || 0}
-          />
-        );
-      }
-      return null;
-
     case 'basic_info':
       return (
         <Card className="border">
@@ -189,7 +176,7 @@ export function WidgetRenderer({ widgetId, data }: WidgetRendererProps) {
 
     case 'financials':
       if (financials) {
-        return <CompanyFinancials financials={financials} />;
+        return <CompanyFinancials financials={financials} aiData={aiData} />;
       }
       return null;
 

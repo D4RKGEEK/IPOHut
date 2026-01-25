@@ -1,6 +1,6 @@
 import { Card, CardContent } from "@/components/ui/card";
 import { IPOGMPData } from "@/types/ipo";
-import { TrendingUp, TrendingDown, Flame, Clock } from "lucide-react";
+import { TrendingUp, TrendingDown, Clock } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { formatCurrency, formatPercent } from "@/lib/api";
 
@@ -17,7 +17,7 @@ const DUMMY_GMP_DATA: IPOGMPData = {
   last_updated: "2 hours ago",
   rating: {
     score: 4,
-    label: "Good"
+    display: "Good"
   }
 };
 
@@ -34,73 +34,56 @@ export function IPOGMPWidget({ gmpData, issuePrice, lotSize, showDummyData = fal
   const estimatedListing = displayData.estimated_listing ?? (issuePrice + gmp);
   const profitPerLot = gmp * lotSize;
 
-  // Rating display
-  const getRatingStars = () => {
-    const rating = displayData.rating?.score ?? Math.min(5, Math.max(1, Math.floor(gmpPercent / 10) + 1));
-    return Array.from({ length: 5 }, (_, i) => (
-      <Flame
-        key={i}
-        className={cn(
-          "h-4 w-4",
-          i < rating ? "text-accent fill-accent" : "text-muted-foreground/30"
-        )}
-      />
-    ));
-  };
-
   return (
     <Card className={cn(
-      "border-2 overflow-hidden",
-      isPositive ? "border-success/30 bg-success/5" : "border-destructive/30 bg-destructive/5"
+      "border-none shadow-md overflow-hidden relative",
+      isPositive
+        ? "bg-gradient-to-br from-emerald-500 to-teal-600 text-white"
+        : "bg-gradient-to-br from-rose-500 to-red-600 text-white"
     )}>
-      <CardContent className="p-4 sm:p-6">
-        <div className="flex items-center justify-between mb-3">
-          <span className="text-xs sm:text-sm text-muted-foreground font-medium">Grey Market Premium</span>
-          <div className="flex items-center gap-1">{getRatingStars()}</div>
-        </div>
+      {/* Abstract Background Shapes */}
+      <div className="absolute top-0 right-0 w-32 h-32 bg-white/10 rounded-full blur-2xl -mr-10 -mt-10 pointer-events-none" />
+      <div className="absolute bottom-0 left-0 w-24 h-24 bg-black/10 rounded-full blur-xl -ml-5 -mb-5 pointer-events-none" />
 
-        <div className="flex items-center gap-2 sm:gap-3 mb-4">
-          {isPositive ? (
-            <TrendingUp className="h-6 w-6 sm:h-8 sm:w-8 text-success shrink-0" />
-          ) : (
-            <TrendingDown className="h-6 w-6 sm:h-8 sm:w-8 text-destructive shrink-0" />
-          )}
+      <CardContent className="p-5 relative z-10">
+        <div className="flex items-start justify-between mb-6">
           <div>
-            <span className={cn(
-              "text-2xl sm:text-4xl font-bold font-tabular",
-              isPositive ? "text-success" : "text-destructive"
-            )}>
-              {formatCurrency(gmp)}
-            </span>
-            <span className={cn(
-              "text-base sm:text-xl font-tabular ml-2",
-              isPositive ? "text-success" : "text-destructive"
-            )}>
-              ({formatPercent(gmpPercent)})
-            </span>
+            <h3 className="text-white/90 text-sm font-medium mb-1">Grey Market Premium</h3>
+            <div className="flex items-baseline gap-2">
+              <span className="text-3xl font-bold font-tabular tracking-tight">
+                {formatCurrency(gmp)}
+              </span>
+              <span className="text-white/80 font-medium bg-white/20 px-1.5 py-0.5 rounded text-sm backdrop-blur-sm">
+                {isPositive ? "+" : ""}{formatPercent(gmpPercent).replace('%', '')}%
+              </span>
+            </div>
+          </div>
+          <div className="p-2 bg-white/20 rounded-lg backdrop-blur-md shadow-sm">
+            {isPositive ? (
+              <TrendingUp className="h-6 w-6 text-white" />
+            ) : (
+              <TrendingDown className="h-6 w-6 text-white" />
+            )}
           </div>
         </div>
 
-        <div className="grid grid-cols-2 gap-3 pt-3 border-t border-border/50">
-          <div>
-            <div className="text-[10px] sm:text-xs text-muted-foreground mb-0.5">Est. Listing</div>
-            <div className="text-sm sm:text-base font-semibold font-tabular">
+        <div className="grid grid-cols-2 gap-4">
+          <div className="bg-black/10 rounded-lg p-3 backdrop-blur-sm">
+            <div className="text-white/70 text-xs mb-1">Est. Listing</div>
+            <div className="text-lg font-bold font-tabular">
               {formatCurrency(estimatedListing)}
             </div>
           </div>
-          <div>
-            <div className="text-[10px] sm:text-xs text-muted-foreground mb-0.5">Profit/Lot</div>
-            <div className={cn(
-              "text-sm sm:text-base font-semibold font-tabular",
-              profitPerLot >= 0 ? "text-success" : "text-destructive"
-            )}>
+          <div className="bg-black/10 rounded-lg p-3 backdrop-blur-sm">
+            <div className="text-white/70 text-xs mb-1">Profit/Lot</div>
+            <div className="text-lg font-bold font-tabular">
               {formatCurrency(profitPerLot)}
             </div>
           </div>
         </div>
 
         {displayData.last_updated && (
-          <div className="flex items-center gap-1 mt-3 text-[10px] sm:text-xs text-muted-foreground">
+          <div className="flex items-center justify-end gap-1 mt-3 text-[10px] text-white/60">
             <Clock className="h-3 w-3" />
             Updated: {displayData.last_updated}
           </div>

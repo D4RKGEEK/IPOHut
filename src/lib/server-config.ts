@@ -23,7 +23,19 @@ export function getAdminSettings(): AdminSettings {
         if (fs.existsSync(SETTINGS_FILE)) {
             const fileContent = fs.readFileSync(SETTINGS_FILE, 'utf-8');
             const settings = JSON.parse(fileContent);
-            cachedSettings = { ...defaultAdminSettings, ...settings };
+            cachedSettings = {
+                ...defaultAdminSettings,
+                ...settings,
+                site: {
+                    ...defaultAdminSettings.site,
+                    ...(settings.site || {}),
+                    pageVisibility: {
+                        ...defaultAdminSettings.site.pageVisibility,
+                        ...(settings.site?.pageVisibility || {})
+                    }
+                },
+                pages: { ...defaultAdminSettings.pages, ...(settings.pages || {}) }
+            };
             return cachedSettings;
         }
     } catch (error) {

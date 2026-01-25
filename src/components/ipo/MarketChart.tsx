@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { LineChart, Line, XAxis, YAxis, Tooltip, ResponsiveContainer } from "recharts";
+import { LineChart, Line, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid } from "recharts";
 import { IPOMarketData, IPOMarketCandle } from "@/types/ipo";
 import { format, subDays, subMonths } from "date-fns";
 
@@ -128,16 +128,24 @@ export function MarketChart({ marketData, ipoName }: MarketChartProps) {
             </CardHeader>
             <CardContent>
                 <ResponsiveContainer width="100%" height={250}>
-                    <LineChart data={chartData}>
+                    <LineChart data={chartData} margin={{ top: 10, right: 10, left: 0, bottom: 5 }}>
+                        <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="hsl(var(--border) / 0.4)" />
                         <XAxis
                             dataKey="time"
-                            tick={{ fontSize: 10 }}
-                            stroke="#94a3b8"
+                            tick={{ fontSize: 10, fill: '#94a3b8' }}
+                            tickLine={false}
+                            axisLine={false}
+                            interval="preserveStartEnd"
+                            minTickGap={40}
+                            padding={{ left: 10, right: 10 }}
                         />
                         <YAxis
-                            tick={{ fontSize: 10 }}
-                            stroke="#94a3b8"
+                            tick={{ fontSize: 10, fill: '#94a3b8' }}
+                            tickLine={false}
+                            axisLine={false}
                             domain={["dataMin - 5", "dataMax + 5"]}
+                            width={45}
+                            tickCount={6}
                         />
                         <Tooltip
                             contentStyle={{

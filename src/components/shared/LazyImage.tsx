@@ -1,11 +1,15 @@
-import { useState, useRef, useEffect } from "react";
+import { useState } from "react";
 import { cn } from "@/lib/utils";
+import Image from "next/image";
 
-interface LazyImageProps extends React.ImgHTMLAttributes<HTMLImageElement> {
+interface LazyImageProps extends Omit<React.ImgHTMLAttributes<HTMLImageElement>, 'src' | 'alt' | 'width' | 'height'> {
   src: string;
   alt: string;
   fallback?: string;
   aspectRatio?: string;
+  width?: number;
+  height?: number;
+  priority?: boolean;
 }
 
 export function LazyImage({
@@ -14,33 +18,13 @@ export function LazyImage({
   fallback = "/placeholder.svg",
   aspectRatio,
   className,
+  width,
+  height,
+  priority = false,
   ...props
 }: LazyImageProps) {
   const [isLoaded, setIsLoaded] = useState(false);
-  const [isInView, setIsInView] = useState(false);
   const [hasError, setHasError] = useState(false);
-  const imgRef = useRef<HTMLImageElement>(null);
-
-  useEffect(() => {
-    if (!imgRef.current) return;
-
-    const observer = new IntersectionObserver(
-      ([entry]) => {
-        if (entry.isIntersecting) {
-          setIsInView(true);
-          observer.disconnect();
-        }
-      },
-      {
-        rootMargin: "100px",
-        threshold: 0,
-      }
-    );
-
-    observer.observe(imgRef.current);
-
-    return () => observer.disconnect();
-  }, []);
 
   const handleLoad = () => {
     setIsLoaded(true);
@@ -50,33 +34,37 @@ export function LazyImage({
     setHasError(true);
   };
 
+  const imageSrc = hasError ? fallback : src;
+  const isFill = !width && !height;
+
   return (
     <div
-      ref={imgRef as any}
       className={cn("relative overflow-hidden bg-muted", className)}
       style={aspectRatio ? { aspectRatio } : undefined}
     >
       {/* Placeholder/skeleton */}
       {!isLoaded && (
-        <div className="absolute inset-0 animate-pulse bg-muted" />
+        <div className="absolute inset-0 animate-pulse bg-muted z-10" />
       )}
 
       {/* Actual image */}
-      {isInView && (
-        <img
-          src={hasError ? fallback : src}
-          alt={alt}
-          onLoad={handleLoad}
-          onError={handleError}
-          loading="lazy"
-          decoding="async"
-          className={cn(
-            "w-full h-full object-cover transition-opacity duration-300",
-            isLoaded ? "opacity-100" : "opacity-0"
-          )}
-          {...props}
-        />
-      )}
+      <Image
+        src={imageSrc}
+        alt={alt}
+        onLoad={handleLoad}
+        onError={handleError}
+        priority={priority}
+        width={width}
+        height={height}
+        fill={isFill}
+        className={cn(
+          "transition-opacity duration-300",
+          isFill ? "object-cover" : "",
+          isLoaded ? "opacity-100" : "opacity-0"
+        )}
+        sizes={isFill ? "(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw" : undefined}
+        {...(props as any)}
+      />
     </div>
   );
 }

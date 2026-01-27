@@ -158,8 +158,8 @@ export default function IPOAllotmentCheckerPage({ initialData }: IPOAllotmentChe
     }
     : initialRegistrarPortal;
 
-  const pageTitle = `${ipoName} IPO Allotment Status Out: Check Direct Link Online Now`;
-  const pageDescription = `Is the ${ipoName} IPO allotment out? Check your status instantly via PAN, Application Number, or DP ID. Use this direct link to the ${registrarPortal.name} portal for official results.`;
+  const pageTitle = `${ipoName} Allotment Status Out: Check Direct Link Online Now`;
+  const pageDescription = `Is the ${ipoName} allotment out? Check your status instantly via PAN, Application Number, or DP ID. Use this direct link to the ${registrarPortal.name} portal for official results.`;
 
   // FAQ data
   const faqs = [
@@ -289,10 +289,10 @@ export default function IPOAllotmentCheckerPage({ initialData }: IPOAllotmentChe
               )}
             </div>
             <h1 className="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-bold mb-3">
-              {ipoName} IPO Allotment Status: Check Online & Direct Links
+              {ipoName} Allotment Status: Check Online & Direct Links
             </h1>
             <p className="text-muted-foreground text-sm sm:text-base leading-relaxed">
-              Check your {companyName} IPO allotment status online using PAN, Application Number, or Demat Account.
+              Check your {companyName} allotment status online using PAN, Application Number, or Demat Account.
               This step-by-step guide will help you verify if you received shares in the {ipoName}.
             </p>
           </header>

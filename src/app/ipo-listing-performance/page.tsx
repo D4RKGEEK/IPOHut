@@ -9,7 +9,21 @@ export const revalidate = 25200;
 export async function generateMetadata(): Promise<Metadata> {
     const settings = getAdminSettings();
     const { title, description } = settings.pages.performance;
-    return { title, description };
+    const url = "https://ipohut.com/ipo-listing-performance";
+
+    return {
+        title,
+        description,
+        alternates: {
+            canonical: url,
+        },
+        openGraph: {
+            title,
+            description,
+            url,
+            type: "website",
+        }
+    };
 }
 
 export default async function PerformanceTracker() {

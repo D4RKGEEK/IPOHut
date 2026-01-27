@@ -1,5 +1,20 @@
 import CompareIPOPage from "@/views/tools/CompareIPOPage";
 import { fetchCalendar } from "@/lib/api";
+import { Metadata } from "next";
+
+export const metadata: Metadata = {
+    title: "Compare IPOs | Performance & Metric Comparison",
+    description: "Compare multiple IPOs side-by-side. Analyze price bands, GMP, subscription status, and listing performance to make informed decisions.",
+    alternates: {
+        canonical: "https://ipohut.com/tools/compare",
+    },
+    openGraph: {
+        title: "Compare IPOs | Performance & Metric Comparison",
+        description: "Compare multiple IPOs side-by-side. Analyze price bands, GMP, subscription status, and listing performance to make informed decisions.",
+        url: "https://ipohut.com/tools/compare",
+        type: "website",
+    }
+};
 
 // 3 Hour Revalidation
 export const revalidate = 25200;

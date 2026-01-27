@@ -3,13 +3,27 @@ import { fetchStatus } from "@/lib/api";
 import { getAdminSettings } from "@/lib/server-config";
 import { Metadata } from "next";
 
-// 3 Hour Revalidation
-export const revalidate = 10800;
+// 7 Hour Revalidation
+export const revalidate = 25200;
 
 export async function generateMetadata(): Promise<Metadata> {
     const settings = getAdminSettings();
     const { title, description } = settings.pages.sme;
-    return { title, description };
+    const url = "https://ipohut.com/sme-ipo";
+
+    return {
+        title,
+        description,
+        alternates: {
+            canonical: url,
+        },
+        openGraph: {
+            title,
+            description,
+            url,
+            type: "website",
+        }
+    };
 }
 
 export default async function SMEIPO() {

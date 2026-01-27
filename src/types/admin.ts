@@ -226,6 +226,7 @@ export interface PageSettings {
   calendar: PageSeoSettings;
   performance: PageSeoSettings;
   statistics: PageSeoSettings;
+  tools: PageSeoSettings;
 }
 
 export interface AdminSettings {
@@ -490,6 +491,12 @@ export const defaultAdminSettings: AdminSettings = {
       description: "Comprehensive statistics of Indian IPO market. Track year-wise trends, sector-wise performance, and success rates.",
       h1: "IPO Statistics",
       subheading: "Historical trends and sector performance",
+    },
+    tools: {
+      title: "IPO Tools & Calculators | GMP & Profit Calculators",
+      description: "Professional IPO investment tools. Calculate GMP, listing gains, and investment returns with our easy-to-use calculators.",
+      h1: "IPO Tools & Calculators",
+      subheading: "Calculate your IPO potential results",
     },
   },
   updatedAt: new Date().toISOString(),

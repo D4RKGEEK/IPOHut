@@ -1,5 +1,20 @@
 import InvestmentCalculatorPage from "@/views/tools/InvestmentCalculatorPage";
 import { fetchCalendar } from "@/lib/api";
+import { Metadata } from "next";
+
+export const metadata: Metadata = {
+    title: "IPO Investment Calculator | Calculate Application Value",
+    description: "Calculate your total IPO investment amount based on lot size and price band. Plan your applications across different categories.",
+    alternates: {
+        canonical: "https://ipohut.com/tools/investment-calculator",
+    },
+    openGraph: {
+        title: "IPO Investment Calculator | Calculate Application Value",
+        description: "Calculate your total IPO investment amount based on lot size and price band. Plan your applications across different categories.",
+        url: "https://ipohut.com/tools/investment-calculator",
+        type: "website",
+    }
+};
 
 // 3 Hour Revalidation
 export const revalidate = 25200;

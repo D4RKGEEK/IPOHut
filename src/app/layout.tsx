@@ -11,22 +11,31 @@ import Script from "next/script";
 export async function generateMetadata(): Promise<Metadata> {
     const settings = getAdminSettings();
     const site = settings.site;
+    const siteName = site.branding.siteName;
+    const defaultImage = site.defaultSeo.ogImage || "/og-image.png";
 
     return {
+        metadataBase: new URL('https://ipohut.com'),
         title: {
-            default: site.branding.siteName,
+            default: siteName,
             template: `%s${site.defaultSeo.titleSuffix}`,
         },
         description: site.defaultSeo.defaultDescription,
-        // keywords: site.defaultSeo.defaultKeywords, // Type might be missing, checking later
         openGraph: {
             title: {
-                default: site.branding.siteName,
+                default: siteName,
                 template: `%s${site.defaultSeo.titleSuffix}`,
             },
             description: site.defaultSeo.defaultDescription,
-            siteName: site.branding.siteName,
-            images: site.defaultSeo.ogImage ? [site.defaultSeo.ogImage] : [],
+            siteName: siteName,
+            images: [
+                {
+                    url: defaultImage,
+                    width: 1200,
+                    height: 630,
+                    alt: siteName,
+                }
+            ],
             type: "website",
         },
         icons: {
@@ -37,12 +46,13 @@ export async function generateMetadata(): Promise<Metadata> {
         twitter: {
             card: "summary_large_image",
             title: {
-                default: site.branding.siteName,
+                default: siteName,
                 template: `%s${site.defaultSeo.titleSuffix}`,
             },
             description: site.defaultSeo.defaultDescription,
             site: site.defaultSeo.twitterHandle,
             creator: site.defaultSeo.twitterHandle,
+            images: [defaultImage],
         },
     };
 }

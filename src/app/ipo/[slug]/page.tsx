@@ -41,62 +41,38 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
         const basicInfo = ipo.basic_info;
         const gmpData = ipo.gmp_data;
         const timeline = ipo.ipo_timeline;
-        const subscription = ipo.subscription_status;
+        const logo = ipo.logo_about?.logo || "";
+        const ipoName = basicInfo["IPO Name"] || slug;
 
-        // Parse issue price with fallback to price band
-        const getIssuePrice = (): number => {
-            const issuePriceStr = basicInfo["Issue Price"];
-            if (issuePriceStr) {
-                const price = parseFloat(issuePriceStr.replace(/[^\d.]/g, ""));
-                if (price > 0) return price;
-            }
+        // SEO content extraction
+        const priceBand = basicInfo["Price Band"] || "TBA";
+        const lotSize = basicInfo["Lot Size"] || "TBA";
+        const gmpValue = gmpData?.current_gmp ?? "TBA";
+        const url = `https://ipohut.com/ipo/${slug}`;
 
-            // Fallback to extracting upper price from Price Band
-            const priceBand = basicInfo["Price Band"];
-            if (priceBand) {
-                const matches = priceBand.match(/(\d+)\s*to\s*(\d+)/i);
-                if (matches && matches[2]) {
-                    return parseFloat(matches[2]);
-                }
-                const numbers = priceBand.match(/\d+/g);
-                if (numbers && numbers.length > 0) {
-                    return parseFloat(numbers[numbers.length - 1]);
-                }
-            }
-
-            return 0;
-        };
-
-        const issuePrice = getIssuePrice();
-
-        // Fetch dynamic admin settings
-        const settings = await getAdminSettings();
-        const pageSettings = settings.pages.ipoDetail;
-
-        const templateVars = {
-            ipo_name: basicInfo["IPO Name"] || slug,
-            company_name: basicInfo["IPO Name"] || slug,
-            gmp_value: gmpData?.current_gmp ?? 0,
-            gmp_percent: gmpData?.current_gmp && issuePrice ? ((gmpData.current_gmp / issuePrice) * 100).toFixed(2) : "0",
-            listing_date: timeline["Tentative Listing Date"] || "TBA",
-            open_date: timeline["IPO Open Date"] || "",
-            close_date: timeline["IPO Close Date"] || "",
-            issue_price: issuePrice,
-            subscription_times: subscription?.SubscriptionTable?.[0]?.subscription_times ?? 0,
-        };
-
-        const title = applyTemplate(pageSettings.titleTemplate, templateVars);
-        const description = applyTemplate(pageSettings.descriptionTemplate, templateVars);
+        const title = `${ipoName} Details: Price, GMP Today, Review & Analysis`;
+        const description = `Get the latest ${ipoName} details: Price Band ${priceBand}, Lot Size ${lotSize}. Should you subscribe? Read our deep-dive review, listing gains potential, and key dates.`;
 
         return {
             title,
             description,
+            alternates: {
+                canonical: url,
+            },
             openGraph: {
                 title,
                 description,
+                url,
                 type: "article",
-                images: ipo.logo_about?.logo ? [ipo.logo_about.logo] : [],
+                images: logo ? [logo] : [],
             },
+            twitter: {
+                card: "summary_large_image",
+                title,
+                description,
+                images: logo ? [logo] : [],
+            },
+            keywords: [`${ipoName} IPO`, `${ipoName} GMP`, `${ipoName} Price Band`, `${ipoName} Review`, `${ipoName} Analysis`, `IPO Hut`],
         };
     } catch (error) {
         return {

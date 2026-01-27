@@ -9,10 +9,20 @@ export const revalidate = 25200;
 export async function generateMetadata(): Promise<Metadata> {
     const settings = getAdminSettings();
     const { title, description } = settings.pages.home;
+    const url = "https://ipohut.com";
 
     return {
         title: title || "IPOHut - Latest IPO GMP & Status",
         description: description || "Track latest IPO GMP, Subscription Status, and Allotment.",
+        alternates: {
+            canonical: url,
+        },
+        openGraph: {
+            title: title,
+            description: description,
+            url: url,
+            type: "website",
+        }
     };
 }
 

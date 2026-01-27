@@ -3,13 +3,35 @@ import { fetchStatus } from "@/lib/api";
 import { getAdminSettings } from "@/lib/server-config";
 import { Metadata } from "next";
 
-// 3 Hour Revalidation
-export const revalidate = 10800;
+// 7 Hour Revalidation
+export const revalidate = 25200;
 
 export async function generateMetadata(): Promise<Metadata> {
     const settings = getAdminSettings();
     const { title, description } = settings.pages.allotmentStatus;
-    return { title, description };
+    const url = "https://ipohut.com/ipo-allotment-status";
+
+    return {
+        title,
+        description,
+        alternates: {
+            canonical: url,
+        },
+        openGraph: {
+            title,
+            description,
+            url,
+            type: "website",
+            images: [
+                {
+                    url: "/og-image.png",
+                    width: 1200,
+                    height: 630,
+                    alt: title,
+                }
+            ],
+        }
+    };
 }
 
 export default async function AllotmentStatus() {

@@ -9,7 +9,21 @@ export const revalidate = 25200;
 export async function generateMetadata(): Promise<Metadata> {
     const settings = getAdminSettings();
     const { title, description } = settings.pages.calendar;
-    return { title, description };
+    const url = "https://ipohut.com/ipo-calendar";
+
+    return {
+        title,
+        description,
+        alternates: {
+            canonical: url,
+        },
+        openGraph: {
+            title,
+            description,
+            url,
+            type: "website",
+        }
+    };
 }
 
 export default async function IPOCalendar() {

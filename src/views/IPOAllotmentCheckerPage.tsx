@@ -158,8 +158,8 @@ export default function IPOAllotmentCheckerPage({ initialData }: IPOAllotmentChe
     }
     : initialRegistrarPortal;
 
-  const pageTitle = `${ipoName} Allotment Status - Check ${companyName} IPO Allotment`;
-  const pageDescription = `Check ${ipoName} allotment status online. Step-by-step guide to check ${companyName} IPO allotment using PAN, Application Number, or Demat Account. Allotment date: ${allotmentDate}.`;
+  const pageTitle = `${ipoName} IPO Allotment Status Out: Check Direct Link Online Now`;
+  const pageDescription = `Is the ${ipoName} IPO allotment out? Check your status instantly via PAN, Application Number, or DP ID. Use this direct link to the ${registrarPortal.name} portal for official results.`;
 
   // FAQ data
   const faqs = [
@@ -256,12 +256,14 @@ export default function IPOAllotmentCheckerPage({ initialData }: IPOAllotmentChe
       <Helmet>
         <title>{pageTitle}</title>
         <meta name="description" content={pageDescription} />
-        <meta name="keywords" content={`${companyName} IPO allotment, ${ipoName} allotment status, ${companyName} IPO allotment check, ${ipoName} allotment checker, check ${companyName} IPO allotment online`} />
+        <meta name="keywords" content={`${ipoName} IPO allotment, ${ipoName} allotment status, ${ipoName} allotment checker, check ${companyName} IPO allotment online, IPO Hut`} />
         <link rel="canonical" href={`https://ipohut.com/ipo/${slug}/allotment`} />
-        <script type="application/ld+json">{JSON.stringify(faqStructuredData)}</script>
-        <script type="application/ld+json">{JSON.stringify(howToStructuredData)}</script>
-        <script type="application/ld+json">{JSON.stringify(breadcrumbStructuredData)}</script>
       </Helmet>
+
+      {/* Structured Data (Moved out of Helmet for better SSR visibility) */}
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(faqStructuredData) }} />
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(howToStructuredData) }} />
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbStructuredData) }} />
 
       <MainLayout>
         <article className="container px-2 sm:px-4 md:px-6 py-4 md:py-8 max-w-4xl mx-auto">
@@ -287,7 +289,7 @@ export default function IPOAllotmentCheckerPage({ initialData }: IPOAllotmentChe
               )}
             </div>
             <h1 className="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-bold mb-3">
-              {ipoName} Allotment Status - Check Online
+              {ipoName} IPO Allotment Status: Check Online & Direct Links
             </h1>
             <p className="text-muted-foreground text-sm sm:text-base leading-relaxed">
               Check your {companyName} IPO allotment status online using PAN, Application Number, or Demat Account.

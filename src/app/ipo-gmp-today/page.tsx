@@ -9,7 +9,21 @@ export const revalidate = 25200;
 export async function generateMetadata(): Promise<Metadata> {
     const settings = getAdminSettings();
     const { title, description } = settings.pages.gmpTracker;
-    return { title, description };
+    const url = "https://ipohut.com/ipo-gmp-today";
+
+    return {
+        title,
+        description,
+        alternates: {
+            canonical: url,
+        },
+        openGraph: {
+            title,
+            description,
+            url,
+            type: "website",
+        }
+    };
 }
 
 async function getGMPData(): Promise<IPOGMPResponse> {

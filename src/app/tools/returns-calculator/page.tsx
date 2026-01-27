@@ -1,5 +1,20 @@
 import ReturnsCalculatorPage from "@/views/tools/ReturnsCalculatorPage";
 import { fetchCalendar } from "@/lib/api";
+import { Metadata } from "next";
+
+export const metadata: Metadata = {
+    title: "IPO Returns Calculator | Estimated Profit & Gain",
+    description: "Estimate your potential IPO returns and listing gains based on current GMP and expected listing price.",
+    alternates: {
+        canonical: "https://ipohut.com/tools/returns-calculator",
+    },
+    openGraph: {
+        title: "IPO Returns Calculator | Estimated Profit & Gain",
+        description: "Estimate your potential IPO returns and listing gains based on current GMP and expected listing price.",
+        url: "https://ipohut.com/tools/returns-calculator",
+        type: "website",
+    }
+};
 
 // 3 Hour Revalidation
 export const revalidate = 25200;

@@ -324,6 +324,16 @@ export default function IPODetailPage({ initialData }: IPODetailPageProps) {
     ],
   };
 
+  const breadcrumbStructuredData = {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    "itemListElement": [
+      { "@type": "ListItem", "position": 1, "name": "Home", "item": "https://ipohut.com" },
+      { "@type": "ListItem", "position": 2, "name": ipo.ipo_type === "sme" ? "SME IPO" : "Mainboard IPO", "item": `https://ipohut.com/${ipo.ipo_type}-ipo` },
+      { "@type": "ListItem", "position": 3, "name": basicInfo["IPO Name"], "item": `https://ipohut.com/ipo/${slug}` }
+    ]
+  };
+
   // Sort widgets
   const sortedAboveFoldWidgets = [...detailConfig.aboveFoldWidgets]
     .filter(w => w.enabled)
@@ -485,6 +495,7 @@ export default function IPODetailPage({ initialData }: IPODetailPageProps) {
       {/* JSON-LD - Injected in Body for now, or use next/script if needed, but plain script works */}
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }} />
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(faqStructuredData) }} />
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbStructuredData) }} />
     </>
   );
 }

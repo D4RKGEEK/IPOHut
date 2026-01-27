@@ -3,8 +3,8 @@ import { fetchGains, fetchCalendar } from "@/lib/api";
 import { getAdminSettings } from "@/lib/server-config";
 import { Metadata } from "next";
 
-// 12 Hour Revalidation for stats
-export const revalidate = 43200;
+// 7 Hour Revalidation
+export const revalidate = 25200;
 
 export async function generateMetadata(): Promise<Metadata> {
     const settings = getAdminSettings();
@@ -12,9 +12,20 @@ export async function generateMetadata(): Promise<Metadata> {
         title: "IPO Statistics",
         description: "IPO Statistics and Analysis"
     };
+    const url = "https://ipohut.com/ipo-statistics";
+
     return {
         title: stats.title,
-        description: stats.description
+        description: stats.description,
+        alternates: {
+            canonical: url,
+        },
+        openGraph: {
+            title: stats.title,
+            description: stats.description,
+            url: url,
+            type: "website",
+        }
     };
 }
 

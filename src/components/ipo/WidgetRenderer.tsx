@@ -5,14 +5,6 @@ import { IPOTimeline, GMPCalculator } from "@/components/shared";
 import {
   IPOVitalStats,
   IPOGMPWidget,
-  LotSizeTable,
-  ReservationTable,
-  PromoterHolding,
-  ObjectivesList,
-  LeadManagersList,
-  KeyMetrics,
-  SubscriptionTable,
-  AboutCompany,
 } from "@/components/ipo";
 
 const MarketCandlesChart = dynamic(() => import("./MarketCandlesChart").then(mod => mod.MarketCandlesChart), {
@@ -31,6 +23,46 @@ const AIInsightsWidget = dynamic(() => import("./AIInsightsWidget").then(mod => 
 });
 
 const IPOFAQSection = dynamic(() => import("./IPOFAQSection").then(mod => mod.IPOFAQSection), {
+  ssr: false,
+  loading: () => <div className="h-48 w-full bg-muted animate-pulse rounded-xl" />
+});
+
+const LotSizeTable = dynamic(() => import("./LotSizeTable").then(mod => mod.LotSizeTable), {
+  ssr: false,
+  loading: () => <div className="h-48 w-full bg-muted animate-pulse rounded-xl" />
+});
+
+const ReservationTable = dynamic(() => import("./ReservationTable").then(mod => mod.ReservationTable), {
+  ssr: false,
+  loading: () => <div className="h-48 w-full bg-muted animate-pulse rounded-xl" />
+});
+
+const PromoterHolding = dynamic(() => import("./PromoterHolding").then(mod => mod.PromoterHolding), {
+  ssr: false,
+  loading: () => <div className="h-48 w-full bg-muted animate-pulse rounded-xl" />
+});
+
+const ObjectivesList = dynamic(() => import("./ObjectivesList").then(mod => mod.ObjectivesList), {
+  ssr: false,
+  loading: () => <div className="h-32 w-full bg-muted animate-pulse rounded-xl" />
+});
+
+const LeadManagersList = dynamic(() => import("./LeadManagersList").then(mod => mod.LeadManagersList), {
+  ssr: false,
+  loading: () => <div className="h-32 w-full bg-muted animate-pulse rounded-xl" />
+});
+
+const KeyMetrics = dynamic(() => import("./KeyMetrics").then(mod => mod.KeyMetrics), {
+  ssr: false,
+  loading: () => <div className="h-48 w-full bg-muted animate-pulse rounded-xl" />
+});
+
+const SubscriptionTable = dynamic(() => import("./SubscriptionTable").then(mod => mod.SubscriptionTable), {
+  ssr: false,
+  loading: () => <div className="h-48 w-full bg-muted animate-pulse rounded-xl" />
+});
+
+const AboutCompany = dynamic(() => import("./AboutCompany").then(mod => mod.AboutCompany), {
   ssr: false,
   loading: () => <div className="h-48 w-full bg-muted animate-pulse rounded-xl" />
 });

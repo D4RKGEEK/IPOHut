@@ -1,7 +1,5 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-
-import { Helmet } from "react-helmet-async";
 import {
   Breadcrumb,
   BreadcrumbItem,
@@ -65,12 +63,10 @@ export function BreadcrumbNav({ items, className }: BreadcrumbNavProps) {
 
   return (
     <>
-      <Helmet>
-        <script type="application/ld+json">
-          {JSON.stringify(breadcrumbSchema)}
-        </script>
-      </Helmet>
-
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbSchema) }}
+      />
       <Breadcrumb className={className}>
         <BreadcrumbList>
           <BreadcrumbItem>

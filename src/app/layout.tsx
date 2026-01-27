@@ -66,6 +66,11 @@ export default function RootLayout({
 
     return (
         <html lang="en" suppressHydrationWarning>
+            <head>
+                <link rel="preconnect" href="https://ipo-api-production.up.railway.app" />
+                <link rel="preconnect" href="https://i.ibb.co" />
+                <link rel="dns-prefetch" href="https://ipo-api-production.up.railway.app" />
+            </head>
             <body className={inter.className}>
                 {settings.site.scripts.headerScripts && (
                     <Script
@@ -75,12 +80,12 @@ export default function RootLayout({
                     />
                 )}
 
-                {/* Google Analytics */}
+                {/* Google Analytics - Loaded after idle to improve PageSpeed */}
                 <Script
                     src={`https://www.googletagmanager.com/gtag/js?id=${settings.site.analytics.googleAnalyticsId || 'G-4NKZT0DTZX'}`}
-                    strategy="afterInteractive"
+                    strategy="lazyOnload"
                 />
-                <Script id="google-analytics" strategy="afterInteractive">
+                <Script id="google-analytics" strategy="lazyOnload">
                     {`
                         window.dataLayer = window.dataLayer || [];
                         function gtag(){dataLayer.push(arguments);}

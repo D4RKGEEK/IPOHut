@@ -39,9 +39,9 @@ export async function generateMetadata(): Promise<Metadata> {
             type: "website",
         },
         icons: {
-            icon: site.branding.logoUrl || "/favicon.ico",
-            apple: site.branding.logoUrl || "/favicon.ico",
-            shortcut: site.branding.logoUrl || "/favicon.ico",
+            icon: site.branding.logoUrl || "/favicon.svg",
+            apple: site.branding.logoUrl || "/favicon.svg",
+            shortcut: site.branding.logoUrl || "/favicon.svg",
         },
         twitter: {
             card: "summary_large_image",

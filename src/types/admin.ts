@@ -469,9 +469,9 @@ export const defaultAdminSettings: AdminSettings = {
       subheading: "Live Grey Market Premium with profit calculator",
     },
     allotmentStatus: {
-      title: "IPO Allotment Status | Check Your Allotment",
-      description: "Check IPO allotment status for recently closed IPOs. Direct links to registrar websites for allotment verification.",
-      h1: "IPO Allotment Status",
+      title: "IPO Allotment Status: Check Direct Links Online Now",
+      description: "Check IPO allotment status for all recently closed IPOs. Get results via PAN, App No, or DP ID. Direct links to Kfintech, Linkintime, and Bigshare official portals.",
+      h1: "IPO Allotment Status Today: Check Online & Direct Links",
       subheading: "Check your allotment on registrar websites",
     },
     calendar: {

@@ -2,7 +2,6 @@
 
 import { useParams } from "next/navigation";
 import Link from "next/link";
-import { Helmet } from "react-helmet-async";
 import { MainLayout } from "@/components/layout";
 import { useIPODetail } from "@/hooks/useIPO";
 import { StatusBadge, TypeBadge } from "@/components/shared";
@@ -158,8 +157,8 @@ export default function IPOAllotmentCheckerPage({ initialData }: IPOAllotmentChe
     }
     : initialRegistrarPortal;
 
-  const pageTitle = `${ipoName} Allotment Status Out: Check Direct Link Online Now`;
-  const pageDescription = `Is the ${ipoName} allotment out? Check your status instantly via PAN, Application Number, or DP ID. Use this direct link to the ${registrarPortal.name} portal for official results.`;
+  const pageTitle = `${ipoName} Allotment Status: Check Direct Link`;
+  const pageDescription = `Check ${ipoName} allotment status instantly. Use our direct link for ${registrarPortal.name} portal to verify your application via PAN, App No, or DP ID.`;
 
   // FAQ data
   const faqs = [
@@ -253,14 +252,6 @@ export default function IPOAllotmentCheckerPage({ initialData }: IPOAllotmentChe
 
   return (
     <>
-      <Helmet>
-        <title>{pageTitle}</title>
-        <meta name="description" content={pageDescription} />
-        <meta name="keywords" content={`${ipoName} IPO allotment, ${ipoName} allotment status, ${ipoName} allotment checker, check ${companyName} IPO allotment online, IPO Hut`} />
-        <link rel="canonical" href={`https://ipohut.com/ipo/${slug}/allotment`} />
-      </Helmet>
-
-      {/* Structured Data (Moved out of Helmet for better SSR visibility) */}
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(faqStructuredData) }} />
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(howToStructuredData) }} />
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbStructuredData) }} />

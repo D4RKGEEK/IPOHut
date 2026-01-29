@@ -22,7 +22,15 @@ export async function generateMetadata(): Promise<Metadata> {
             description: description,
             url: url,
             type: "website",
-        }
+            images: [
+                {
+                    url: settings.site.defaultSeo.ogImage || "/og-image.png",
+                    width: 1200,
+                    height: 630,
+                    alt: settings.site.branding.siteName,
+                }
+            ],
+        },
     };
 }
 
@@ -36,6 +44,9 @@ export default async function Home() {
         fetchNews({ limit: 20 }),
     ]);
 
+    const settings = getAdminSettings();
+    const pageSettings = settings.pages.home;
+
     const initialData = {
         openIPOs,
         upcomingIPOs,
@@ -45,5 +56,36 @@ export default async function Home() {
         newsData
     };
 
-    return <HomePage initialData={initialData} />;
+    const structuredData = {
+        "@context": "https://schema.org",
+        "@type": "WebSite",
+        "name": settings.site.branding.siteName,
+        "url": "https://ipohut.com",
+        "description": pageSettings.description,
+        "potentialAction": {
+            "@type": "SearchAction",
+            "target": "https://ipohut.com/search?q={search_term_string}",
+            "query-input": "required name=search_term_string"
+        }
+    };
+
+    const orgSchema = {
+        "@context": "https://schema.org",
+        "@type": "Organization",
+        "name": settings.site.branding.siteName,
+        "url": "https://ipohut.com",
+        "logo": "https://ipohut.com/logo.png"
+    };
+
+    return (
+        <>
+            <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }} />
+            <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(orgSchema) }} />
+            {/* Visually hidden H1 for crawlers if they miss the client-side one, or just the main one */}
+            <div style={{ display: 'none' }}>
+                <h1>{pageSettings.h1}</h1>
+            </div>
+            <HomePage initialData={initialData} />
+        </>
+    );
 }

@@ -14,4 +14,5 @@ export { MarketChart } from "./MarketChart";
 export { MarketCandlesChart } from "./MarketCandlesChart";
 export { AIInsightsWidget } from "./AIInsightsWidget";
 export { IPOFAQSection } from "./IPOFAQSection";
+export { RelatedIPOs } from "./RelatedIPOs";
 export { WidgetRenderer, WidgetList } from "./WidgetRenderer";

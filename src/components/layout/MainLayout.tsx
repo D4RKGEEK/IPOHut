@@ -1,3 +1,4 @@
+"use client";
 import { Header } from "./Header";
 import { Footer } from "./Footer";
 import { useAdmin } from "@/contexts/AdminContext";

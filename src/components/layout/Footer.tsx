@@ -1,3 +1,4 @@
+"use client";
 import Link from "next/link";
 import { useAdmin } from "@/contexts/AdminContext";
 import { Twitter, Facebook, Linkedin, Youtube, Send, TrendingUp, ArrowUpRight } from "lucide-react";

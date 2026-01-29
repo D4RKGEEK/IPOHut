@@ -13,18 +13,19 @@ import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { FileCheck } from "lucide-react";
 import { analytics, useScrollTracking, useTimeOnPage } from "@/hooks/useAnalytics";
-import { PDFDownloadButton, WidgetRenderer } from "@/components/ipo";
+import { PDFDownloadButton, WidgetRenderer, RelatedIPOs } from "@/components/ipo";
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
 import { useMemo } from "react";
 import Image from "next/image";
 
-import { IPODetail } from "@/types/ipo";
+import { IPODetail, IPOStatus } from "@/types/ipo";
 
 interface IPODetailPageProps {
   initialData?: IPODetail;
+  relatedIpos?: IPOStatus[];
 }
 
-export default function IPODetailPage({ initialData }: IPODetailPageProps) {
+export default function IPODetailPage({ initialData, relatedIpos = [] }: IPODetailPageProps) {
   const params = useParams();
   const slug = params?.slug as string;
   const { settings } = useAdmin();
@@ -478,11 +479,29 @@ export default function IPODetailPage({ initialData }: IPODetailPageProps) {
                   })}
                 </Tabs>
               )}
+
+              {/* Mobile Only Related IPOs */}
+              <div className="lg:hidden space-y-6 mt-8">
+                {Array.isArray(relatedIpos) && relatedIpos.length > 0 && (
+                  <RelatedIPOs
+                    relatedIpos={relatedIpos}
+                    title={`Other ${String(ipo.ipo_type) === 'sme' ? 'SME' : 'Mainboard'} IPOs`}
+                  />
+                )}
+              </div>
             </div>
 
             {/* Sidebar */}
             <div className="hidden lg:block lg:col-span-4 space-y-6">
               <div className="sticky top-24 space-y-6">
+                {/* Related IPOs Sidebar - Better SEO & Internal Linking */}
+                {Array.isArray(relatedIpos) && relatedIpos.length > 0 && (
+                  <RelatedIPOs
+                    relatedIpos={relatedIpos}
+                    title={`Other ${String(ipo.ipo_type) === 'sme' ? 'SME' : 'Mainboard'} IPOs`}
+                  />
+                )}
+
                 {sortedSidebarWidgets.map(widget => (
                   <WidgetRenderer key={widget.id} widgetId={widget.id} data={widgetData} />
                 ))}

@@ -22,6 +22,14 @@ export async function generateMetadata(): Promise<Metadata> {
             description,
             url,
             type: "website",
+            images: [
+                {
+                    url: settings.site.defaultSeo.ogImage || "/og-image.png",
+                    width: 1200,
+                    height: 630,
+                    alt: settings.site.branding.siteName,
+                }
+            ],
         }
     };
 }

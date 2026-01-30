@@ -74,9 +74,6 @@ export default async function SMEIPO() {
     return (
         <>
             <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(schema) }} />
-            <div style={{ display: 'none' }}>
-                <h1>{pageSettings.h1}</h1>
-            </div>
             <SMEIPOPage initialData={combinedData} />
         </>
     );

@@ -81,10 +81,6 @@ export default async function Home() {
         <>
             <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }} />
             <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(orgSchema) }} />
-            {/* Visually hidden H1 for crawlers if they miss the client-side one, or just the main one */}
-            <div style={{ display: 'none' }}>
-                <h1>{pageSettings.h1}</h1>
-            </div>
             <HomePage initialData={initialData} />
         </>
     );

@@ -30,12 +30,11 @@ export function Providers({ children, initialAdminSettings }: { children: React.
                     <AdminProvider initialSettings={initialAdminSettings}>
                         <TooltipProvider>
                             <Suspense fallback={null}>
-                                <AnalyticsProvider>
-                                    {children}
-                                    <Toaster />
-                                    <Sonner />
-                                </AnalyticsProvider>
+                                <AnalyticsProvider />
                             </Suspense>
+                            {children}
+                            <Toaster />
+                            <Sonner />
                         </TooltipProvider>
                     </AdminProvider>
                 </QueryClientProvider>

@@ -330,5 +330,10 @@ export interface IPOGMPListItem {
 }
 
 export interface IPOGMPResponse {
+  success: boolean;
   data: IPOGMPListItem[];
+  total?: number;
+  cache_last_updated?: string;
+  is_cached_response?: boolean;
+  server_timestamp?: string;
 }

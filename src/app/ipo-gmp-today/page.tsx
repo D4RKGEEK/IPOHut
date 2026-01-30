@@ -47,7 +47,7 @@ async function getGMPData(): Promise<IPOGMPResponse> {
         return res.json();
     } catch (error) {
         console.error("Error fetching GMP data:", error);
-        return { data: [] };
+        return { success: false, data: [] };
     }
 }
 

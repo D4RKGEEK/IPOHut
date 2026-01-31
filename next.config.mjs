@@ -11,6 +11,12 @@ const nextConfig = {
         port: '',
         pathname: '/**',
       },
+      {
+        protocol: 'https',
+        hostname: 'images.weserv.nl',
+        port: '',
+        pathname: '/**',
+      },
     ],
   },
 };

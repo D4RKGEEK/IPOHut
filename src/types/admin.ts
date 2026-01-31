@@ -190,6 +190,7 @@ export interface SiteSettings {
     defaultDescription: string;
     ogImage: string;
     twitterHandle: string;
+    useIpoLogoInSeo: boolean;
   };
   socialLinks: SocialLinks;
   contact: ContactInfo;
@@ -252,6 +253,7 @@ export const defaultAdminSettings: AdminSettings = {
       defaultDescription: "Track live IPO GMP, subscription status, allotment dates, and listing performance. Your complete guide to Indian IPO market.",
       ogImage: "",
       twitterHandle: "",
+      useIpoLogoInSeo: true,
     },
     socialLinks: {
       twitter: "",

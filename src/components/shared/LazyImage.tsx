@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { cn } from "@/lib/utils";
+import { cn, getOptimizedSrc } from "@/lib/utils";
 import Image from "next/image";
 
 interface LazyImageProps extends Omit<React.ImgHTMLAttributes<HTMLImageElement>, 'src' | 'alt' | 'width' | 'height'> {
@@ -34,7 +34,7 @@ export function LazyImage({
     setHasError(true);
   };
 
-  const imageSrc = hasError ? fallback : src;
+  const imageSrc = hasError ? fallback : getOptimizedSrc(src, width || 200, height);
   const isFill = !width && !height;
 
   return (

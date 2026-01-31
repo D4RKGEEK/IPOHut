@@ -69,6 +69,7 @@ export default function RootLayout({
             <head>
                 <link rel="preconnect" href="https://ipo-api-production.up.railway.app" />
                 <link rel="preconnect" href="https://i.ibb.co" />
+                <link rel="preconnect" href="https://images.weserv.nl" />
                 <link rel="dns-prefetch" href="https://ipo-api-production.up.railway.app" />
             </head>
             <body className={inter.className}>

@@ -14,6 +14,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { FileCheck } from "lucide-react";
 import { analytics, useScrollTracking, useTimeOnPage } from "@/hooks/useAnalytics";
 import { PDFDownloadButton, WidgetRenderer, RelatedIPOs } from "@/components/ipo";
+import { LazyImage } from "@/components/shared";
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
 import { useMemo } from "react";
 import Image from "next/image";
@@ -367,12 +368,12 @@ export default function IPODetailPage({ initialData, relatedIpos = [] }: IPODeta
               <div className="flex items-start gap-4">
                 {detailConfig.showLogo && ipo.logo_about?.logo && (
                   <div className="h-16 w-16 md:h-20 md:w-20 rounded-xl border bg-white p-2 shrink-0 shadow-sm flex items-center justify-center overflow-hidden">
-                    <Image
+                    <LazyImage
                       src={ipo.logo_about.logo}
                       alt={`${basicInfo["IPO Name"]} Logo`}
                       width={80}
                       height={80}
-                      className="max-h-full max-w-full object-contain"
+                      className="max-h-full max-w-full"
                       priority
                     />
                   </div>

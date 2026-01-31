@@ -1,7 +1,6 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { Helmet } from "react-helmet-async";
 import Link from "next/link";
 import { MainLayout } from "@/components/layout";
 import { IPOSelector, SelectedIPO } from "@/components/shared/IPOSelector";
@@ -78,13 +77,6 @@ export default function ReturnsCalculatorPage({ initialIPOList }: ReturnsCalcula
 
   return (
     <MainLayout>
-      <Helmet>
-        <title>IPO Returns Calculator - Calculate Listing Gains & Target Price | IPO Watch</title>
-        <meta
-          name="description"
-          content="Calculate IPO listing gains, current returns, and target prices. Select any IPO to auto-load its data and analyze potential returns."
-        />
-      </Helmet>
 
       <section className="border-b">
         <div className="container py-5 md:py-8">

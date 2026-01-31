@@ -2,6 +2,7 @@
 
 import Link, { LinkProps } from "next/link";
 import { useCallback, useRef } from "react";
+import { getOptimizedSrc } from "@/lib/utils";
 
 interface IPOLinkProps extends LinkProps {
     logoUrl?: string;
@@ -20,7 +21,7 @@ export function IPOLink({ logoUrl, children, className, ...props }: IPOLinkProps
     const handleMouseEnter = useCallback(() => {
         if (logoUrl && !preloaded.current) {
             const img = new Image();
-            img.src = logoUrl;
+            img.src = getOptimizedSrc(logoUrl, 200);
             preloaded.current = true;
         }
     }, [logoUrl]);

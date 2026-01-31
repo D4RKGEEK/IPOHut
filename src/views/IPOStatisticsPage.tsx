@@ -9,7 +9,6 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Skeleton } from "@/components/ui/skeleton";
 import { TrendingUp, TrendingDown, BarChart3, PieChart, Calendar, Building2, Factory, Briefcase, Heart, Cpu, Car, ShoppingBag } from "lucide-react";
 import { useScrollTracking, useTimeOnPage, trackEvent } from "@/hooks/useAnalytics";
-import { Helmet } from "react-helmet-async";
 import { cn } from "@/lib/utils";
 
 // Lazy load charts for code splitting
@@ -211,18 +210,16 @@ export default function IPOStatisticsPage({ initialData }: {
       title="IPO Statistics"
       description="Year-wise IPO statistics, performance trends, sector analysis, and historical data for Indian IPO market."
     >
-      <Helmet>
-        <script type="application/ld+json">
-          {JSON.stringify({
-            "@context": "https://schema.org",
-            "@type": "Dataset",
-            "name": "Indian IPO Statistics",
-            "description": "Comprehensive year-wise statistics and analysis of Indian IPO market including performance metrics, sector breakdown, and trends.",
-            "keywords": ["IPO", "Statistics", "India", "Stock Market", "Performance"],
-            "temporalCoverage": "2020/2025",
-          })}
-        </script>
-      </Helmet>
+      <script type="application/ld+json" dangerouslySetInnerHTML={{
+        __html: JSON.stringify({
+          "@context": "https://schema.org",
+          "@type": "Dataset",
+          "name": "Indian IPO Statistics",
+          "description": "Comprehensive year-wise statistics and analysis of Indian IPO market including performance metrics, sector breakdown, and trends.",
+          "keywords": ["IPO", "Statistics", "India", "Stock Market", "Performance"],
+          "temporalCoverage": "2020/2025",
+        })
+      }} />
 
       <div className="container py-4 md:py-6 space-y-4">
         <BreadcrumbNav items={[{ label: "IPO Statistics" }]} />

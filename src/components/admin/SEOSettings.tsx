@@ -4,6 +4,7 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
+import { Switch } from "@/components/ui/switch";
 
 const PAGE_LABELS: Record<string, string> = {
   home: "Home Page",
@@ -27,7 +28,7 @@ export function SEOSettings() {
           <CardTitle>Default SEO Settings</CardTitle>
           <CardDescription>Global SEO settings applied across the site</CardDescription>
         </CardHeader>
-        <CardContent className="space-y-4">
+        <CardContent className="space-y-6">
           <div className="space-y-2">
             <Label htmlFor="titleSuffix">Title Suffix</Label>
             <Input
@@ -67,6 +68,26 @@ export function SEOSettings() {
                 placeholder="@yourhandle"
               />
             </div>
+          </div>
+
+          <div className="flex items-center justify-between p-4 border rounded-lg bg-muted/30">
+            <div className="space-y-0.5">
+              <Label htmlFor="useIpoLogoInSeo">Use IPO Logo in SEO</Label>
+              <p className="text-xs text-muted-foreground">
+                When enabled, individual IPO logos are used for Open Graph and Twitter images.
+                When disabled, the site logo is used as a fallback.
+              </p>
+            </div>
+            <Switch
+              id="useIpoLogoInSeo"
+              checked={settings.site.defaultSeo.useIpoLogoInSeo !== false}
+              onCheckedChange={checked => updateSiteSettings({
+                defaultSeo: {
+                  ...settings.site.defaultSeo,
+                  useIpoLogoInSeo: checked
+                }
+              })}
+            />
           </div>
         </CardContent>
       </Card>

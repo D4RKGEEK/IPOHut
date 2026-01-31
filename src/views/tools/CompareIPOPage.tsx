@@ -1,7 +1,6 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { Helmet } from "react-helmet-async";
 import Link from "next/link";
 import { MainLayout } from "@/components/layout";
 import { IPOSelector, SelectedIPO } from "@/components/shared/IPOSelector";
@@ -88,13 +87,6 @@ export default function CompareIPOPage({ initialIPOList }: CompareIPOPageProps) 
 
   return (
     <MainLayout>
-      <Helmet>
-        <title>Compare IPOs - Side by Side IPO Comparison Tool | IPO Watch</title>
-        <meta
-          name="description"
-          content="Compare multiple IPOs side by side. Analyze issue price, GMP, subscription, returns and more to make better investment decisions."
-        />
-      </Helmet>
 
       <section className="border-b">
         <div className="container py-5 md:py-8">

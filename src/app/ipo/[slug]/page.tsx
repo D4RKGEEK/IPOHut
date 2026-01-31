@@ -55,9 +55,13 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
         const description = `Get ${ipoName} details: Price ${priceBand}, Lot ${lotSize} & GMP Today. Read our expert review, listing gain potential and key subscription dates.`;
 
         const settings = getAdminSettings();
-        const defaultImage = settings.site.defaultSeo.ogImage || "/og-image.png";
-        const images = logo ? [{ url: logo }] : [{
-            url: defaultImage,
+        const siteLogo = settings.site.branding.logoUrl || "/favicon.svg";
+        const defaultImage = settings.site.defaultSeo.ogImage || siteLogo;
+        const useIpoLogo = settings.site.defaultSeo.useIpoLogoInSeo !== false;
+
+        const logoUrl = (logo && useIpoLogo) ? logo : defaultImage;
+        const images = [{
+            url: logoUrl,
             width: 1200,
             height: 630,
             alt: settings.site.branding.siteName,
@@ -80,7 +84,7 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
                 card: "summary_large_image",
                 title,
                 description,
-                images: logo ? [logo] : [defaultImage],
+                images: (logo && useIpoLogo) ? [logo] : [defaultImage],
             },
             keywords: [`${ipoName} IPO`, `${ipoName} GMP`, `${ipoName} Price Band`, `${ipoName} Review`, `${ipoName} Analysis`, `IPO Hut`],
         };

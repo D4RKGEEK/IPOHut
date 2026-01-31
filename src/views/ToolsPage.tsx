@@ -1,6 +1,5 @@
 "use client";
 
-import { Helmet } from "react-helmet-async";
 import Link from "next/link";
 import { MainLayout } from "@/components/layout";
 import { BreadcrumbNav } from "@/components/shared";
@@ -54,13 +53,6 @@ export default function ToolsPage() {
   };
   return (
     <MainLayout>
-      <Helmet>
-        <title>IPO Tools & Calculators | IPO Watch</title>
-        <meta
-          name="description"
-          content="Free IPO calculators and tools - Investment calculator, IPO comparison tool, and return calculator. Select any IPO to auto-load data."
-        />
-      </Helmet>
 
       {/* Hero Section */}
       <section className="border-b">

@@ -7,7 +7,6 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { ThemeProvider } from "next-themes";
 import { AdminProvider } from "@/contexts/AdminContext";
 import { AnalyticsProvider } from "@/components/analytics/AnalyticsProvider";
-import { HelmetProvider } from "react-helmet-async";
 import { useState, Suspense } from "react";
 import { AdminSettings } from "@/types/admin";
 
@@ -24,21 +23,19 @@ export function Providers({ children, initialAdminSettings }: { children: React.
     }));
 
     return (
-        <HelmetProvider>
-            <ThemeProvider attribute="class" defaultTheme="light" enableSystem>
-                <QueryClientProvider client={queryClient}>
-                    <AdminProvider initialSettings={initialAdminSettings}>
-                        <TooltipProvider>
-                            <Suspense fallback={null}>
-                                <AnalyticsProvider />
-                            </Suspense>
-                            {children}
-                            <Toaster />
-                            <Sonner />
-                        </TooltipProvider>
-                    </AdminProvider>
-                </QueryClientProvider>
-            </ThemeProvider>
-        </HelmetProvider>
+        <ThemeProvider attribute="class" defaultTheme="light" enableSystem>
+            <QueryClientProvider client={queryClient}>
+                <AdminProvider initialSettings={initialAdminSettings}>
+                    <TooltipProvider>
+                        <Suspense fallback={null}>
+                            <AnalyticsProvider />
+                        </Suspense>
+                        {children}
+                        <Toaster />
+                        <Sonner />
+                    </TooltipProvider>
+                </AdminProvider>
+            </QueryClientProvider>
+        </ThemeProvider>
     );
 }

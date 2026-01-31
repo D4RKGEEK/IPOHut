@@ -1,3 +1,4 @@
+import { IPOLink } from "./IPOLink";
 import Link from "next/link";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -19,6 +20,7 @@ interface IPOGMPCardProps {
     subscription?: string | number;
     lotSize?: number | string;
     showGMP?: boolean;
+    logoUrl?: string;
 }
 
 export function IPOGMPCard({
@@ -34,7 +36,8 @@ export function IPOGMPCard({
     closeDate,
     subscription,
     lotSize,
-    showGMP = true
+    showGMP = true,
+    logoUrl
 }: IPOGMPCardProps) {
     const hasPrice = price && price !== "—" && price !== 0;
     const hasGMP = showGMP && gmp !== undefined && gmp !== null && gmp !== 0;
@@ -45,7 +48,7 @@ export function IPOGMPCard({
         : null;
 
     return (
-        <Link href={`/ipo/${slug}`} className="shrink-0 w-64 md:w-auto group block">
+        <IPOLink href={`/ipo/${slug}`} logoUrl={logoUrl} className="shrink-0 w-64 md:w-auto group block">
             <Card className={cn(
                 "card-hover h-full transition-all duration-500 border-border/40 shadow-sm overflow-hidden",
                 index === 0 ? "border-primary/40 bg-gradient-to-br from-primary/10 via-background to-background" : "hover:border-primary/40 bg-background/50 backdrop-blur-sm",
@@ -155,6 +158,6 @@ export function IPOGMPCard({
                     </div>
                 </CardContent>
             </Card>
-        </Link>
+        </IPOLink>
     );
 }

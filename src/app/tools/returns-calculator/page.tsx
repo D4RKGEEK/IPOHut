@@ -13,7 +13,21 @@ export const metadata: Metadata = {
         description: "Estimate your potential IPO returns and listing gains based on current GMP and expected listing price.",
         url: "https://ipohut.com/tools/returns-calculator",
         type: "website",
-    }
+        images: [
+            {
+                url: "/og-image.png",
+                width: 1200,
+                height: 630,
+                alt: "IPO Returns Calculator",
+            },
+        ],
+    },
+    twitter: {
+        card: "summary_large_image",
+        title: "IPO Returns Calculator | Estimated Profit & Gain",
+        description: "Estimate your potential IPO returns and listing gains based on current GMP and expected listing price.",
+        images: ["/og-image.png"],
+    },
 };
 
 // 3 Hour Revalidation

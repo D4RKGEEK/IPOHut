@@ -1,6 +1,8 @@
 import { MetadataRoute } from 'next';
 import { fetchIPOMetadata } from '@/lib/api';
 
+export const dynamic = 'force-static';
+
 const BASE_URL = 'https://ipohut.com';
 
 const STATIC_ROUTES = [
@@ -37,9 +39,11 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
         }
     ])).flat();
 
+    const buildTime = new Date();
+
     const staticEntries = STATIC_ROUTES.map(route => ({
         url: `${BASE_URL}${route.url}`,
-        lastModified: new Date(),
+        lastModified: buildTime,
         changeFrequency: route.changeFrequency,
         priority: route.priority,
     }));

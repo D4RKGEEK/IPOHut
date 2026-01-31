@@ -5,6 +5,7 @@ import { Metadata } from "next";
 
 // 7 Hour Revalidation
 export const revalidate = 25200;
+export const dynamicParams = false;
 
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
     const { slug } = await params;

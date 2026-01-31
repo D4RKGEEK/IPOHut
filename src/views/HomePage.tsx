@@ -171,6 +171,7 @@ export default function HomePage({ initialData }: HomePageProps) {
                       openDate={ipo.open_date}
                       closeDate={ipo.close_date}
                       subscription={ipo.subscription_times}
+                      logoUrl={ipo.logo_about?.logo}
                     />
                   ))}
                 </div>
@@ -227,6 +228,7 @@ export default function HomePage({ initialData }: HomePageProps) {
                       return {
                         slug: ipo.slug,
                         name: ipo.name.replace(' IPO', ''),
+                        logoUrl: ipo.logo_about?.logo,
                         ipoType: ipo.ipo_type?.toLowerCase() as "mainboard" | "sme" | undefined,
                         openDate: formatDateWithoutYear(ipo.open_date),
                       };
@@ -270,6 +272,7 @@ export default function HomePage({ initialData }: HomePageProps) {
                     data={recentlyListed.data.slice(0, 6).map(ipo => ({
                       slug: ipo.slug,
                       name: ipo.name.replace(' IPO', ''),
+                      logoUrl: ipo.logo_about?.logo,
                       listingPrice: formatCurrency(ipo.current_price || 0),
                       gain: (
                         <span className={cn("font-bold", (ipo.gain_loss_percent || 0) >= 0 ? "text-emerald-500" : "text-rose-500")}>

@@ -248,7 +248,7 @@ export const defaultAdminSettings: AdminSettings = {
       footerScripts: "",
     },
     defaultSeo: {
-      titleSuffix: " | IPOHut 2026",
+      titleSuffix: "",
       defaultDescription: "Track live IPO GMP, subscription status, allotment dates, and listing performance. Your complete guide to Indian IPO market.",
       ogImage: "",
       twitterHandle: "",

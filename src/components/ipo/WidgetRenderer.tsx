@@ -141,7 +141,7 @@ export function WidgetRenderer({ widgetId, data }: WidgetRendererProps) {
       return <IPOGMPWidget gmpData={undefined} issuePrice={issuePrice || 300} lotSize={lotSize || 50} showDummyData={false} />;
 
     case 'market_chart':
-      if (marketData && status === "listed") {
+      if (marketData) {
         return <MarketCandlesChart marketData={marketData} issuePrice={issuePrice} ipoSlug={slug} />;
       }
       return null;

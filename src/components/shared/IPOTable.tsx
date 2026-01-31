@@ -1,3 +1,4 @@
+import { IPOLink } from "./IPOLink";
 import Link from "next/link";
 import {
   Table,
@@ -25,6 +26,7 @@ export interface IPOTableColumn {
 export interface IPOTableRow {
   slug: string;
   name: string;
+  logoUrl?: string;
   status?: string | React.ReactNode;
   ipoType?: "mainboard" | "sme" | string;
   openDate?: string | React.ReactNode;
@@ -105,13 +107,14 @@ export function IPOTable({
         const showAllotmentLink = row.status && typeof row.status === 'string' && ["recently_listed", "listed"].includes(row.status.toLowerCase());
         return (
           <div className="flex items-center gap-2">
-            <Link
+            <IPOLink
               href={`/ipo/${row.slug}`}
+              logoUrl={row.logoUrl}
               className="font-medium text-foreground hover:text-primary transition-colors"
               onClick={(e) => onRowClick && e.stopPropagation()}
             >
               {row.name}
-            </Link>
+            </IPOLink>
             {showAllotmentLink && (
               <Tooltip>
                 <TooltipTrigger asChild>

@@ -11,6 +11,10 @@ export interface IPOGain {
   subscription_times: number;
   ipo_type: "mainboard" | "sme";
   listing_at: string;
+  logo_about?: {
+    logo?: string;
+    about?: string;
+  };
 }
 
 export interface IPOStatus {
@@ -33,6 +37,10 @@ export interface IPOStatus {
   lot_size?: number;
   issue_price_band?: string;
   issue_price_final?: string;
+  logo_about?: {
+    logo?: string;
+    about?: string;
+  };
 }
 
 export interface IPONews {

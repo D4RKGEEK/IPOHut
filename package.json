@@ -7,7 +7,7 @@
     "dev": "next dev",
     "prebuild": "npx tsx scripts/generate-search-data.ts",
     "build": "next build",
-    "start": "next start",
+    "start": "npx serve out",
     "lint": "next lint"
   },
   "dependencies": {

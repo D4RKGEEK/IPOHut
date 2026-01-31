@@ -9,6 +9,7 @@ import { getAdminSettings } from "@/lib/server-config";
 
 // 3 Hour Revalidation
 export const revalidate = 25200;
+export const dynamicParams = false;
 
 export async function generateStaticParams() {
     try {

@@ -44,18 +44,37 @@ export function MarketCandlesChart({ marketData, issuePrice, ipoSlug }: MarketCa
   const allCandles = useMemo(() => {
     let candles: CandleData[] = [];
 
-    // New format: candles at root level with exchange, isin, date
+    if (!marketData) return [];
+
+    // Format 1: IPOMarketData (with candles array at root or in nested object)
     if ('candles' in marketData && Array.isArray(marketData.candles)) {
       candles = marketData.candles;
     }
-    // Old format: nested under date key like "2025-12-31": { candles: [...] }
+    // Format 2: Record<string, CandleData> where key is date
     else if (typeof marketData === 'object') {
-      const dateKeys = Object.keys(marketData).filter(key => /^\d{4}-\d{2}-\d{2}$/.test(key));
-      if (dateKeys.length > 0) {
-        const dateKey = dateKeys[0];
-        const dateData = marketData[dateKey];
-        if (dateData?.candles && Array.isArray(dateData.candles)) {
-          candles = dateData.candles;
+      const entries = Object.entries(marketData);
+      // Check if entries look like date keys with candle data
+      const looksLikeDateEntries = entries.every(([key]) => /^\d{4}-\d{2}-\d{2}$/.test(key));
+
+      if (looksLikeDateEntries && entries.length > 0) {
+        candles = entries.map(([date, data]) => ({
+          time: date,
+          open: Number(data.open || 0),
+          high: Number(data.high || 0),
+          low: Number(data.low || 0),
+          close: Number(data.close || 0),
+          volume: Number(data.volume || 0),
+        }));
+      }
+      // Format 3: Nested under a date key (older format)
+      else {
+        const dateKeys = Object.keys(marketData).filter(key => /^\d{4}-\d{2}-\d{2}$/.test(key));
+        if (dateKeys.length > 0) {
+          const dateKey = dateKeys[0];
+          const dateData = marketData[dateKey];
+          if (dateData?.candles && Array.isArray(dateData.candles)) {
+            candles = dateData.candles;
+          }
         }
       }
     }
@@ -94,7 +113,10 @@ export function MarketCandlesChart({ marketData, issuePrice, ipoSlug }: MarketCa
         return allCandles;
     }
 
-    return allCandles.filter(candle => new Date(candle.time) >= cutoffDate);
+    const filtered = allCandles.filter(candle => new Date(candle.time) >= cutoffDate);
+
+    // If no filtered data, fallback to ALL to ensure chart is visible
+    return filtered.length > 0 ? filtered : allCandles;
   }, [allCandles, selectedRange]);
 
   // Transform to chart data

@@ -13,7 +13,21 @@ export const metadata: Metadata = {
         description: "Calculate your total IPO investment amount based on lot size and price band. Plan your applications across different categories.",
         url: "https://ipohut.com/tools/investment-calculator",
         type: "website",
-    }
+        images: [
+            {
+                url: "/og-image.png",
+                width: 1200,
+                height: 630,
+                alt: "IPO Investment Calculator",
+            },
+        ],
+    },
+    twitter: {
+        card: "summary_large_image",
+        title: "IPO Investment Calculator | Calculate Application Value",
+        description: "Calculate your total IPO investment amount based on lot size and price band. Plan your applications across different categories.",
+        images: ["/og-image.png"],
+    },
 };
 
 // 3 Hour Revalidation

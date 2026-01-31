@@ -1,3 +1,4 @@
+import { IPOLink } from "./IPOLink";
 import Link from "next/link";
 import { Card, CardContent } from "@/components/ui/card";
 import { StatusBadge, TypeBadge } from "./StatusBadge";
@@ -18,6 +19,7 @@ interface IPOCardProps {
   subscriptionTimes?: number;
   closeDate?: string;
   listingDate?: string;
+  logoUrl?: string;
   className?: string;
   style?: React.CSSProperties;
 }
@@ -34,6 +36,7 @@ export function IPOCard({
   subscriptionTimes,
   closeDate,
   listingDate,
+  logoUrl,
   className,
   style,
 }: IPOCardProps) {
@@ -50,8 +53,9 @@ export function IPOCard({
     <Card className={cn("card-hover h-full border-border/40 bg-card/50 backdrop-blur-sm", className)} style={style}>
       <CardContent className="p-4">
         {/* Header */}
-        <Link
+        <IPOLink
           href={`/ipo/${slug}`}
+          logoUrl={logoUrl}
           className="group block"
           onClick={() => analytics.ipoCardClick(name, slug)}
         >
@@ -71,14 +75,15 @@ export function IPOCard({
             </div>
             <StatusBadge status={status} className="shrink-0" />
           </div>
-        </Link>
+        </IPOLink>
 
         {/* Info Grid for better data presentation */}
         <div className="space-y-3">
           {/* GMP Display - Only if data exists */}
           {hasGmpData && (
-            <Link
+            <IPOLink
               href={`/ipo/${slug}`}
+              logoUrl={logoUrl}
               onClick={() => analytics.ipoCardClick(name, slug)}
               className="block"
             >
@@ -118,7 +123,7 @@ export function IPOCard({
                   )}
                 </div>
               </div>
-            </Link>
+            </IPOLink>
           )}
 
           {/* Subscription & Timing */}

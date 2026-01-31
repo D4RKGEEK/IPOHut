@@ -13,7 +13,21 @@ export const metadata: Metadata = {
         description: "Compare multiple IPOs side-by-side. Analyze price bands, GMP, subscription status, and listing performance to make informed decisions.",
         url: "https://ipohut.com/tools/compare",
         type: "website",
-    }
+        images: [
+            {
+                url: "/og-image.png",
+                width: 1200,
+                height: 630,
+                alt: "Compare IPOs side-by-side",
+            },
+        ],
+    },
+    twitter: {
+        card: "summary_large_image",
+        title: "Compare IPOs | Performance & Metric Comparison",
+        description: "Compare multiple IPOs side-by-side. Analyze price bands, GMP, subscription status, and listing performance to make informed decisions.",
+        images: ["/og-image.png"],
+    },
 };
 
 // 3 Hour Revalidation

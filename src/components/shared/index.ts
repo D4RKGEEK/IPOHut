@@ -5,6 +5,7 @@ export { IPOTimeline } from "./IPOTimeline";
 export { GMPCalculator } from "./GMPCalculator";
 export { BrokerSentiment } from "./BrokerSentiment";
 export { ThemeToggle } from "./ThemeToggle";
+export * from "./SlashEnforcer";
 export { NewsTicker } from "./NewsTicker";
 export { ShareButtons } from "./ShareButtons";
 export { IPOSelector, type SelectedIPO } from "./IPOSelector";

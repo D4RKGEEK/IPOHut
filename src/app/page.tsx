@@ -36,9 +36,9 @@ export async function generateMetadata(): Promise<Metadata> {
 
 export default async function Home() {
     const [openIPOs, upcomingIPOs, recentlyListed, gainersData, losersData, newsData] = await Promise.all([
-        fetchStatus({ status: 'open', limit: 6 }),
-        fetchStatus({ status: 'upcoming', limit: 5 }),
-        fetchStatus({ status: 'recently_listed', limit: 8 }),
+        fetchStatus({ status: 'open', sort_by: 'open_date', order: 'desc', limit: 6 }),
+        fetchStatus({ status: 'upcoming', sort_by: 'open_date', order: 'asc', limit: 5 }),
+        fetchStatus({ status: 'recently_listed', sort_by: 'listing_date', order: 'desc', limit: 8 }),
         fetchGains({ sort_by: "listing_gain_percent", order: "desc", limit: 5 }),
         fetchGains({ sort_by: "listing_gain_percent", order: "asc", limit: 5 }),
         fetchNews({ limit: 20 }),

@@ -9,6 +9,7 @@ import { AdminProvider } from "@/contexts/AdminContext";
 import { AnalyticsProvider } from "@/components/analytics/AnalyticsProvider";
 import { useState, Suspense } from "react";
 import { AdminSettings } from "@/types/admin";
+import { SlashEnforcer } from "@/components/shared/SlashEnforcer";
 
 export function Providers({ children, initialAdminSettings }: { children: React.ReactNode; initialAdminSettings?: AdminSettings }) {
     const [queryClient] = useState(() => new QueryClient({
@@ -27,6 +28,7 @@ export function Providers({ children, initialAdminSettings }: { children: React.
             <QueryClientProvider client={queryClient}>
                 <AdminProvider initialSettings={initialAdminSettings}>
                     <TooltipProvider>
+                        <SlashEnforcer />
                         <Suspense fallback={null}>
                             <AnalyticsProvider />
                         </Suspense>

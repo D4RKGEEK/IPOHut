@@ -9,7 +9,7 @@ export const revalidate = 25200;
 export async function generateMetadata(): Promise<Metadata> {
     const settings = getAdminSettings();
     const { title, description } = settings.pages.sme;
-    const url = "https://ipohut.com/sme-ipo";
+    const url = "https://ipohut.com/sme-ipo/";
 
     return {
         title,
@@ -58,14 +58,14 @@ export default async function SMEIPO() {
         "@type": "CollectionPage",
         "name": pageSettings.title,
         "description": pageSettings.description,
-        "url": "https://ipohut.com/sme-ipo",
+        "url": "https://ipohut.com/sme-ipo/",
         "mainEntity": {
             "@type": "ItemList",
             "numberOfItems": combinedData.data.length,
             "itemListElement": combinedData.data.slice(0, 10).map((ipo, index) => ({
                 "@type": "ListItem",
                 "position": index + 1,
-                "url": `https://ipohut.com/ipo/${ipo.slug}`,
+                "url": `https://ipohut.com/ipo/${ipo.slug}/`,
                 "name": ipo.name
             }))
         }

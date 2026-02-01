@@ -12,7 +12,7 @@ export async function generateMetadata(): Promise<Metadata> {
         title: "IPO Statistics",
         description: "IPO Statistics and Analysis"
     };
-    const url = "https://ipohut.com/ipo-statistics";
+    const url = "https://ipohut.com/ipo-statistics/";
 
     return {
         title: stats.title,

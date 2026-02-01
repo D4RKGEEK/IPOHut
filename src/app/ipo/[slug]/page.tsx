@@ -49,7 +49,7 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
         const priceBand = basicInfo["Price Band"] || "TBA";
         const lotSize = basicInfo["Lot Size"] || "TBA";
         const gmpValue = gmpData?.current_gmp ?? "TBA";
-        const url = `https://ipohut.com/ipo/${slug}`;
+        const url = `https://ipohut.com/ipo/${slug}/`;
 
         const title = `${ipoName} Details: Price, GMP Today, Review & Analysis`;
         const description = `Get ${ipoName} details: Price ${priceBand}, Lot ${lotSize} & GMP Today. Read our expert review, listing gain potential and key subscription dates.`;
@@ -236,9 +236,9 @@ export default async function IPODetail({ params }: { params: Promise<{ slug: st
             "@context": "https://schema.org",
             "@type": "BreadcrumbList",
             "itemListElement": [
-                { "@type": "ListItem", "position": 1, "name": "Home", "item": "https://ipohut.com" },
-                { "@type": "ListItem", "position": 2, "name": ipoType === "sme" ? "SME IPO" : "Mainboard IPO", "item": `https://ipohut.com/${ipoType === 'sme' ? 'sme' : 'mainboard'}-ipo` },
-                { "@type": "ListItem", "position": 3, "name": ipoName, "item": `https://ipohut.com/ipo/${slug}` }
+                { "@type": "ListItem", "position": 1, "name": "Home", "item": "https://ipohut.com/" },
+                { "@type": "ListItem", "position": 2, "name": ipoType === "sme" ? "SME IPO" : "Mainboard IPO", "item": `https://ipohut.com/${ipoType === 'sme' ? 'sme' : 'mainboard'}-ipo/` },
+                { "@type": "ListItem", "position": 3, "name": ipoName, "item": `https://ipohut.com/ipo/${slug}/` }
             ]
         };
 

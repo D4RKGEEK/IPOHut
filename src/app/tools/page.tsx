@@ -11,7 +11,7 @@ export async function generateMetadata(): Promise<Metadata> {
         title: "IPO Tools & Calculators",
         description: "Calculate IPO profits, GMP, and investment returns with our professional tools."
     };
-    const url = "https://ipohut.com/tools";
+    const url = "https://ipohut.com/tools/";
 
     return {
         title: stats.title,

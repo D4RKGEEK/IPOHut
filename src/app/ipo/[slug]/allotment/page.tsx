@@ -27,7 +27,7 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
 
         const title = `${ipoName} Allotment Status: Check Direct Link`;
         const description = `Check ${ipoName} allotment status instantly. Use our direct link for ${registrarName} portal to verify your application via PAN, App No, or DP ID.`;
-        const url = `https://ipohut.com/ipo/${slug}/allotment`;
+        const url = `https://ipohut.com/ipo/${slug}/allotment/`;
 
         return {
             title,

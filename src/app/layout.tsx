@@ -21,6 +21,9 @@ export async function generateMetadata(): Promise<Metadata> {
             template: `%s${site.defaultSeo.titleSuffix}`,
         },
         description: site.defaultSeo.defaultDescription,
+        alternates: {
+            canonical: "/",
+        },
         openGraph: {
             title: {
                 default: siteName,

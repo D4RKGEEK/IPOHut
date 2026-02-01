@@ -60,7 +60,7 @@ export default async function Home() {
         "@context": "https://schema.org",
         "@type": "WebSite",
         "name": settings.site.branding.siteName,
-        "url": "https://ipohut.com",
+        "url": "https://ipohut.com/",
         "description": pageSettings.description,
         "potentialAction": {
             "@type": "SearchAction",
@@ -73,7 +73,7 @@ export default async function Home() {
         "@context": "https://schema.org",
         "@type": "Organization",
         "name": settings.site.branding.siteName,
-        "url": "https://ipohut.com",
+        "url": "https://ipohut.com/",
         "logo": "https://ipohut.com/logo.png"
     };
 

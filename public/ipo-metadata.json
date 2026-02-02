@@ -4,6 +4,10 @@
     "name": "E to E Transportation Infrastructure IPO"
   },
   {
+    "slug": "avana-electrosystems-ipo",
+    "name": "Avana Electrosystems IPO"
+  },
+  {
     "slug": "defrail-technologies-ipo",
     "name": "Defrail Technologies IPO"
   },
@@ -12,20 +16,16 @@
     "name": "Yajur Fibres IPO"
   },
   {
+    "slug": "jsw-cement-ipo",
+    "name": "JSW Cement IPO"
+  },
+  {
     "slug": "victory-electric-vehicles-ipo",
     "name": "Victory Electric Vehicles IPO"
   },
   {
     "slug": "gabion-technologies-india-ipo",
     "name": "Gabion Technologies IPO"
-  },
-  {
-    "slug": "jsw-cement-ipo",
-    "name": "JSW Cement IPO"
-  },
-  {
-    "slug": "avana-electrosystems-ipo",
-    "name": "Avana Electrosystems IPO"
   },
   {
     "slug": "physicswallah-ipo",
@@ -420,6 +420,10 @@
     "name": "Scoda Tubes IPO"
   },
   {
+    "slug": "biopol-chemicals-ipo",
+    "name": "Biopol Chemicals IPO"
+  },
+  {
     "slug": "gallard-steel-ipo",
     "name": "Gallard Steel IPO"
   },
@@ -512,6 +516,10 @@
     "name": "HRS Aluglaze IPO"
   },
   {
+    "slug": "grover-jewells-ipo",
+    "name": "Grover Jewells IPO"
+  },
+  {
     "slug": "austere-systems-ipo",
     "name": "Austere Systems IPO"
   },
@@ -602,6 +610,10 @@
   {
     "slug": "krupalu-metals-ipo",
     "name": "Krupalu Metals IPO"
+  },
+  {
+    "slug": "brandman-retail-ipo",
+    "name": "Brandman Retail IPO"
   },
   {
     "slug": "super-iron-foundry-ipo",
@@ -1492,64 +1504,64 @@
     "name": "Dhillon Freight Carrier IPO"
   },
   {
-    "slug": "indo-smc-ipo",
-    "name": "INDO SMC IPO"
-  },
-  {
-    "slug": "accretion-nutraveda-ipo",
-    "name": "Accretion Nutraveda IPO"
+    "slug": "aritas-vinyl-ipo",
+    "name": "Aritas Vinyl IPO"
   },
   {
     "slug": "shayona-engineering-ipo",
     "name": "Shayona Engineering IPO"
   },
   {
-    "slug": "msafe-equipments-ipo",
-    "name": "Msafe Equipments IPO"
-  },
-  {
-    "slug": "hannah-joseph-ipo",
-    "name": "Hannah Joseph Hospital IPO"
-  },
-  {
     "slug": "kanishk-aluminium-india-ipo",
     "name": "Kanishk Aluminium India IPO"
-  },
-  {
-    "slug": "narmadesh-brass-industries-ipo",
-    "name": "Narmadesh Brass Industries IPO"
   },
   {
     "slug": "nfp-sampoorna-foods-ipo",
     "name": "NFP Sampoorna Foods IPO"
   },
   {
+    "slug": "c-k-k-retail-mart-ipo",
+    "name": "CKK Retail Mart IPO"
+  },
+  {
     "slug": "kasturi-metal-ipo",
     "name": "Kasturi Metal Composite IPO"
+  },
+  {
+    "slug": "hannah-joseph-ipo",
+    "name": "Hannah Joseph Hospital IPO"
   },
   {
     "slug": "krm-ayurveda-ipo",
     "name": "KRM Ayurveda IPO"
   },
   {
-    "slug": "amagi-media-labs-ipo",
-    "name": "Amagi Media Labs IPO"
+    "slug": "armour-security-india-ipo",
+    "name": "Armour Security IPO"
   },
   {
     "slug": "digilogic-systems-ipo",
     "name": "Digilogic Systems IPO"
   },
   {
-    "slug": "aritas-vinyl-ipo",
-    "name": "Aritas Vinyl IPO"
+    "slug": "amagi-media-labs-ipo",
+    "name": "Amagi Media Labs IPO"
   },
   {
-    "slug": "c-k-k-retail-mart-ipo",
-    "name": "CKK Retail Mart IPO"
+    "slug": "indo-smc-ipo",
+    "name": "INDO SMC IPO"
   },
   {
-    "slug": "armour-security-india-ipo",
-    "name": "Armour Security IPO"
+    "slug": "narmadesh-brass-industries-ipo",
+    "name": "Narmadesh Brass Industries IPO"
+  },
+  {
+    "slug": "accretion-nutraveda-ipo",
+    "name": "Accretion Nutraveda IPO"
+  },
+  {
+    "slug": "msafe-equipments-ipo",
+    "name": "Msafe Equipments IPO"
   },
   {
     "slug": "shadowfax-technologies-ipo",
